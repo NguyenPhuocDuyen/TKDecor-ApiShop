@@ -7,13 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Utility.Mail;
 using Utility;
 using BusinessObject.DTO;
-using System.Security.Cryptography.Xml;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BE_TKDecor.Controllers
 {
@@ -32,13 +29,13 @@ namespace BE_TKDecor.Controllers
             _sendMailService = sendMailService;
         }
 
-        ////GET: api/Users/GetUsers
-        //[Authorize(Roles = RoleContent.Admin)]
-        //[HttpGet("GetUsers")]
-        //public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        //{
-        //    return Ok(await _db.User.GetAllAsync());
-        //}
+        //GET: api/Users/GetUsers
+        [Authorize(Roles = RoleContent.Admin)]
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        {
+            return Ok(await userRepository.GetAll());
+        }
 
         ////GET: api/Users/TotalUser
         //[HttpGet("TotalUser")]
@@ -48,22 +45,23 @@ namespace BE_TKDecor.Controllers
         //    return Ok(list.Count());
         //}
 
-        //// GET: api/Users/GetUserInfo
-        //[Authorize]
-        //[HttpGet("GetUserInfo")]
-        //public async Task<ActionResult<User>> GetUserInfo()
-        //{
-        //    User user = new();
-        //    var currentUser = HttpContext.User;
-        //    if (currentUser.HasClaim(c => c.Type == ClaimTypes.Name))
-        //    {
-        //        var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-        //        // get user by user id
-        //        user = await _db.User.GetFirstOrDefaultAsync(x => x.Id == int.Parse(userId));
-        //    }
-
-        //    return user;
-        //}
+        // GET: api/Users/GetUserInfo
+        [Authorize]
+        [HttpGet("GetUserInfo")]
+        public async Task<ActionResult<User>> GetUserInfo()
+        {
+            User user = new();
+            var currentUser = HttpContext.User;
+            if (currentUser.HasClaim(c => c.Type == ClaimTypes.Name))
+            {
+                var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                // get user by user id
+                user = await userRepository.FindById(int.Parse(userId));
+                user.PasswordHash = "";
+                return user;
+            }
+            return Conflict(new ErrorApp { Error = ErrorContent.Error });
+        }
 
         // POST: api/Users/PostUser
         //user register accoount
@@ -93,16 +91,16 @@ namespace BE_TKDecor.Controllers
                     PasswordHash = Password.HashPassword(user.Password),
                     FullName = user.FullName,
                     AvatarUrl = user.AvatarUrl,
-                    IsSubscriber = false,
-                    EmailConfirmed = false,
-                    EmailConfirmationCode = code,
-                    EmailConfirmationSentAt = DateTime.Now,
-                    ResetPasswordRequired = false,
-                    ResetPasswordCode = null,
-                    ResetPasswordSentAt = null,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    IsDelete = false
+                    //IsSubscriber = false,
+                    //EmailConfirmed = false,
+                    //EmailConfirmationCode = code,
+                    //EmailConfirmationSentAt = DateTime.Now,
+                    //ResetPasswordRequired = false,
+                    //ResetPasswordCode = null,
+                    //ResetPasswordSentAt = null,
+                    //CreatedAt = DateTime.Now,
+                    //UpdatedAt = DateTime.Now,
+                    //IsDelete = false
                 };
 
                 //send mail to confirm account
@@ -119,13 +117,13 @@ namespace BE_TKDecor.Controllers
 
                 var resultUser = await userRepository.Add(newUser);
 
-                return Ok();
+                return Ok(resultUser);
             }
-            catch (Exception ex)
+            catch 
             {
-                await Console.Out.WriteLineAsync(ex.ToString());
+                //await Console.Out.WriteLineAsync(ex.ToString());
                 //lỗi do xung đột dữ liệu
-                return Conflict(new ErrorApp { Error = ex.ToString()});
+                return Conflict(new ErrorApp { Error = ErrorContent.Error});
             }
         }
 
@@ -169,7 +167,7 @@ namespace BE_TKDecor.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             //convert token to string
             var tokenString = tokenHandler.WriteToken(token);
-            u.PasswordHash= "";
+            u.PasswordHash = "";
 
             return Ok(new { User = u, Access_Token = tokenString });
         }
@@ -177,16 +175,16 @@ namespace BE_TKDecor.Controllers
         // POST: api/Users/ConfirmMail
         //confirm mail of user 
         [HttpPost("ConfirmMail")]
-        public async Task<ActionResult> ConfirmMail(User userInput)
+        public async Task<ActionResult> ConfirmMail(string email, string code)
         {
             // get user by email confirm token 
             //var user = await _db.User.GetFirstOrDefaultAsync(x => x.EmailConfirmationToken == userInput.EmailConfirmationToken);
-            var user = await userRepository.FindByEmail(userInput.Email);
+            var user = await userRepository.FindByEmail(email.ToLower().Trim());
 
             if (user == null)
                 return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
 
-            if (user.EmailConfirmationCode != userInput.EmailConfirmationCode)
+            if (user.EmailConfirmationCode != code.Trim())
                 return BadRequest(new ErrorApp { Error = "Wrong email confirmation code." });
 
             //set email confirm
@@ -195,8 +193,89 @@ namespace BE_TKDecor.Controllers
             try
             {
                 //update database
-                await userRepository.Update(user);
-                return NoContent();
+                var userInfo = await userRepository.Update(user);
+                return Ok(userInfo);
+            }
+            catch
+            {
+                return BadRequest(new ErrorApp { Error = ErrorContent.Error });
+            }
+        }
+
+        // POST: api/Users/ForgotPassword
+        //ForgotPassword of user 
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> ForgotPassword(string email)
+        {
+            // get user by email confirm token 
+            var user = await userRepository.FindByEmail(email);
+
+            if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
+
+            try
+            {
+                // create code authen forgot password
+                string code = Token.GenerateRandomCode();
+                //property authen mail
+                user.ResetPasswordCode = code;
+                user.ResetPasswordSentAt = DateTime.Now;
+                user.ResetPasswordRequired = true;
+
+                //send mail to confirm account
+                //set data to send
+                MailContent mailContent = new()
+                {
+                    To = user.Email,
+                    Subject = "Đặt lại mật khẩu cho tài khoản TKDecor Shop",
+                    Body = $"<h1>Nếu bạn không đặt lại mật khẩu cho tài khoản TKDecor Shop thì vui lòng bỏ qua email này</h1>" +
+                       $"<h4>Nếu bạn đã đặt lại mật khẩu cho tài khoản TKDecor Shop thì hãy nhập mã code bên dưới.</h4>" +
+                       $"<p>Đây là mã code của bạn: <strong>{code}</strong></p>"
+                };
+
+                // send mail
+                await _sendMailService.SendMail(mailContent);
+
+                //update user
+                var userInfo = await userRepository.Update(user);
+
+                return Ok(userInfo);
+            }
+            catch
+            {
+                return BadRequest(new ErrorApp { Error = ErrorContent.Error });
+            }
+        }
+
+        // POST: api/Users/ConfirmForgotPassword
+        //ChangePassword of user 
+        [HttpPost("ConfirmForgotPassword")]
+        public async Task<ActionResult> ConfirmForgotPassword(LoginUserDTO userReset, string code)
+        {
+            // get user by email
+            var user = await userRepository.FindByEmail(userReset.Email);
+
+            if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
+
+            //check token expires: 5 minutes
+            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
+                return BadRequest(new ErrorApp { Error = ErrorContent.TokenOutDate });
+
+            if (user.ResetPasswordRequired is not true)
+                return BadRequest(new ErrorApp { Error = "Tài khoản không có yêu cầu đặt lại mật khẩu" });
+
+            if (user.ResetPasswordCode != code) 
+                return BadRequest(new ErrorApp { Error = "Sai mã code." });
+
+            try
+            {
+                //if reset password, will back status do not reset password
+                user.ResetPasswordRequired = false;
+                //set new password
+                user.PasswordHash = Password.HashPassword(userReset.Password.Trim());
+
+                //update to database and return info user
+                var userInfo = await userRepository.Update(user);
+                return Ok(userInfo);
             }
             catch
             {
@@ -246,99 +325,6 @@ namespace BE_TKDecor.Controllers
         //    {
         //        return BadRequest(new ErrorApp { Error = ErrorContent.Error });
         //    }
-        //}
-
-        //// POST: api/Users/ForgotPassword
-        ////ForgotPassword of user 
-        //[HttpPost("ForgotPassword")]
-        //public async Task<ActionResult> ForgotPassword(User userInput)
-        //{
-        //    // get user by email confirm token 
-        //    var user = await _db.User.GetFirstOrDefaultAsync(
-        //        filter: x => x.Email.ToLower().Trim() == userInput.Email.ToLower().Trim());
-
-        //    if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
-
-        //    try
-        //    {
-        //        // create code authen forgot password
-        //        byte[] randomBytes = new byte[32];
-        //        using (RNGCryptoServiceProvider rng = new())
-        //        {
-        //            rng.GetBytes(randomBytes);
-        //        }
-        //        string token = BitConverter.ToString(randomBytes).Replace("-", "").ToLower();
-
-        //        //property authen mail
-        //        user.ResetPasswordToken = token;
-        //        user.ResetPasswordSentAt = DateTime.Now;
-        //        user.IsPasswordResetRequired = true;
-
-        //        //send mail to confirm account
-        //        //set data to send
-        //        MailContent mailContent = new()
-        //        {
-        //            To = user.Email,
-        //            Subject = "Đặt lại mật khẩu cho tài khoản TKDecor Shop",
-        //            Body = $"<h1>Nếu bạn không đặt lại mật khẩu cho tài khoản TKDecor Shop thì vui lòng bỏ qua email này</h1>" +
-        //               $"<h4>Nếu bạn đã đặt lại mật khẩu cho tài khoản TKDecor Shop thì click vào link dưới</h4>" +
-        //               $"<p>Vui lòng click vào <a href=\"https://localhost:44310/Account/ResetPassword?tokenPassword={token}&email={user.Email}\">đây</a> để kích hoạt tài khoản của bạn.</p>"
-        //        };
-
-        //        //send mail
-        //        HttpResponseMessage response = GobalVariables.WebAPIClient.PostAsJsonAsync($"Mails/PostMail", mailContent).Result;
-        //        //check status
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            //update to database
-        //            _db.User.Update(user);
-        //            await _db.SaveAsync();
-
-        //            return NoContent();
-        //        }
-        //        else
-        //        {
-        //            return BadRequest(new ErrorApp { Error = ErrorContent.SendEmail });
-        //        }
-        //    }
-        //    catch { }
-
-        //    return BadRequest(new ErrorApp { Error = ErrorContent.Error });
-        //}
-
-        //// POST: api/Users/ChangePassword/tokenPassword
-        ////ChangePassword of user 
-        //[HttpPost("ChangePassword/{tokenPassword}")]
-        //public async Task<ActionResult> ChangePassword(string tokenPassword, User userInput)
-        //{
-        //    // get user by email confirm token 
-        //    var user = await _db.User.GetFirstOrDefaultAsync(
-        //        filter: x => x.Email.ToLower().Trim() == userInput.Email.ToLower().Trim()
-        //        && x.ResetPasswordToken == tokenPassword
-        //        && x.IsPasswordResetRequired == true);
-
-        //    if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
-
-        //    //check token expires 
-        //    if (user.ResetPasswordSentAt <= DateTime.Now.AddHours(-1))
-        //        return BadRequest(new ErrorApp { Error = ErrorContent.TokenOutDate });
-
-        //    try
-        //    {
-        //        //if reset password, will back status do not reset password
-        //        user.IsPasswordResetRequired = false;
-        //        //set new password
-        //        user.Password = HasPassword.HashPassword(userInput.Password);
-
-        //        //update to database
-        //        _db.User.Update(user);
-        //        await _db.SaveAsync();
-
-        //        return NoContent();
-        //    }
-        //    catch { }
-
-        //    return BadRequest(new ErrorApp { Error = ErrorContent.Error });
         //}
     }
 }

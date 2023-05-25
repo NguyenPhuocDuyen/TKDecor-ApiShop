@@ -17,25 +17,25 @@ public partial class User
 
     public string? AvatarUrl { get; set; }
 
-    public bool? IsSubscriber { get; set; }
+    public bool? IsSubscriber { get; set; } = false;
 
-    public bool? EmailConfirmed { get; set; }
+    public bool? EmailConfirmed { get; set; } = false;
 
-    public string? EmailConfirmationCode { get; set; }
+    public string? EmailConfirmationCode { get; set; } = null;
 
-    public DateTime? EmailConfirmationSentAt { get; set; }
+    public DateTime? EmailConfirmationSentAt { get; set; } = null;
 
-    public bool? ResetPasswordRequired { get; set; }
+    public bool? ResetPasswordRequired { get; set; } = false;
 
-    public string? ResetPasswordCode { get; set; }
+    public string? ResetPasswordCode { get; set; } = null;
 
-    public DateTime? ResetPasswordSentAt { get; set; }
+    public DateTime? ResetPasswordSentAt { get; set; } = null;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.Now;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
-    public bool? IsDelete { get; set; }
+    public bool? IsDelete { get; set; } = false;
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 
