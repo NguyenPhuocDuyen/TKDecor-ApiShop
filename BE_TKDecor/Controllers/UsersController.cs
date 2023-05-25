@@ -57,7 +57,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 // get user by user id
                 user = await userRepository.FindById(int.Parse(userId));
-                user.PasswordHash = "";
+
                 return user;
             }
             return Conflict(new ErrorApp { Error = ErrorContent.Error });
@@ -91,10 +91,11 @@ namespace BE_TKDecor.Controllers
                     PasswordHash = Password.HashPassword(user.Password),
                     FullName = user.FullName,
                     AvatarUrl = user.AvatarUrl,
+                    EmailConfirmationCode = code,
                     //IsSubscriber = false,
                     //EmailConfirmed = false,
                     //EmailConfirmationCode = code,
-                    //EmailConfirmationSentAt = DateTime.Now,
+                    EmailConfirmationSentAt = DateTime.Now,
                     //ResetPasswordRequired = false,
                     //ResetPasswordCode = null,
                     //ResetPasswordSentAt = null,
@@ -143,7 +144,7 @@ namespace BE_TKDecor.Controllers
             if (u.EmailConfirmed is false) return BadRequest(new ErrorApp { Error = ErrorContent.NotConfirmEmail });
 
             //check correct password
-            bool isCorrectPassword = Password.VerifyPassword(user.Password, u.PasswordHash);
+            bool isCorrectPassword = await userRepository.CheckLogin(user.Email, user.Password);
 
             if (!isCorrectPassword)
                 return BadRequest(new ErrorApp { Error = ErrorContent.LoginFail });
@@ -167,7 +168,6 @@ namespace BE_TKDecor.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             //convert token to string
             var tokenString = tokenHandler.WriteToken(token);
-            u.PasswordHash = "";
 
             return Ok(new { User = u, Access_Token = tokenString });
         }

@@ -18,6 +18,7 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var users = await context.Users.ToListAsync();
+                users.ForEach(u => { u.PasswordHash = ""; });
                 return users;
             }
             catch (Exception ex)
@@ -52,6 +53,9 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.UserId == id);
+
+                if (user != null) user.PasswordHash = "";
+
                 return user;
             }
             catch (Exception ex)
@@ -66,6 +70,9 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.Email == email);
+
+                if (user != null) user.PasswordHash = "";
+
                 return user;
             }
             catch (Exception ex)
@@ -83,6 +90,9 @@ namespace DataAccess.DAO
                 await context.SaveChangesAsync();
 
                 var newUser = await context.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
+
+                if (newUser != null) user.PasswordHash = "";
+
                 return newUser;
             }
             catch (Exception ex)
@@ -100,6 +110,9 @@ namespace DataAccess.DAO
                 await context.SaveChangesAsync();
 
                 var newUser = await context.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
+
+                if (newUser != null) user.PasswordHash = "";
+
                 return newUser;
             }
             catch (Exception ex)
