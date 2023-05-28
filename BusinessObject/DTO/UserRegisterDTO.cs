@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTO
 {
-    public class RegisterUserDTO : LoginUserDTO
+    public class UserRegisterDTO : UserLoginDTO
     {
         public string FullName { get; set; } = null!;
 

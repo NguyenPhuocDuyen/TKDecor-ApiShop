@@ -101,6 +101,7 @@ namespace BusinessObject.Migrations
                     category_id = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    slug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<decimal>(type: "decimal(10,0)", nullable: false),
                     url_3D_model = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
@@ -152,7 +153,7 @@ namespace BusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     role_id = table.Column<int>(type: "int", nullable: false),
                     email = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    password_hash = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    password = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     full_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     avatar_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     is_subscriber = table.Column<bool>(type: "bit", nullable: true),
@@ -423,6 +424,30 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserAddress",
                 columns: table => new
                 {
@@ -595,6 +620,13 @@ namespace BusinessObject.Migrations
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
+                name: "UQ__Product__72E12F1B1235289A",
+                table: "Product",
+                column: "slug",
+                unique: true,
+                filter: "[slug] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "UQ__Product__72E12F1B7465289F",
                 table: "Product",
                 column: "name",
@@ -645,6 +677,11 @@ namespace BusinessObject.Migrations
                 name: "IX_ProductReview_user_id",
                 table: "ProductReview",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshToken_UserId",
+                table: "RefreshToken",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReportProductReview_product_review_reported_id",
@@ -716,6 +753,9 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductReport");
+
+            migrationBuilder.DropTable(
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "ReportProductReview");

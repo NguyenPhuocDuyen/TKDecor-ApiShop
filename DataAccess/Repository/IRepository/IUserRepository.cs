@@ -13,7 +13,7 @@ namespace DataAccess.Repository.IRepository
         Task<bool> CheckLogin(string email, string password);
         Task<User> FindById(int id);
         Task<User> FindByEmail(string email);
-        Task<User> Add(User user);
-        Task<User> Update(User user);
+        Task Add(User user);
+        Task Update(User user);
     }
 }

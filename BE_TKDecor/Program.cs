@@ -21,7 +21,7 @@ var jwtsettings = builder.Configuration.GetSection("JwtSettings");  // đọc co
 builder.Services.Configure<JwtSettings>(jwtsettings);
 
 //add Configure JWT authentication
-byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecrectKey"]);
+byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecretKey"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

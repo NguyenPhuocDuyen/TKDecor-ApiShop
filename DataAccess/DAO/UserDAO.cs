@@ -1,11 +1,5 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utility;
 
 namespace DataAccess.DAO
@@ -18,7 +12,7 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var users = await context.Users.ToListAsync();
-                users.ForEach(u => { u.PasswordHash = ""; });
+                users.ForEach(u => { u.Password = ""; });
                 return users;
             }
             catch (Exception ex)
@@ -26,6 +20,7 @@ namespace DataAccess.DAO
                 throw new Exception(ex.Message);
             }
         }
+
         public static async Task<bool> CheckLogin(string email, string password)
         {
             try
@@ -37,7 +32,7 @@ namespace DataAccess.DAO
                     .SingleOrDefaultAsync(user => user.Email == email);
 
                 if (user is not null)
-                    if (Password.VerifyPassword(password, user.PasswordHash)) return true;
+                    if (Password.VerifyPassword(password, user.Password)) return true;
 
                 return isUserExists;
             }
@@ -54,7 +49,7 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.UserId == id);
 
-                if (user != null) user.PasswordHash = "";
+                if (user != null) user.Password = "";
 
                 return user;
             }
@@ -71,7 +66,7 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.Email == email);
 
-                if (user != null) user.PasswordHash = "";
+                if (user != null) user.Password = "";
 
                 return user;
             }
@@ -81,19 +76,15 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<User> Add(User user)
+        public static async Task Add(User user)
         {
             try
             {
                 using var context = new TkdecorContext();
+                //hash password
+                user.Password = Password.HashPassword(user.Password);
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
-
-                var newUser = await context.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
-
-                if (newUser != null) user.PasswordHash = "";
-
-                return newUser;
             }
             catch (Exception ex)
             {
@@ -101,19 +92,15 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<User> Update(User user)
+        public static async Task Update(User user)
         {
             try
             {
                 using var context = new TkdecorContext();
+                // hash password
+                user.Password = Password.HashPassword(user.Password);
                 context.Users.Update(user);
                 await context.SaveChangesAsync();
-
-                var newUser = await context.Users.SingleOrDefaultAsync(u => u.Email == user.Email);
-
-                if (newUser != null) user.PasswordHash = "";
-
-                return newUser;
             }
             catch (Exception ex)
             {

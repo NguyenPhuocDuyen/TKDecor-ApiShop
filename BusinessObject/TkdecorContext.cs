@@ -16,6 +16,7 @@ public partial class TkdecorContext : DbContext
     {
     }
 
+    #region DbSet
     public virtual DbSet<Article> Articles { get; set; }
 
     public virtual DbSet<Cart> Carts { get; set; }
@@ -48,6 +49,8 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<ProductReview> ProductReviews { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<ReportProductReview> ReportProductReviews { get; set; }
 
     public virtual DbSet<ReportStatus> ReportStatuses { get; set; }
@@ -58,9 +61,10 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<UserAddress> UserAddresses { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+    #endregion
+    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+    //        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -587,10 +591,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("full_name");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             entity.Property(e => e.IsSubscriber).HasColumnName("is_subscriber");
-            entity.Property(e => e.PasswordHash)
+            entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .IsUnicode(false)
-                .HasColumnName("password_hash");
+                .HasColumnName("password");
             entity.Property(e => e.ResetPasswordCode)
                 .HasMaxLength(255)
                 .IsUnicode(false)

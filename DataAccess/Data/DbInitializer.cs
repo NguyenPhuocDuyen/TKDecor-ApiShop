@@ -1,12 +1,6 @@
 ﻿using BusinessObject;
 using BusinessObject.Other;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utility;
 
 namespace DataAccess.Data
@@ -43,7 +37,7 @@ namespace DataAccess.Data
             User admin = new()
             {
                 Email = "admin@admin.com",
-                PasswordHash = Password.HashPassword("admin@admin.com"),
+                Password = Password.HashPassword("admin@admin.com"),
                 FullName = "admin",
                 Role = roleAdmin,
                 EmailConfirmed = true,

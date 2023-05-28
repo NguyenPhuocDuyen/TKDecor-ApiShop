@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BCryptNet = BCrypt.Net.BCrypt;
+﻿using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Utility
 {
-    public static class Password
+    public class Password
     {
         public static string HashPassword(string password)
         {

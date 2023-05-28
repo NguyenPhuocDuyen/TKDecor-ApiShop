@@ -672,6 +672,42 @@ namespace BusinessObject.Migrations
                     b.ToTable("ProductReview", (string)null);
                 });
 
+            modelBuilder.Entity("BusinessObject.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
+                });
+
             modelBuilder.Entity("BusinessObject.ReportProductReview", b =>
                 {
                     b.Property<int>("ReportProductReviewId")
@@ -820,12 +856,12 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_subscriber");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)")
-                        .HasColumnName("password_hash");
+                        .HasColumnName("password");
 
                     b.Property<string>("ResetPasswordCode")
                         .HasMaxLength(255)
@@ -1118,6 +1154,17 @@ namespace BusinessObject.Migrations
                         .HasConstraintName("FK_ProductReview_User");
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessObject.RefreshToken", b =>
+                {
+                    b.HasOne("BusinessObject.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
