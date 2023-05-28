@@ -11,6 +11,7 @@ using System.Text;
 using Utility.Mail;
 using Utility;
 using BusinessObject.DTO;
+using Microsoft.Extensions.Options;
 
 namespace BE_TKDecor.Controllers
 {
@@ -18,49 +19,47 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly JwtSettings _jwtSettings;
         private readonly ISendMailService _sendMailService;
-        private IUserRepository userRepository = new UserRepository();
-        private IRoleRepository roleRepository = new RoleRepository();
+        private IUserRepository _userRepository = new UserRepository();
+        private IRoleRepository _roleRepository = new RoleRepository();
 
-        public UsersController(IConfiguration configuration, ISendMailService sendMailService)
+        public UsersController(ISendMailService sendMailService, IOptions<JwtSettings> options)
         {
-            _configuration = configuration;
             _sendMailService = sendMailService;
+            _jwtSettings = options.Value;
         }
 
         //GET: api/Users/GetUsers
         [Authorize(Roles = RoleContent.Admin)]
         [HttpGet("GetUsers")]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            return Ok(await userRepository.GetAll());
+            return Ok(new ApiResponse<IEnumerable<User>>
+            {
+                Success = true,
+                Data = await _userRepository.GetAll()
+            });
         }
-
-        ////GET: api/Users/TotalUser
-        //[HttpGet("TotalUser")]
-        //public async Task<ActionResult<int>> TotalUser()
-        //{
-        //    var list = await _db.User.GetAllAsync();
-        //    return Ok(list.Count());
-        //}
 
         // GET: api/Users/GetUserInfo
         [Authorize]
         [HttpGet("GetUserInfo")]
-        public async Task<ActionResult<User>> GetUserInfo()
+        public async Task<IActionResult> GetUserInfo()
         {
             User user = new();
             var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == ClaimTypes.Name))
+            if (currentUser.HasClaim(c => c.Type == "UserId"))
             {
-                var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                var userId = currentUser.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
                 // get user by user id
-                user = await userRepository.FindById(int.Parse(userId));
-
-                return user;
+                user = await _userRepository.FindById(int.Parse(userId));
+                return Ok(new ApiResponse<User>
+                { Success = true, Data = user });
             }
-            return Conflict(new ErrorApp { Error = ErrorContent.Error });
+
+            return BadRequest(new ApiResponse<User>
+            { Success = false, Message = ErrorContent.Error });
         }
 
         // POST: api/Users/PostUser
@@ -69,41 +68,31 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> Register(RegisterUserDTO user)
         {
             user.Email = user.Email.ToLower().Trim();
-            user.Password = user.Password.ToLower().Trim();
-
             //get user in database by email
-            User? u = await userRepository.FindByEmail(user.Email);
-
+            User? u = await _userRepository.FindByEmail(user.Email);
             //check exists
-            if (u != null && u.EmailConfirmed is false)
-                return BadRequest(new ErrorApp { Error = ErrorContent.EmailExists });
+            if (u != null && u.EmailConfirmed is true)
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.EmailExists });
 
             try
             {
                 // take customer role
-                Role? role = await roleRepository.FindByName(RoleContent.Customer);
-
+                Role? role = await _roleRepository.FindByName(RoleContent.Customer);
+                // get random code
                 string code = Token.GenerateRandomCode();
+                // initial new user
                 User newUser = new()
                 {
                     RoleId = role.RoleId,
                     Email = user.Email,
-                    PasswordHash = Password.HashPassword(user.Password),
+                    PasswordHash = Password.HashPassword(user.Password.ToLower().Trim()),
                     FullName = user.FullName,
                     AvatarUrl = user.AvatarUrl,
+                    EmailConfirmed = false,
                     EmailConfirmationCode = code,
-                    //IsSubscriber = false,
-                    //EmailConfirmed = false,
-                    //EmailConfirmationCode = code,
-                    EmailConfirmationSentAt = DateTime.Now,
-                    //ResetPasswordRequired = false,
-                    //ResetPasswordCode = null,
-                    //ResetPasswordSentAt = null,
-                    //CreatedAt = DateTime.Now,
-                    //UpdatedAt = DateTime.Now,
-                    //IsDelete = false
+                    EmailConfirmationSentAt = DateTime.Now
                 };
-
                 //send mail to confirm account
                 //set data to send
                 MailContent mailContent = new()
@@ -112,19 +101,18 @@ namespace BE_TKDecor.Controllers
                     Subject = "Kích hoạt tài khoản TKDecor Shop",
                     Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> <p>Đây là mã code của bạn: <strong>{code}</strong></p>"
                 };
-
                 // send mail
                 await _sendMailService.SendMail(mailContent);
+                // add user
+                await _userRepository.Add(newUser);
 
-                var resultUser = await userRepository.Add(newUser);
-
-                return Ok(resultUser);
+                return NoContent();
             }
-            catch 
+            catch
             {
-                //await Console.Out.WriteLineAsync(ex.ToString());
                 //lỗi do xung đột dữ liệu
-                return Conflict(new ErrorApp { Error = ErrorContent.Error});
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.Error });
             }
         }
 
@@ -135,41 +123,28 @@ namespace BE_TKDecor.Controllers
         {
             //get user by email
             user.Email = user.Email.ToLower().Trim();
-            var u = await userRepository.FindByEmail(user.Email);
+            var u = await _userRepository.FindByEmail(user.Email);
 
             //check user null
-            if (u == null) return NotFound(new ErrorApp { Error = ErrorContent.LoginFail });
-
-            //check confirm email
-            if (u.EmailConfirmed is false) return BadRequest(new ErrorApp { Error = ErrorContent.NotConfirmEmail });
+            if (u == null)
+                return NotFound(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.LoginFail });
 
             //check correct password
-            bool isCorrectPassword = await userRepository.CheckLogin(user.Email, user.Password);
-
+            bool isCorrectPassword = await _userRepository.CheckLogin(user.Email, user.Password);
             if (!isCorrectPassword)
-                return BadRequest(new ErrorApp { Error = ErrorContent.LoginFail });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.LoginFail });
 
-            //create handler
-            var tokenHandler = new JwtSecurityTokenHandler();
-            //encoding key in json
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            //set description for token
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, u.UserId.ToString()),
-                    new Claim(ClaimTypes.Role, u.Role.Name.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            //create token
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+            //check confirm email
+            if (u.EmailConfirmed is false)
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.NotConfirmEmail });
+
             //convert token to string
-            var tokenString = tokenHandler.WriteToken(token);
+            var tokenString = GenerateToken(u);
 
-            return Ok(new { User = u, Access_Token = tokenString });
+            return Ok(new ApiResponse<string> { Success = true, Data = tokenString });
         }
 
         // POST: api/Users/ConfirmMail
@@ -179,26 +154,27 @@ namespace BE_TKDecor.Controllers
         {
             // get user by email confirm token 
             //var user = await _db.User.GetFirstOrDefaultAsync(x => x.EmailConfirmationToken == userInput.EmailConfirmationToken);
-            var user = await userRepository.FindByEmail(email.ToLower().Trim());
-
+            var user = await _userRepository.FindByEmail(email.ToLower().Trim());
             if (user == null)
-                return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
+                return NotFound(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.UserNotFound });
 
             if (user.EmailConfirmationCode != code.Trim())
-                return BadRequest(new ErrorApp { Error = "Wrong email confirmation code." });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = "Wrong email confirmation code." });
 
             //set email confirm
             user.EmailConfirmed = true;
-
             try
             {
                 //update database
-                var userInfo = await userRepository.Update(user);
-                return Ok(userInfo);
+                await _userRepository.Update(user);
+                return NoContent();
             }
             catch
             {
-                return BadRequest(new ErrorApp { Error = ErrorContent.Error });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.Error });
             }
         }
 
@@ -208,9 +184,10 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> ForgotPassword(string email)
         {
             // get user by email confirm token 
-            var user = await userRepository.FindByEmail(email);
-
-            if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
+            var user = await _userRepository.FindByEmail(email);
+            if (user == null)
+                return NotFound(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.UserNotFound });
 
             try
             {
@@ -234,15 +211,15 @@ namespace BE_TKDecor.Controllers
 
                 // send mail
                 await _sendMailService.SendMail(mailContent);
-
                 //update user
-                var userInfo = await userRepository.Update(user);
+                await _userRepository.Update(user);
 
-                return Ok(userInfo);
+                return NoContent();
             }
             catch
             {
-                return BadRequest(new ErrorApp { Error = ErrorContent.Error });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.Error });
             }
         }
 
@@ -252,19 +229,24 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> ConfirmForgotPassword(LoginUserDTO userReset, string code)
         {
             // get user by email
-            var user = await userRepository.FindByEmail(userReset.Email);
+            var user = await _userRepository.FindByEmail(userReset.Email);
 
-            if (user == null) return NotFound(new ErrorApp { Error = ErrorContent.UserNotFound });
+            if (user == null)
+                return NotFound(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.UserNotFound });
 
             //check token expires: 5 minutes
             if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
-                return BadRequest(new ErrorApp { Error = ErrorContent.TokenOutDate });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.TokenOutDate });
 
             if (user.ResetPasswordRequired is not true)
-                return BadRequest(new ErrorApp { Error = "Tài khoản không có yêu cầu đặt lại mật khẩu" });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = "Tài khoản không có yêu cầu đặt lại mật khẩu" });
 
-            if (user.ResetPasswordCode != code) 
-                return BadRequest(new ErrorApp { Error = "Sai mã code." });
+            if (user.ResetPasswordCode != code)
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = "Sai mã code." });
 
             try
             {
@@ -274,12 +256,13 @@ namespace BE_TKDecor.Controllers
                 user.PasswordHash = Password.HashPassword(userReset.Password.Trim());
 
                 //update to database and return info user
-                var userInfo = await userRepository.Update(user);
-                return Ok(userInfo);
+                await _userRepository.Update(user);
+                return NoContent();
             }
             catch
             {
-                return BadRequest(new ErrorApp { Error = ErrorContent.Error });
+                return BadRequest(new ApiResponse<object>
+                { Success = false, Message = ErrorContent.Error });
             }
         }
 
@@ -292,9 +275,9 @@ namespace BE_TKDecor.Controllers
         //    User user = new();
         //    //get user by token
         //    var currentUser = HttpContext.User;
-        //    if (currentUser.HasClaim(c => c.Type == ClaimTypes.Name))
+        //    if (currentUser.HasClaim(c => c.Type == "UserId"))
         //    {
-        //        var userId = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+        //        var userId = currentUser.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
         //        // get user by id
         //        user = await _db.User.GetFirstOrDefaultAsync(x => x.Id == int.Parse(userId));
         //    }
@@ -326,5 +309,31 @@ namespace BE_TKDecor.Controllers
         //        return BadRequest(new ErrorApp { Error = ErrorContent.Error });
         //    }
         //}
+
+        private string GenerateToken(User user)
+        {
+            //create handler
+            var tokenHandler = new JwtSecurityTokenHandler();
+            //encoding key in json
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.SecrectKey);
+            //set description for token
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("UserId", user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.FullName),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Role, user.Role.Name),
+                    new Claim("TokenId", Guid.NewGuid().ToString()),
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            //create token
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            //convert token to string
+            return tokenHandler.WriteToken(token);
+        }
     }
 }

@@ -46,6 +46,7 @@ namespace DataAccess.Data
                 PasswordHash = Password.HashPassword("admin@admin.com"),
                 FullName = "admin",
                 Role = roleAdmin,
+                EmailConfirmed = true,
                 AvatarUrl = "",
             };
             _db.Users.Add(admin);

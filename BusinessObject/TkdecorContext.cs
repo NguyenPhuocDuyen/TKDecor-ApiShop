@@ -332,6 +332,7 @@ public partial class TkdecorContext : DbContext
             entity.ToTable("Product");
 
             entity.HasIndex(e => e.Name, "UQ__Product__72E12F1B7465289F").IsUnique();
+            entity.HasIndex(e => e.Slug, "UQ__Product__72E12F1B1235289A").IsUnique();
 
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
@@ -343,6 +344,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
+            entity.Property(e => e.Slug)
+                .HasMaxLength(255)
+                .HasColumnName("slug");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 0)")
                 .HasColumnName("price");

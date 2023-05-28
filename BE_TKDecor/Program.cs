@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using BusinessObject.Other;
 using DataAccess.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -16,8 +17,11 @@ var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc 
 builder.Services.Configure<MailSettings>(mailsettings);
 builder.Services.AddTransient<ISendMailService, SendMailService>();
 
+var jwtsettings = builder.Configuration.GetSection("JwtSettings");  // đọc config jwt setting
+builder.Services.Configure<JwtSettings>(jwtsettings);
+
 //add Configure JWT authentication
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecrectKey"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -25,10 +29,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
+            // Tự cấp token (nếu có xài dịch vụ đăng nhập ngoài(google,..) thì set thành true)
+            ValidateIssuer = false,
+            ValidateAudience = false,
+
+            // Ký token
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
         };
     });
 
