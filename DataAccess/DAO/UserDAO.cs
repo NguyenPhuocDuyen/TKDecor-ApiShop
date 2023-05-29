@@ -11,7 +11,7 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var users = await context.Users.ToListAsync();
+                var users = await context.Users.Include(u => u.Role).ToListAsync();
                 users.ForEach(u => { u.Password = ""; });
                 return users;
             }
@@ -83,7 +83,7 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 //hash password
                 user.Password = Password.HashPassword(user.Password);
-                await context.Users.AddAsync(user);
+                await context.AddAsync(user);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 // hash password
                 user.Password = Password.HashPassword(user.Password);
-                context.Users.Update(user);
+                context.Update(user);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex)

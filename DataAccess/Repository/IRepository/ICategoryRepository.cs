@@ -9,6 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface ICategoryRepository
     {
-        List<Category> GetCategories();
+        Task<List<Category>> GetAll();
     }
 }

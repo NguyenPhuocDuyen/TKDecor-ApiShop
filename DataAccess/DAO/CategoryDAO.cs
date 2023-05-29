@@ -10,19 +10,18 @@ namespace DataAccess.DAO
 {
     public class CategoryDAO
     {
-        public static List<Category> GetCategories()
+        public static async Task<List<Category>> GetAll()
         {
-            var listCategories = new List<Category>();
             try
             {
                 using var context = new TkdecorContext();
-                listCategories = context.Categories.ToList();
+                var listCategories =await context.Categories.ToListAsync();
+                return listCategories;
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            return listCategories;
         }
     }
 }

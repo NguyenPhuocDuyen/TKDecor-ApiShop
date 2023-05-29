@@ -25,8 +25,8 @@ byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecretKe
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
+        //options.RequireHttpsMetadata = false;
+        //options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             // Tự cấp token (nếu có xài dịch vụ đăng nhập ngoài(google,..) thì set thành true)
@@ -36,6 +36,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // Ký token
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
+
+            ClockSkew = TimeSpan.Zero
         };
     });
 

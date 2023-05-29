@@ -61,7 +61,7 @@ namespace BE_TKDecor.Controllers
             }
 
             return BadRequest(new ApiResponse<User>
-            { Success = false, Message = ErrorContent.Error });
+            { Message = ErrorContent.Error });
         }
 
         //// POST: api/Users/UpdateUserInfo
@@ -93,7 +93,7 @@ namespace BE_TKDecor.Controllers
         //        //update password
         //        user.Password = HasPassword.HashPassword(userInput.Password);
         //    }
-        //    user.UpdateAt = DateTime.Now;
+        //    user.UpdateAt = DateTime.UtcNow;
 
         //    try
         //    {
@@ -112,7 +112,7 @@ namespace BE_TKDecor.Controllers
         // POST: api/Users/PostUser
         //user register accoount
         [HttpPost("Register")]
-        public async Task<ActionResult> Register(UserRegisterDTO user)
+        public async Task<IActionResult> Register(UserRegisterDTO user)
         {
             user.Email = user.Email.ToLower().Trim();
             //get user in database by email
@@ -120,46 +120,46 @@ namespace BE_TKDecor.Controllers
             //check exists
             if (u != null)
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.EmailExists });
+                { Message = "Email đã tồn tại!" });
+
+            // take customer role
+            Role? role = await _roleRepository.FindByName(RoleContent.Customer);
+            // get random code
+            string code = GenerateRandomCode();
+            // initial new user
+            User newUser = new()
+            {
+                RoleId = role.RoleId,
+                Email = user.Email,
+                Password = user.Password,
+                FullName = user.FullName,
+                AvatarUrl = user.AvatarUrl,
+                EmailConfirmed = false,
+                EmailConfirmationCode = code,
+                EmailConfirmationSentAt = DateTime.UtcNow
+            };
+            //send mail to confirm account
+            //set data to send
+            MailContent mailContent = new()
+            {
+                To = newUser.Email,
+                Subject = "Kích hoạt tài khoản TKDecor Shop",
+                Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> <p>Đây là mã code của bạn: <strong>{code}</strong></p>"
+            };
+            // send mail
+            await _sendMailService.SendMail(mailContent);
 
             try
             {
-                // take customer role
-                Role? role = await _roleRepository.FindByName(RoleContent.Customer);
-                // get random code
-                string code = GenerateRandomCode();
-                // initial new user
-                User newUser = new()
-                {
-                    RoleId = role.RoleId,
-                    Email = user.Email,
-                    Password = user.Password,
-                    FullName = user.FullName,
-                    AvatarUrl = user.AvatarUrl,
-                    EmailConfirmed = false,
-                    EmailConfirmationCode = code,
-                    EmailConfirmationSentAt = DateTime.Now
-                };
-                //send mail to confirm account
-                //set data to send
-                MailContent mailContent = new()
-                {
-                    To = newUser.Email,
-                    Subject = "Kích hoạt tài khoản TKDecor Shop",
-                    Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> <p>Đây là mã code của bạn: <strong>{code}</strong></p>"
-                };
-                // send mail
-                await _sendMailService.SendMail(mailContent);
                 // add user
                 await _userRepository.Add(newUser);
-
                 return NoContent();
             }
             catch
             {
                 //lỗi do xung đột dữ liệu
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.Error });
+                { Message = ErrorContent.Data });
             }
         }
 
@@ -175,18 +175,18 @@ namespace BE_TKDecor.Controllers
             //check user null
             if (u == null)
                 return NotFound(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.LoginFail });
+                { Message = "Email hoặc mật khẩu không chính xác!" });
 
             //check correct password
             bool isCorrectPassword = await _userRepository.CheckLogin(user.Email, user.Password);
             if (!isCorrectPassword)
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.LoginFail });
+                { Message = "Email hoặc mật khẩu không chính xác!" });
 
             //check confirm email
             if (u.EmailConfirmed is not true)
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.NotConfirmEmail });
+                { Message = "Email chưa xác nhận!" });
 
             //convert token to string
             var token = await GenerateToken(u);
@@ -204,14 +204,15 @@ namespace BE_TKDecor.Controllers
             var user = await _userRepository.FindByEmail(userDto.Email.ToLower().Trim());
             if (user == null)
                 return NotFound(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.UserNotFound });
+                { Message = ErrorContent.UserNotFound });
 
             if (user.EmailConfirmationCode != userDto.Code.Trim())
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = "Wrong email confirmation code." });
+                { Message = "Sai mã code." });
 
             //set email confirm
             user.EmailConfirmed = true;
+            user.UpdatedAt = DateTime.UtcNow;
             try
             {
                 //update database
@@ -221,52 +222,52 @@ namespace BE_TKDecor.Controllers
             catch
             {
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.Error });
+                { Message = ErrorContent.Data });
             }
         }
 
         // POST: api/Users/ForgotPassword
         //ForgotPassword of user 
         [HttpPost("ForgotPassword")]
-        public async Task<ActionResult> ForgotPassword([FromBody]string email)
+        public async Task<ActionResult> ForgotPassword([FromBody] string email)
         {
             // get user by email confirm token 
             var user = await _userRepository.FindByEmail(email);
             if (user == null)
                 return NotFound(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.UserNotFound });
+                { Message = ErrorContent.UserNotFound });
+
+            // create code authen forgot password
+            string code = GenerateRandomCode();
+            //property authen mail
+            user.ResetPasswordCode = code;
+            user.ResetPasswordSentAt = DateTime.UtcNow;
+            user.ResetPasswordRequired = true;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            //send mail to confirm account
+            //set data to send
+            MailContent mailContent = new()
+            {
+                To = user.Email,
+                Subject = "Đặt lại mật khẩu cho tài khoản TKDecor Shop",
+                Body = $"<h1>Nếu bạn không đặt lại mật khẩu cho tài khoản TKDecor Shop thì vui lòng bỏ qua email này</h1>" +
+                   $"<h4>Nếu bạn đã đặt lại mật khẩu cho tài khoản TKDecor Shop thì hãy nhập mã code bên dưới.</h4>" +
+                   $"<p>Đây là mã code của bạn: <strong>{code}</strong></p>"
+            };
+            // send mail
+            await _sendMailService.SendMail(mailContent);
 
             try
             {
-                // create code authen forgot password
-                string code = GenerateRandomCode();
-                //property authen mail
-                user.ResetPasswordCode = code;
-                user.ResetPasswordSentAt = DateTime.Now;
-                user.ResetPasswordRequired = true;
-
-                //send mail to confirm account
-                //set data to send
-                MailContent mailContent = new()
-                {
-                    To = user.Email,
-                    Subject = "Đặt lại mật khẩu cho tài khoản TKDecor Shop",
-                    Body = $"<h1>Nếu bạn không đặt lại mật khẩu cho tài khoản TKDecor Shop thì vui lòng bỏ qua email này</h1>" +
-                       $"<h4>Nếu bạn đã đặt lại mật khẩu cho tài khoản TKDecor Shop thì hãy nhập mã code bên dưới.</h4>" +
-                       $"<p>Đây là mã code của bạn: <strong>{code}</strong></p>"
-                };
-
-                // send mail
-                await _sendMailService.SendMail(mailContent);
                 //update user
                 await _userRepository.Update(user);
-
                 return NoContent();
             }
             catch
             {
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.Error });
+                { Message = ErrorContent.Data });
             }
         }
 
@@ -280,28 +281,29 @@ namespace BE_TKDecor.Controllers
 
             if (user == null)
                 return NotFound(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.UserNotFound });
+                { Message = ErrorContent.UserNotFound });
 
             //check token expires: 5 minutes
-            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.ResetPasswordSentAt <= DateTime.UtcNow.AddMinutes(-5))
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.TokenOutDate });
+                { Message = "Token hết hạn!" });
 
             if (user.ResetPasswordRequired is not true)
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = "Tài khoản không có yêu cầu đặt lại mật khẩu" });
+                { Message = "Tài khoản không có yêu cầu đặt lại mật khẩu" });
 
             if (user.ResetPasswordCode != userDto.Code)
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = "Sai mã code." });
+                { Message = "Sai mã code." });
+
+            //if reset password, will back status do not reset password
+            user.ResetPasswordRequired = false;
+            //set new password
+            user.Password = userDto.Password;
+            user.UpdatedAt = DateTime.UtcNow;
 
             try
             {
-                //if reset password, will back status do not reset password
-                user.ResetPasswordRequired = false;
-                //set new password
-                user.Password = userDto.Password;
-
                 //update to database and return info user
                 await _userRepository.Update(user);
                 return NoContent();
@@ -309,7 +311,7 @@ namespace BE_TKDecor.Controllers
             catch
             {
                 return BadRequest(new ApiResponse<object>
-                { Success = false, Message = ErrorContent.Error });
+                { Message = ErrorContent.Data });
             }
         }
 
@@ -342,10 +344,8 @@ namespace BE_TKDecor.Controllers
                 {
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
                     if (!result)//false
-                    {
                         return Ok(new ApiResponse<object>
-                        { Success = false, Message = "Invalid token" });
-                    }
+                        { Message = "Invalid token" });
                 }
 
                 //check 3: Check accessToken expire?
@@ -353,50 +353,29 @@ namespace BE_TKDecor.Controllers
 
                 var expireDate = ConvertUnixTimeToDateTime(utcExpireDate);
                 if (expireDate > DateTime.UtcNow)
-                {
                     return Ok(new ApiResponse<object>
-                    { Success = false, Message = "Access token has not yet expired" });
-                }
+                    { Message = "Access token has not yet expired" });
 
                 //check 4: Check refreshtoken exist in DB
                 var storedToken = await _refreshTokenRepository.FindByToken(model.RefreshToken);
                 if (storedToken == null)
-                {
                     return Ok(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Refresh token does not exist"
-                    });
-                }
+                    { Message = "Refresh token does not exist" });
 
                 //check 5: check refreshToken is used/revoked?
                 if (storedToken.IsUsed)
-                {
                     return Ok(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Refresh token has been used"
-                    });
-                }
+                    { Message = "Refresh token has been used" });
+                
                 if (storedToken.IsRevoked)
-                {
                     return Ok(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Refresh token has been revoked"
-                    });
-                }
+                    { Message = "Refresh token has been revoked" });
 
                 //check 6: AccessToken id == JwtId in RefreshToken
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
                 if (storedToken.JwtId != jti)
-                {
                     return Ok(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Token doesn't match"
-                    });
-                }
+                    { Message = "Token doesn't match" });
 
                 //Update token is used
                 storedToken.IsRevoked = true;
@@ -417,10 +396,7 @@ namespace BE_TKDecor.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new ApiResponse<object>
-                {
-                    Success = false,
-                    Message = "Something went wrong"
-                });
+                { Message = "Something went wrong" });
             }
         }
 
@@ -437,14 +413,13 @@ namespace BE_TKDecor.Controllers
                 {
                     new Claim("UserId", user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.FullName),
-                    new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role.Name),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddSeconds(20),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             //create token
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -488,7 +463,7 @@ namespace BE_TKDecor.Controllers
             int code = random.Next(1000000, 9999999);
             return code.ToString();
         }
-        
+
         private static DateTime ConvertUnixTimeToDateTime(long utcExpireDate)
         {
             var dateTimeInterval = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
