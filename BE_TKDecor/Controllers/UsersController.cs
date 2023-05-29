@@ -418,7 +418,7 @@ namespace BE_TKDecor.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(20),
+                Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             //create token
@@ -430,7 +430,7 @@ namespace BE_TKDecor.Controllers
             //Lưu database
             var refreshTokenEntity = new RefreshToken
             {
-                Id = Guid.NewGuid(),
+                RefreshTokenId = Guid.NewGuid(),
                 JwtId = token.Id,
                 UserId = user.UserId,
                 Token = refreshToken,

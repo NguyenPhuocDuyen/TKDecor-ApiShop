@@ -12,7 +12,7 @@ namespace BusinessObject
     public class RefreshToken
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid RefreshTokenId { get; set; }
         public int UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

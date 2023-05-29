@@ -674,34 +674,42 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.RefreshToken", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("RefreshTokenId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("refresh_token_id");
 
                     b.Property<DateTime>("ExpiredAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("expired_at");
 
                     b.Property<bool>("IsRevoked")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("is_revoked");
 
                     b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("is_used");
 
                     b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("issued_at");
 
                     b.Property<string>("JwtId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("jwt_id");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("token");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("RefreshTokenId");
 
                     b.HasIndex("UserId");
 
@@ -1161,10 +1169,10 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.RefreshToken", b =>
                 {
                     b.HasOne("BusinessObject.User", "User")
-                        .WithMany()
+                        .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_RefreshToken_User");
 
                     b.Navigation("User");
                 });
@@ -1299,6 +1307,8 @@ namespace BusinessObject.Migrations
                     b.Navigation("ProductReports");
 
                     b.Navigation("ProductReviews");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("ReportProductReviews");
 

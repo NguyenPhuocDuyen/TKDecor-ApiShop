@@ -77,6 +77,28 @@ public partial class TkdecorContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.Property(e => e.RefreshTokenId).HasColumnName("refresh_token_id");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Token).HasColumnName("token");
+            entity.Property(e => e.JwtId).HasColumnName("jwt_id");
+            entity.Property(e => e.IsUsed).HasColumnName("is_used");
+            entity.Property(e => e.IsRevoked).HasColumnName("is_revoked");
+            entity.Property(e => e.IssuedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("issued_at");
+            entity.Property(e => e.ExpiredAt)
+                .HasColumnType("datetime")
+                .HasColumnName("expired_at");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RefreshToken_User");
+
+        });
+
         modelBuilder.Entity<Article>(entity =>
         {
             entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F660180F7E7F");

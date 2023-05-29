@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -427,24 +427,23 @@ namespace BusinessObject.Migrations
                 name: "RefreshToken",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsUsed = table.Column<bool>(type: "bit", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
-                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    refresh_token_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<int>(type: "int", nullable: false),
+                    token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    jwt_id = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    is_used = table.Column<bool>(type: "bit", nullable: false),
+                    is_revoked = table.Column<bool>(type: "bit", nullable: false),
+                    issued_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    expired_at = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.PrimaryKey("PK_RefreshToken", x => x.refresh_token_id);
                     table.ForeignKey(
-                        name: "FK_RefreshToken_User_UserId",
-                        column: x => x.UserId,
+                        name: "FK_RefreshToken_User",
+                        column: x => x.user_id,
                         principalTable: "User",
-                        principalColumn: "user_id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "user_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -679,9 +678,9 @@ namespace BusinessObject.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RefreshToken_UserId",
+                name: "IX_RefreshToken_user_id",
                 table: "RefreshToken",
-                column: "UserId");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReportProductReview_product_review_reported_id",
