@@ -82,7 +82,8 @@ namespace BE_TKDecor.Controllers
             productDb.Slug = newSlug;
             productDb.Quantity = product.Quantity;
             productDb.Price = product.Price;
-            productDb.Url3dModel = product.Url3dModel;
+            //productDb.Url3dModel = product.Url3dModel;
+            //productDb.ProductImages = product.ProductImages;
             productDb.UpdatedAt = DateTime.UtcNow;
 
             try
@@ -117,7 +118,8 @@ namespace BE_TKDecor.Controllers
                 Slug = newSlug,
                 Quantity = product.Quantity,
                 Price = product.Price,
-                Url3dModel = product.Url3dModel,
+                //Url3dModel = product.Url3dModel,
+                //ProductImages = product.ProductImages,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsDelete = false

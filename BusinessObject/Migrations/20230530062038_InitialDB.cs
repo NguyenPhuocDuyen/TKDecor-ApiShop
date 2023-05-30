@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BusinessObject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDatabase : Migration
+    public partial class InitialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,22 @@ namespace BusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Category__D54EE9B430138B56", x => x.category_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CDNStorages",
+                columns: table => new
+                {
+                    file_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    file_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    file_size = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    cdn_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CDNStorages", x => x.file_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -51,6 +67,23 @@ namespace BusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__OrderSta__A499CF231D746F37", x => x.order_status_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product3DModel",
+                columns: table => new
+                {
+                    model_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    video_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    model_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    thumbnail_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Product3__7A982983809D9053", x => x.model_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,33 +126,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Product",
-                columns: table => new
-                {
-                    product_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    category_id = table.Column<int>(type: "int", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    slug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    quantity = table.Column<int>(type: "int", nullable: false),
-                    price = table.Column<decimal>(type: "decimal(10,0)", nullable: false),
-                    url_3D_model = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Product__47027DF5960BA9EF", x => x.product_id);
-                    table.ForeignKey(
-                        name: "FK_Product_Category",
-                        column: x => x.category_id,
-                        principalTable: "Category",
-                        principalColumn: "category_id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Coupon",
                 columns: table => new
                 {
@@ -143,6 +149,38 @@ namespace BusinessObject.Migrations
                         column: x => x.coupon_type_id,
                         principalTable: "CouponType",
                         principalColumn: "coupon_type_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Product",
+                columns: table => new
+                {
+                    product_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    category_id = table.Column<int>(type: "int", nullable: false),
+                    model_3d_id = table.Column<int>(type: "int", nullable: true),
+                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    slug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    price = table.Column<decimal>(type: "decimal(10,0)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Product__47027DF5960BA9EF", x => x.product_id);
+                    table.ForeignKey(
+                        name: "FK_Product_Category",
+                        column: x => x.category_id,
+                        principalTable: "Category",
+                        principalColumn: "category_id");
+                    table.ForeignKey(
+                        name: "FK_Product_Product3DModel_Model3DId",
+                        column: x => x.model_3d_id,
+                        principalTable: "Product3DModel",
+                        principalColumn: "model_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -181,7 +219,8 @@ namespace BusinessObject.Migrations
                 name: "ProductImage",
                 columns: table => new
                 {
-                    productImage_id = table.Column<int>(type: "int", nullable: false),
+                    productImage_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     product_id = table.Column<int>(type: "int", nullable: false),
                     image_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: true)
@@ -191,7 +230,7 @@ namespace BusinessObject.Migrations
                     table.PrimaryKey("PK__ProductI__7A342910809D9053", x => x.productImage_id);
                     table.ForeignKey(
                         name: "FK_ProductImage_Product",
-                        column: x => x.productImage_id,
+                        column: x => x.product_id,
                         principalTable: "Product",
                         principalColumn: "product_id");
                 });
@@ -545,27 +584,9 @@ namespace BusinessObject.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Category__72E12F1BE7D29FE9",
-                table: "Category",
-                column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Coupon_coupon_type_id",
                 table: "Coupon",
                 column: "coupon_type_id");
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__Coupon__357D4CF9C0A7C258",
-                table: "Coupon",
-                column: "code",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__CouponTy__72E12F1BE5D8D49E",
-                table: "CouponType",
-                column: "name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Message_receiver_id",
@@ -608,28 +629,19 @@ namespace BusinessObject.Migrations
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__OrderSta__72E12F1B9EE1EE34",
-                table: "OrderStatus",
-                column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Product_category_id",
                 table: "Product",
                 column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Product__72E12F1B1235289A",
+                name: "IX_Product_model_3d_id",
                 table: "Product",
-                column: "slug",
-                unique: true,
-                filter: "[slug] IS NOT NULL");
+                column: "model_3d_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Product__72E12F1B7465289F",
-                table: "Product",
-                column: "name",
-                unique: true);
+                name: "IX_ProductImage_product_id",
+                table: "ProductImage",
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInteraction_product_id",
@@ -645,12 +657,6 @@ namespace BusinessObject.Migrations
                 name: "IX_ProductInteraction_user_id",
                 table: "ProductInteraction",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__ProductI__72E12F1BB1BB6955",
-                table: "ProductInteractionStatus",
-                column: "name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReport_product_reported_id",
@@ -698,27 +704,9 @@ namespace BusinessObject.Migrations
                 column: "user_report_id");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__ReportSt__72E12F1B690C91E7",
-                table: "ReportStatus",
-                column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__Role__72E12F1B88C9766C",
-                table: "Role",
-                column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_User_role_id",
                 table: "User",
                 column: "role_id");
-
-            migrationBuilder.CreateIndex(
-                name: "UQ__User__AB6E6164CB4E6B2A",
-                table: "User",
-                column: "email",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddress_user_id",
@@ -734,6 +722,9 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cart");
+
+            migrationBuilder.DropTable(
+                name: "CDNStorages");
 
             migrationBuilder.DropTable(
                 name: "Message");
@@ -791,6 +782,9 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "Category");
+
+            migrationBuilder.DropTable(
+                name: "Product3DModel");
 
             migrationBuilder.DropTable(
                 name: "Role");

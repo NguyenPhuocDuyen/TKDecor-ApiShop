@@ -13,5 +13,5 @@ public partial class ProductImage
 
     public bool? IsDelete { get; set; }
 
-    public virtual Product ProductImageNavigation { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
 }

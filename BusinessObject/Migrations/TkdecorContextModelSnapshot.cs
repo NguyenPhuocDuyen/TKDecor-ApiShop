@@ -135,10 +135,40 @@ namespace BusinessObject.Migrations
                     b.HasKey("CategoryId")
                         .HasName("PK__Category__D54EE9B430138B56");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__Category__72E12F1BE7D29FE9")
-                        .IsUnique();
-
                     b.ToTable("Category", (string)null);
+                });
+
+            modelBuilder.Entity("BusinessObject.Cdnstorage", b =>
+                {
+                    b.Property<int>("FileId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("file_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FileId"));
+
+                    b.Property<string>("CdnUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("cdn_url");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("file_name");
+
+                    b.Property<string>("FileSize")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("file_size");
+
+                    b.HasKey("FileId");
+
+                    b.ToTable("CDNStorages", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.Coupon", b =>
@@ -194,9 +224,6 @@ namespace BusinessObject.Migrations
 
                     b.HasIndex("CouponTypeId");
 
-                    b.HasIndex(new[] { "Code" }, "UQ__Coupon__357D4CF9C0A7C258")
-                        .IsUnique();
-
                     b.ToTable("Coupon", (string)null);
                 });
 
@@ -217,9 +244,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("CouponTypeId")
                         .HasName("PK__CouponTy__AD2AFC0A104B34A3");
-
-                    b.HasIndex(new[] { "Name" }, "UQ__CouponTy__72E12F1BE5D8D49E")
-                        .IsUnique();
 
                     b.ToTable("CouponType", (string)null);
                 });
@@ -418,9 +442,6 @@ namespace BusinessObject.Migrations
                     b.HasKey("OrderStatusId")
                         .HasName("PK__OrderSta__A499CF231D746F37");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__OrderSta__72E12F1B9EE1EE34")
-                        .IsUnique();
-
                     b.ToTable("OrderStatus", (string)null);
                 });
 
@@ -449,6 +470,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
+                    b.Property<int?>("Model3dId")
+                        .HasColumnType("int")
+                        .HasColumnName("model_3d_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -472,25 +497,55 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<string>("Url3dModel")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("url_3D_model");
-
                     b.HasKey("ProductId")
                         .HasName("PK__Product__47027DF5960BA9EF");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex(new[] { "Slug" }, "UQ__Product__72E12F1B1235289A")
-                        .IsUnique()
-                        .HasFilter("[slug] IS NOT NULL");
-
-                    b.HasIndex(new[] { "Name" }, "UQ__Product__72E12F1B7465289F")
-                        .IsUnique();
+                    b.HasIndex("Model3dId");
 
                     b.ToTable("Product", (string)null);
+                });
+
+            modelBuilder.Entity("BusinessObject.Product3Dmodel", b =>
+                {
+                    b.Property<int>("ModelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("model_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ModelId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("ModelUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("model_url");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("thumbnail_url");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)")
+                        .HasColumnName("video_url");
+
+                    b.HasKey("ModelId")
+                        .HasName("PK__Product3__7A982983809D9053");
+
+                    b.ToTable("Product3DModel", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.ProductImage", b =>
@@ -499,6 +554,8 @@ namespace BusinessObject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("productImage_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductImageId"));
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -517,6 +574,8 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("ProductImageId")
                         .HasName("PK__ProductI__7A342910809D9053");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductImage", (string)null);
                 });
@@ -571,9 +630,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("ProductInteractionStatusId")
                         .HasName("PK__ProductI__0CC0092882FD7968");
-
-                    b.HasIndex(new[] { "Name" }, "UQ__ProductI__72E12F1BB1BB6955")
-                        .IsUnique();
 
                     b.ToTable("ProductInteractionStatus", (string)null);
                 });
@@ -675,7 +731,6 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.RefreshToken", b =>
                 {
                     b.Property<Guid>("RefreshTokenId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("refresh_token_id");
 
@@ -713,7 +768,7 @@ namespace BusinessObject.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshToken", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.ReportProductReview", b =>
@@ -780,9 +835,6 @@ namespace BusinessObject.Migrations
                     b.HasKey("ReportStatusId")
                         .HasName("PK__ReportSt__09E0D88687C41A16");
 
-                    b.HasIndex(new[] { "Name" }, "UQ__ReportSt__72E12F1B690C91E7")
-                        .IsUnique();
-
                     b.ToTable("ReportStatus", (string)null);
                 });
 
@@ -803,9 +855,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("RoleId")
                         .HasName("PK__Role__760965CC5F8795DF");
-
-                    b.HasIndex(new[] { "Name" }, "UQ__Role__72E12F1B88C9766C")
-                        .IsUnique();
 
                     b.ToTable("Role", (string)null);
                 });
@@ -897,9 +946,6 @@ namespace BusinessObject.Migrations
                         .HasName("PK__User__B9BE370F0AD19949");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex(new[] { "Email" }, "UQ__User__AB6E6164CB4E6B2A")
-                        .IsUnique();
 
                     b.ToTable("User", (string)null);
                 });
@@ -1079,18 +1125,25 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Product_Category");
 
+                    b.HasOne("BusinessObject.Product3Dmodel", "Model3d")
+                        .WithMany("Products")
+                        .HasForeignKey("Model3dId")
+                        .HasConstraintName("FK_Product_Product3DModel_Model3DId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Model3d");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductImage", b =>
                 {
-                    b.HasOne("BusinessObject.Product", "ProductImageNavigation")
-                        .WithOne("ProductImage")
-                        .HasForeignKey("BusinessObject.ProductImage", "ProductImageId")
+                    b.HasOne("BusinessObject.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
                         .IsRequired()
                         .HasConstraintName("FK_ProductImage_Product");
 
-                    b.Navigation("ProductImageNavigation");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductInteraction", b =>
@@ -1257,13 +1310,18 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("OrderDetails");
 
-                    b.Navigation("ProductImage");
+                    b.Navigation("ProductImages");
 
                     b.Navigation("ProductInteractions");
 
                     b.Navigation("ProductReports");
 
                     b.Navigation("ProductReviews");
+                });
+
+            modelBuilder.Entity("BusinessObject.Product3Dmodel", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductInteractionStatus", b =>
