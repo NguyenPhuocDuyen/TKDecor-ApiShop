@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace BusinessObject;
 
@@ -16,12 +15,13 @@ public partial class TkdecorContext : DbContext
     {
     }
 
-    #region DbSet
     public virtual DbSet<Article> Articles { get; set; }
 
     public virtual DbSet<Cart> Carts { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
+
+    public virtual DbSet<Cdnstorage> Cdnstorages { get; set; }
 
     public virtual DbSet<Coupon> Coupons { get; set; }
 
@@ -38,6 +38,8 @@ public partial class TkdecorContext : DbContext
     public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<Product3Dmodel> Product3Dmodels { get; set; }
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
@@ -61,44 +63,12 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<UserAddress> UserAddresses { get; set; }
 
-    #endregion
-    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    //        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        IConfigurationRoot configuration = builder.Build();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<RefreshToken>(entity =>
-        {
-            entity.Property(e => e.RefreshTokenId).HasColumnName("refresh_token_id");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.Token).HasColumnName("token");
-            entity.Property(e => e.JwtId).HasColumnName("jwt_id");
-            entity.Property(e => e.IsUsed).HasColumnName("is_used");
-            entity.Property(e => e.IsRevoked).HasColumnName("is_revoked");
-            entity.Property(e => e.IssuedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("issued_at");
-            entity.Property(e => e.ExpiredAt)
-                .HasColumnType("datetime")
-                .HasColumnName("expired_at");
-
-            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_RefreshToken_User");
-
-        });
-
         modelBuilder.Entity<Article>(entity =>
         {
             entity.HasKey(e => e.ArticleId).HasName("PK__Article__CC36F660180F7E7F");
@@ -153,8 +123,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("Category");
 
-            entity.HasIndex(e => e.Name, "UQ__Category__72E12F1BE7D29FE9").IsUnique();
-
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -168,13 +136,24 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("update_at");
         });
 
+        modelBuilder.Entity<Cdnstorage>(entity =>
+        {
+            entity.HasKey(e => e.FileId);
+
+            entity.ToTable("CDNStorages");
+
+            entity.Property(e => e.FileId).HasColumnName("file_id");
+            entity.Property(e => e.CdnUrl).HasColumnName("cdn_url");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.FileName).HasColumnName("file_name");
+            entity.Property(e => e.FileSize).HasColumnName("file_size");
+        });
+
         modelBuilder.Entity<Coupon>(entity =>
         {
             entity.HasKey(e => e.CouponId).HasName("PK__Coupon__58CF6389A836CD8D");
 
             entity.ToTable("Coupon");
-
-            entity.HasIndex(e => e.Code, "UQ__Coupon__357D4CF9C0A7C258").IsUnique();
 
             entity.Property(e => e.CouponId).HasColumnName("coupon_id");
             entity.Property(e => e.Code)
@@ -211,8 +190,6 @@ public partial class TkdecorContext : DbContext
             entity.HasKey(e => e.CouponTypeId).HasName("PK__CouponTy__AD2AFC0A104B34A3");
 
             entity.ToTable("CouponType");
-
-            entity.HasIndex(e => e.Name, "UQ__CouponTy__72E12F1BE5D8D49E").IsUnique();
 
             entity.Property(e => e.CouponTypeId).HasColumnName("coupon_type_id");
             entity.Property(e => e.Name)
@@ -343,8 +320,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("OrderStatus");
 
-            entity.HasIndex(e => e.Name, "UQ__OrderSta__72E12F1B9EE1EE34").IsUnique();
-
             entity.Property(e => e.OrderStatusId).HasColumnName("order_status_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
@@ -357,9 +332,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("Product");
 
-            entity.HasIndex(e => e.Name, "UQ__Product__72E12F1B7465289F").IsUnique();
-            entity.HasIndex(e => e.Slug, "UQ__Product__72E12F1B1235289A").IsUnique();
-
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
             entity.Property(e => e.CreatedAt)
@@ -367,28 +339,53 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
+            entity.Property(e => e.Model3dId).HasColumnName("model_3d_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
-            entity.Property(e => e.Slug)
-                .HasMaxLength(255)
-                .HasColumnName("slug");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 0)")
                 .HasColumnName("price");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.Slug)
+                .HasMaxLength(255)
+                .HasColumnName("slug");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.Url3dModel)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("url_3D_model");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Product_Category");
+
+            entity.HasOne(d => d.Model3d).WithMany(p => p.Products)
+                .HasForeignKey(d => d.Model3dId)
+                .HasConstraintName("FK_Product_Product3DModel_Model3DId");
+        });
+
+        modelBuilder.Entity<Product3Dmodel>(entity =>
+        {
+            entity.HasKey(e => e.ModelId).HasName("PK__Product3__7A982983809D9053");
+
+            entity.ToTable("Product3DModel");
+
+            entity.Property(e => e.ModelId).HasColumnName("model_id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ModelUrl)
+                .HasMaxLength(512)
+                .HasColumnName("model_url");
+            entity.Property(e => e.ThumbnailUrl)
+                .HasMaxLength(512)
+                .HasColumnName("thumbnail_url");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.VideoUrl)
+                .HasMaxLength(512)
+                .HasColumnName("video_url");
         });
 
         modelBuilder.Entity<ProductImage>(entity =>
@@ -397,9 +394,7 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("ProductImage");
 
-            entity.Property(e => e.ProductImageId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("productImage_id");
+            entity.Property(e => e.ProductImageId).HasColumnName("productImage_id");
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -407,8 +402,8 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
 
-            entity.HasOne(d => d.ProductImageNavigation).WithOne(p => p.ProductImage)
-                .HasForeignKey<ProductImage>(d => d.ProductImageId)
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)
+                .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductImage_Product");
         });
@@ -445,8 +440,6 @@ public partial class TkdecorContext : DbContext
             entity.HasKey(e => e.ProductInteractionStatusId).HasName("PK__ProductI__0CC0092882FD7968");
 
             entity.ToTable("ProductInteractionStatus");
-
-            entity.HasIndex(e => e.Name, "UQ__ProductI__72E12F1BB1BB6955").IsUnique();
 
             entity.Property(e => e.ProductInteractionStatusId).HasColumnName("product_interaction_status_id");
             entity.Property(e => e.Name)
@@ -518,6 +511,31 @@ public partial class TkdecorContext : DbContext
                 .HasConstraintName("FK_ProductReview_User");
         });
 
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("RefreshToken");
+
+            entity.Property(e => e.RefreshTokenId)
+                .ValueGeneratedNever()
+                .HasColumnName("refresh_token_id");
+            entity.Property(e => e.ExpiredAt)
+                .HasColumnType("datetime")
+                .HasColumnName("expired_at");
+            entity.Property(e => e.IsRevoked).HasColumnName("is_revoked");
+            entity.Property(e => e.IsUsed).HasColumnName("is_used");
+            entity.Property(e => e.IssuedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("issued_at");
+            entity.Property(e => e.JwtId).HasColumnName("jwt_id");
+            entity.Property(e => e.Token).HasColumnName("token");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RefreshToken_User");
+        });
+
         modelBuilder.Entity<ReportProductReview>(entity =>
         {
             entity.HasKey(e => e.ReportProductReviewId).HasName("PK__ReportPr__09EE80B34DFBA358");
@@ -558,8 +576,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("ReportStatus");
 
-            entity.HasIndex(e => e.Name, "UQ__ReportSt__72E12F1B690C91E7").IsUnique();
-
             entity.Property(e => e.ReportStatusId).HasColumnName("report_status_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
@@ -572,8 +588,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("Role");
 
-            entity.HasIndex(e => e.Name, "UQ__Role__72E12F1B88C9766C").IsUnique();
-
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
@@ -585,8 +599,6 @@ public partial class TkdecorContext : DbContext
             entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370F0AD19949");
 
             entity.ToTable("User");
-
-            entity.HasIndex(e => e.Email, "UQ__User__AB6E6164CB4E6B2A").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.AvatarUrl)

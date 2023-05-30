@@ -20,5 +20,7 @@ namespace BusinessObject.DTO
         public decimal Price { get; set; }
 
         public string? Url3dModel { get; set; }
+
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

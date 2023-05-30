@@ -9,6 +9,8 @@ public partial class Product
 
     public int CategoryId { get; set; }
 
+    public int? Model3dId { get; set; }
+
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
@@ -19,11 +21,9 @@ public partial class Product
 
     public decimal Price { get; set; }
 
-    public string? Url3dModel { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 
     public bool? IsDelete { get; set; }
 
@@ -31,9 +31,11 @@ public partial class Product
 
     public virtual Category Category { get; set; } = null!;
 
+    public virtual Product3Dmodel? Model3d { get; set; }
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ProductImage? ProductImage { get; set; }
+    public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
 
     public virtual ICollection<ProductInteraction> ProductInteractions { get; set; } = new List<ProductInteraction>();
 

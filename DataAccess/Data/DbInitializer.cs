@@ -43,7 +43,20 @@ namespace DataAccess.Data
                 EmailConfirmed = true,
                 AvatarUrl = "",
             };
+
+            Role roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == RoleContent.Customer);
+
+            User customer = new()
+            {
+                Email = "customer@customer.com",
+                Password = Password.HashPassword("customer@customer.com"),
+                FullName = "customer",
+                Role = roleCustomer,
+                EmailConfirmed = true,
+                AvatarUrl = "",
+            };
             _db.Users.Add(admin);
+            _db.Users.Add(customer);
             _db.SaveChanges();
 
             List<CouponType> couponTypes = new()

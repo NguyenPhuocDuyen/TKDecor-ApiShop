@@ -17,25 +17,25 @@ public partial class User
 
     public string? AvatarUrl { get; set; }
 
-    public bool? IsSubscriber { get; set; } = false;
+    public bool? IsSubscriber { get; set; }
 
-    public bool? EmailConfirmed { get; set; } = false;
+    public bool? EmailConfirmed { get; set; }
 
-    public string? EmailConfirmationCode { get; set; } = null;
+    public string? EmailConfirmationCode { get; set; }
 
-    public DateTime? EmailConfirmationSentAt { get; set; } = null;
+    public DateTime? EmailConfirmationSentAt { get; set; }
 
-    public bool? ResetPasswordRequired { get; set; } = false;
+    public bool? ResetPasswordRequired { get; set; }
 
-    public string? ResetPasswordCode { get; set; } = null;
+    public string? ResetPasswordCode { get; set; }
 
-    public DateTime? ResetPasswordSentAt { get; set; } = null;
+    public DateTime? ResetPasswordSentAt { get; set; }
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 
-    public bool? IsDelete { get; set; } = false;
+    public bool? IsDelete { get; set; }
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 
@@ -55,11 +55,11 @@ public partial class User
 
     public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();
 
     public virtual Role Role { get; set; } = null!;
 
     public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
-
-    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }
