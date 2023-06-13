@@ -49,6 +49,8 @@ public partial class User
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    public virtual ICollection<ProductFavorite> ProductFavorites { get; set; } = new List<ProductFavorite>();
+
     public virtual ICollection<ProductInteraction> ProductInteractions { get; set; } = new List<ProductInteraction>();
 
     public virtual ICollection<ProductReport> ProductReports { get; set; } = new List<ProductReport>();

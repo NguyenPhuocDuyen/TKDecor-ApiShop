@@ -21,6 +21,6 @@ namespace BusinessObject.DTO
 
         public string? Url3dModel { get; set; }
 
-        public List<ProductImage> ProductImages { get; set; }
+        //public List<ProductImage> ProductImages { get; set; }
     }
 }
