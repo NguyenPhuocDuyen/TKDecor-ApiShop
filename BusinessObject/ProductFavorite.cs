@@ -11,7 +11,7 @@ public partial class ProductFavorite
 
     public int ProductId { get; set; }
 
-    public DateTime? Created { get; set; }
+    public DateTime? Created { get; set; } = DateTime.UtcNow;
 
     public virtual Product Product { get; set; } = null!;
 

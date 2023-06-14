@@ -15,7 +15,10 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var list = await context.Products.Include(x => x.Category).ToListAsync();
+                var list = await context.Products
+                    .OrderByDescending(x => x.UpdatedAt)
+                    .Include(x => x.Category)
+                    .ToListAsync();
                 return list;
             }
             catch (Exception ex)

@@ -151,7 +151,10 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
-            entity.Property(e => e.UpdateAt)
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(255)
+                .HasColumnName("image_url");
+            entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("update_at");
         });
@@ -223,7 +226,7 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.IsRead).HasColumnName("is_read");
-            entity.Property(e => e.Message1).HasColumnName("message");
+            entity.Property(e => e.Content).HasColumnName("content");
             entity.Property(e => e.ReceiverId).HasColumnName("receiver_id");
             entity.Property(e => e.SenderId).HasColumnName("sender_id");
             entity.Property(e => e.UpdatedAt)
@@ -269,15 +272,12 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("Order");
 
-            entity.HasIndex(e => e.CouponId, "IX_Order_coupon_id");
-
             entity.HasIndex(e => e.OrderStatusId, "IX_Order_order_status_id");
 
             entity.HasIndex(e => e.UserId, "IX_Order_user_id");
 
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.Address).HasColumnName("address");
-            entity.Property(e => e.CouponId).HasColumnName("coupon_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
@@ -296,10 +296,6 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.Coupon).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.CouponId)
-                .HasConstraintName("FK_Order_Coupon");
 
             entity.HasOne(d => d.OrderStatus).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.OrderStatusId)

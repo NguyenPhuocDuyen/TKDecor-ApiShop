@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    [Migration("20230614030634_Initial")]
+    [Migration("20230614121933_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace BusinessObject.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -89,7 +89,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
 
-                    b.Property<DateTime?>("Created")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ProductId")
@@ -99,6 +99,9 @@ namespace BusinessObject.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int")
                         .HasColumnName("quantity");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int")
@@ -127,6 +130,12 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("image_url");
+
                     b.Property<bool?>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
@@ -137,7 +146,7 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime?>("UpdateAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("update_at");
 
@@ -239,6 +248,11 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("content");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
@@ -246,11 +260,6 @@ namespace BusinessObject.Migrations
                     b.Property<bool?>("IsRead")
                         .HasColumnType("bit")
                         .HasColumnName("is_read");
-
-                    b.Property<string>("Message1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("message");
 
                     b.Property<int>("ReceiverId")
                         .HasColumnType("int")
@@ -325,10 +334,6 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
-                    b.Property<int?>("CouponId")
-                        .HasColumnType("int")
-                        .HasColumnName("coupon_id");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
@@ -364,8 +369,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("OrderId")
                         .HasName("PK__Order__465962292D23A46C");
-
-                    b.HasIndex(new[] { "CouponId" }, "IX_Order_coupon_id");
 
                     b.HasIndex(new[] { "OrderStatusId" }, "IX_Order_order_status_id");
 
@@ -509,7 +512,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Product3DModelId"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
@@ -525,7 +528,7 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasColumnName("thumbnail_url");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
@@ -1099,11 +1102,6 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Order", b =>
                 {
-                    b.HasOne("BusinessObject.Coupon", "Coupon")
-                        .WithMany("Orders")
-                        .HasForeignKey("CouponId")
-                        .HasConstraintName("FK_Order_Coupon");
-
                     b.HasOne("BusinessObject.OrderStatus", "OrderStatus")
                         .WithMany("Orders")
                         .HasForeignKey("OrderStatusId")
@@ -1115,8 +1113,6 @@ namespace BusinessObject.Migrations
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_User");
-
-                    b.Navigation("Coupon");
 
                     b.Navigation("OrderStatus");
 
@@ -1327,11 +1323,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("BusinessObject.Coupon", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
             modelBuilder.Entity("BusinessObject.CouponType", b =>
                 {
                     b.Navigation("Coupons");
@@ -1366,7 +1357,8 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product3DModel", b =>
                 {
-                    b.Navigation("Product");
+                    b.Navigation("Product")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BusinessObject.ProductInteractionStatus", b =>

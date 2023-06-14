@@ -11,13 +11,13 @@ public partial class Message
 
     public int ReceiverId { get; set; }
 
-    public string Message1 { get; set; } = null!;
+    public string Content { get; set; } = null!;
 
-    public bool? IsRead { get; set; }
+    public bool? IsRead { get; set; } = false;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual User Receiver { get; set; } = null!;
 

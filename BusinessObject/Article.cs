@@ -15,13 +15,13 @@ public partial class Article
 
     public string Thumbnail { get; set; } = null!;
 
-    public bool? IsPublish { get; set; }
+    public bool? IsPublish { get; set; } = false;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public bool? IsDelete { get; set; }
-
+    public bool? IsDelete { get; set; } = false;
+     
     public virtual User User { get; set; } = null!;
 }
