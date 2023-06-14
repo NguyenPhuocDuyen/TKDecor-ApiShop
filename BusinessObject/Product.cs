@@ -9,7 +9,7 @@ public partial class Product
 
     public int CategoryId { get; set; }
 
-    public int? Model3dId { get; set; }
+    public int? Product3DModelId { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -31,7 +31,7 @@ public partial class Product
 
     public virtual Category Category { get; set; } = null!;
 
-    public virtual Product3Dmodel? Model3d { get; set; }
+    public virtual Product3DModel? Product3DModel { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

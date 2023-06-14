@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace BusinessObject;
 
-public partial class Product3Dmodel
+public partial class Product3DModel
 {
-    public int ModelId { get; set; }
+    public int Product3DModelId { get; set; }
 
     public string VideoUrl { get; set; } = null!;
 
@@ -17,5 +17,5 @@ public partial class Product3Dmodel
 
     public DateTime UpdatedAt { get; set; }
 
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual Product? Product { get; set; }
 }
