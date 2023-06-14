@@ -38,7 +38,7 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<Product3Dmodel> Product3Dmodels { get; set; }
+    public virtual DbSet<Product3DModel> Product3Dmodels { get; set; }
 
     public virtual DbSet<ProductFavorite> ProductFavorites { get; set; }
 
@@ -361,7 +361,7 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.CategoryId, "IX_Product_category_id");
 
-            entity.HasIndex(e => e.Model3dId, "IX_Product_model_3d_id");
+            entity.HasIndex(e => e.Product3DModelId, "IX_Product_3d_Model_id");
 
             entity.HasIndex(e => e.Slug, "IX_Product_slug")
                 .IsUnique()
@@ -374,7 +374,7 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-            entity.Property(e => e.Model3dId).HasColumnName("model_3d_id");
+            entity.Property(e => e.Product3DModelId).HasColumnName("product_3d_model_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
                 .HasColumnName("name");
@@ -394,18 +394,18 @@ public partial class TkdecorContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Product_Category");
 
-            entity.HasOne(d => d.Model3d).WithMany(p => p.Products)
-                .HasForeignKey(d => d.Model3dId)
-                .HasConstraintName("FK_Product_Product3DModel_Model3DId");
+            entity.HasOne(p => p.Product3DModel)
+                .WithOne(m => m.Product)
+                .HasForeignKey<Product>(p => p.Product3DModelId);
         });
 
-        modelBuilder.Entity<Product3Dmodel>(entity =>
+        modelBuilder.Entity<Product3DModel>(entity =>
         {
-            entity.HasKey(e => e.ModelId).HasName("PK__Product3__7A982983809D9053");
+            entity.HasKey(e => e.Product3DModelId).HasName("PK__Product3__7A982983809D9053");
 
             entity.ToTable("Product3DModel");
 
-            entity.Property(e => e.ModelId).HasColumnName("model_id");
+            entity.Property(e => e.Product3DModelId).HasColumnName("product_3d_model_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
