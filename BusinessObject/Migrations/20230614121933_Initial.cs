@@ -18,6 +18,7 @@ namespace BusinessObject.Migrations
                     category_id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    image_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     update_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     is_delete = table.Column<bool>(type: "bit", nullable: true)
@@ -62,8 +63,8 @@ namespace BusinessObject.Migrations
                     video_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     model_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
                     thumbnail_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -253,7 +254,8 @@ namespace BusinessObject.Migrations
                     user_id = table.Column<int>(type: "int", nullable: false),
                     product_id = table.Column<int>(type: "int", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -278,7 +280,7 @@ namespace BusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     sender_id = table.Column<int>(type: "int", nullable: false),
                     receiver_id = table.Column<int>(type: "int", nullable: false),
-                    message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_read = table.Column<bool>(type: "bit", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
@@ -328,7 +330,6 @@ namespace BusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     user_id = table.Column<int>(type: "int", nullable: false),
                     order_status_id = table.Column<int>(type: "int", nullable: false),
-                    coupon_id = table.Column<int>(type: "int", nullable: true),
                     full_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     phone = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -339,11 +340,6 @@ namespace BusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Order__465962292D23A46C", x => x.order_id);
-                    table.ForeignKey(
-                        name: "FK_Order_Coupon",
-                        column: x => x.coupon_id,
-                        principalTable: "Coupon",
-                        principalColumn: "coupon_id");
                     table.ForeignKey(
                         name: "FK_Order_OrderStatus",
                         column: x => x.order_status_id,
@@ -637,11 +633,6 @@ namespace BusinessObject.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_coupon_id",
-                table: "Order",
-                column: "coupon_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Order_order_status_id",
                 table: "Order",
                 column: "order_status_id");
@@ -781,6 +772,9 @@ namespace BusinessObject.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
+                name: "Coupon");
+
+            migrationBuilder.DropTable(
                 name: "Message");
 
             migrationBuilder.DropTable(
@@ -811,6 +805,9 @@ namespace BusinessObject.Migrations
                 name: "UserAddress");
 
             migrationBuilder.DropTable(
+                name: "CouponType");
+
+            migrationBuilder.DropTable(
                 name: "Order");
 
             migrationBuilder.DropTable(
@@ -823,9 +820,6 @@ namespace BusinessObject.Migrations
                 name: "ReportStatus");
 
             migrationBuilder.DropTable(
-                name: "Coupon");
-
-            migrationBuilder.DropTable(
                 name: "OrderStatus");
 
             migrationBuilder.DropTable(
@@ -833,9 +827,6 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
-
-            migrationBuilder.DropTable(
-                name: "CouponType");
 
             migrationBuilder.DropTable(
                 name: "Category");

@@ -15,12 +15,12 @@ public partial class ProductReview
 
     public string Description { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public bool? IsDelete { get; set; }
-
+    public bool? IsDelete { get; set; } = false;
+     
     public virtual Product Product { get; set; } = null!;
 
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();

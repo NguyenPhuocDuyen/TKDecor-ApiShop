@@ -1,6 +1,8 @@
 ﻿using BusinessObject;
 using BusinessObject.Other;
 using DataAccess.Data;
+using DataAccess.Repository;
+using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +13,7 @@ using Utility.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddOptions();                                         // Kích hoạt Options
 var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config

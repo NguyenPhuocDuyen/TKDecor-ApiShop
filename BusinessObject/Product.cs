@@ -21,17 +21,17 @@ public partial class Product
 
     public decimal Price { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public bool? IsDelete { get; set; }
-
-    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
+    public bool? IsDelete { get; set; } = false;
 
     public virtual Category Category { get; set; } = null!;
 
     public virtual Product3DModel? Product3DModel { get; set; }
+
+    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

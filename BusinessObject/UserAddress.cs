@@ -15,11 +15,11 @@ public partial class UserAddress
 
     public string Address { get; set; } = null!;
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public bool? IsDefault { get; set; }
+    public bool? IsDefault { get; set; } = false;
 
     public virtual User User { get; set; } = null!;
 }

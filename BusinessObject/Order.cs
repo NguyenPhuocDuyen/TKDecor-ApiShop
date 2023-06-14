@@ -11,8 +11,6 @@ public partial class Order
 
     public int OrderStatusId { get; set; }
 
-    public int? CouponId { get; set; }
-
     public string FullName { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
@@ -21,11 +19,9 @@ public partial class Order
 
     public decimal TotalPrice { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? UpdatedAt { get; set; }
-
-    public virtual Coupon? Coupon { get; set; }
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

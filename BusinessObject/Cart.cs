@@ -13,7 +13,9 @@ public partial class Cart
 
     public int Quantity { get; set; }
 
-    public DateTime? Created { get; set; }
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual Product Product { get; set; } = null!;
 
