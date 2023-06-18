@@ -10,28 +10,31 @@ namespace Utility
 {
     public class Slug
     {
-        public static string GenerateSlug(string title)
+        public static string GenerateSlug(string text)
         {
-            string slug = RemoveDiacritics(title);
-            slug = Regex.Replace(slug, @"\s+", " "); // Chuyển nhiều khoảng trắng thành một khoảng trắng duy nhất
-            slug = Regex.Replace(slug, @"[^a-zA-Z0-9\s]", ""); // Xóa các ký tự không hợp lệ
-            slug = slug.ToLower(); // Chuyển tất cả thành chữ thường
-            slug = slug.Replace(" ", "-"); // Thay thế khoảng trắng bằng dấu gạch ngang
-            return slug;
-        }
-
-        private static string RemoveDiacritics(string text)
-        {
-            string normalizedString = text.Normalize(NormalizationForm.FormD);
-            StringBuilder stringBuilder = new();
-
-            foreach (char c in normalizedString)
+            //SlugHelper slugHelper = new();
+            //string slug = slugHelper.GenerateSlug(text);
+            //return slug;
+            for (int i = 32; i < 48; i++)
             {
-                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                    stringBuilder.Append(c);
-            }
+                text = text.Replace(((char)i).ToString(), " ").ToLower().Trim();
 
-            return stringBuilder.ToString();
+            }
+            text = text.Replace(".", "-");
+
+            text = text.Replace(" ", "-");
+
+            text = text.Replace(",", "-");
+
+            text = text.Replace(";", "-");
+
+            text = text.Replace(":", "-");
+
+            Regex regex = new(@"\p{IsCombiningDiacriticalMarks}+");
+
+            string strFormD = text.Normalize(System.Text.NormalizationForm.FormD);
+
+            return regex.Replace(strFormD, string.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D');
         }
     }
 }

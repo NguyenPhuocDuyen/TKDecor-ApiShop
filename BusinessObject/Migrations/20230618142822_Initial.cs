@@ -230,6 +230,7 @@ namespace BusinessObject.Migrations
                     title = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     is_publish = table.Column<bool>(type: "bit", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
@@ -578,6 +579,13 @@ namespace BusinessObject.Migrations
                         principalTable: "User",
                         principalColumn: "user_id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Article_slug",
+                table: "Article",
+                column: "slug",
+                unique: true,
+                filter: "[slug] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Article_title",

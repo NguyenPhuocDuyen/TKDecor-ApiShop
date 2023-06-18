@@ -15,6 +15,8 @@ public partial class Article
 
     public string Thumbnail { get; set; } = null!;
 
+    public string? Slug { get; set; } 
+
     public bool? IsPublish { get; set; } = false;
 
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;

@@ -53,6 +53,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()
@@ -115,7 +117,7 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-    dbInitializer.Initialize();
+    await dbInitializer.Initialize();
 }
 
 app.UseRouting();

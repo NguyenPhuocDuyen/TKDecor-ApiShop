@@ -89,6 +89,12 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.UserId, "IX_Article_user_id");
 
+            entity.HasIndex(e => e.Slug, "IX_Article_slug")
+                .IsUnique();
+
+            entity.Property(e => e.Slug).HasColumnName("slug");
+                //.HasFilter("([slug] IS NOT NULL)");
+
             entity.Property(e => e.ArticleId).HasColumnName("article_id");
             entity.Property(e => e.Content).HasColumnName("content");
             entity.Property(e => e.CreatedAt)
