@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Other
+namespace BE_TKDecor.Core.Config.JWT
 {
     public class JwtSettings
     {

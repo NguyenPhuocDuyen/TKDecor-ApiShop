@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Other
+namespace BE_TKDecor.Core.Response
 {
-    public class ApiResponse<T>
+    public class ApiResponse
     {
         public bool Success { get; set; } = false;
         public string Message { get; set; } = string.Empty;
-        public T? Data { get; set; }
+        public object? Data { get; set; }
     }
 }
