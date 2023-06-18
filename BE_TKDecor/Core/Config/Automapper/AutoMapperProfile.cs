@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Dtos.Category;
+using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.User;
 using BusinessObject;
@@ -31,6 +32,9 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<Article, ArticleGetDto>()
                 .ForMember(dev => dev.UserName,
                 src => src.MapFrom(x => x.User.FullName));
+
+            // product favorite 
+            CreateMap<ProductFavorite, FavoriteGetDto>();
         }
     }
 }
