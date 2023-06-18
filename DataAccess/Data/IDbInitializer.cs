@@ -8,6 +8,6 @@ namespace DataAccess.Data
 {
     public interface IDbInitializer
     {
-        void Initialize();
+        Task Initialize();
     }
 }

@@ -115,7 +115,7 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-    dbInitializer.Initialize();
+    await dbInitializer.Initialize();
 }
 
 app.UseRouting();

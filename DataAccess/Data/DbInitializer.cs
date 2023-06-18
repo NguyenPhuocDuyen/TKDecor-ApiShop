@@ -13,7 +13,7 @@ namespace DataAccess.Data
     {
         private readonly TkdecorContext _db = new();
 
-        public async void Initialize()
+        public async Task Initialize()
         {
             try
             {
@@ -248,7 +248,7 @@ namespace DataAccess.Data
                     product.Product3DModel = product3DModel;
                     product3DModel.Product = product;
 
-                    product.Name = $"Product {i} {product.Name}";
+                    product.Name = $"Product {i} {product.Name} of cate-{category.CategoryId}";
                     product.Slug = Slug.GenerateSlug(product.Name);
                     _db.Products.Add(product);
                 }

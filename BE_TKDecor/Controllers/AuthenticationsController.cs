@@ -53,8 +53,16 @@ namespace BE_TKDecor.Controllers
             User? u = await _userRepository.FindByEmail(userDto.Email);
             //check exists
             if (u != null)
+            {
+                if (u.EmailConfirmed is not true)
+                {
+                    return BadRequest(new ApiResponse
+                    { Message = "Mail is registered but not confirmed!" });
+                }
+
                 return BadRequest(new ApiResponse
                 { Message = "Email already exists!" });
+            }
 
             // take customer role
             Role? role = await _roleRepository.FindByName(RoleContent.Customer);
@@ -64,6 +72,7 @@ namespace BE_TKDecor.Controllers
             // initial new user
             User newUser = _mapper.Map<User>(userDto);
             newUser.RoleId = role.RoleId;
+            newUser.Password = Password.HashPassword(newUser.Password);
             newUser.EmailConfirmed = false;
             newUser.EmailConfirmationCode = code;
             newUser.EmailConfirmationSentAt = DateTime.UtcNow;
@@ -136,10 +145,10 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse
                 { Message = "Email has been confirmed!" });
 
-            // get random code
-            string code = GenerateRandomCode();
+            //check code expires to create new code: 5 minutes
+            if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
+                user.EmailConfirmationCode = GenerateRandomCode();
 
-            user.EmailConfirmationCode = code;
             user.EmailConfirmationSentAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
 
@@ -149,7 +158,8 @@ namespace BE_TKDecor.Controllers
             {
                 To = user.Email,
                 Subject = "Activate account for TKDecor Shop",
-                Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
+                Body = $"<h4>You have created an account for TKDecor web.</h4> " +
+                $"<p>Here is your code: <strong>{user.EmailConfirmationCode}</strong></p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);
@@ -304,7 +314,7 @@ namespace BE_TKDecor.Controllers
                 ClockSkew = TimeSpan.Zero,
 
                 //do not check expired token
-                ValidateLifetime = false 
+                ValidateLifetime = false
             };
             try
             {
