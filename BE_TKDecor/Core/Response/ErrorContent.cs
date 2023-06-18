@@ -12,10 +12,12 @@ namespace BE_TKDecor.Core.Response
         public static string Error = "An error occurred, try again later!";
 
         public static string Data = "Data conflict try again later!";
+        public static string NotMatchId = "Not match id!";
 
         //not found
         public static string UserNotFound = "User not found!";
         public static string ProductNotFound = "No products found!";
+        public static string ArticleNotFound = "No Article found!";
 
         public static string AccountIncorrect = "Email or password is incorrect!";
     }

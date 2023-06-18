@@ -447,6 +447,7 @@ namespace DataAccess.Data
                     {
                         Article article = articleSetDefaults.Generate();
                         article.Title = "Article 1: " + article.Title;
+                        article.Slug = Slug.GenerateSlug(article.Title);
                         _db.Articles.Add(article);
                     }
                     _db.SaveChanges();

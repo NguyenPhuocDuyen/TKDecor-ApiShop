@@ -48,6 +48,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_publish");
 
+                    b.Property<string>("Slug")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("slug");
+
                     b.Property<string>("Thumbnail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -68,6 +72,10 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("ArticleId")
                         .HasName("PK__Article__CC36F660180F7E7F");
+
+                    b.HasIndex(new[] { "Slug" }, "IX_Article_slug")
+                        .IsUnique()
+                        .HasFilter("[slug] IS NOT NULL");
 
                     b.HasIndex(new[] { "Title" }, "IX_Article_title")
                         .IsUnique();
