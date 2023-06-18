@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using BusinessObject;
-using BusinessObject.Other;
+using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;

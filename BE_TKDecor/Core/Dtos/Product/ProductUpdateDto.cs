@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.DTO
+namespace BE_TKDecor.Core.Dtos.Product
 {
-    public class ProductUpdateDTO : ProductDTO
+    public class ProductUpdateDto : ProductDto
     {
         public int ProductId { get; set; }
     }

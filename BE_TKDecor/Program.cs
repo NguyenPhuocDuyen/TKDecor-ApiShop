@@ -1,10 +1,9 @@
-﻿using BusinessObject;
-using BusinessObject.Other;
+﻿using BE_TKDecor.Core.Config.Automapper;
+using BE_TKDecor.Core.Config.JWT;
 using DataAccess.Data;
 using DataAccess.Repository;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -13,17 +12,20 @@ using Utility.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+// config automapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+// config send mail
 builder.Services.AddOptions();                                         // Kích hoạt Options
 var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config
 builder.Services.Configure<MailSettings>(mailsettings);
 builder.Services.AddTransient<ISendMailService, SendMailService>();
 
+// config setting jwt
 var jwtsettings = builder.Configuration.GetSection("JwtSettings");  // đọc config jwt setting
 builder.Services.Configure<JwtSettings>(jwtsettings);
 
-//add Configure JWT authentication
+// Configure JWT authentication
 byte[] key = Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecretKey"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -44,16 +46,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-//service Database
-//builder.Services.AddDbContext<TKDecorContext>();
+// service Database
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-//services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+// config json no loop data
 builder.Services.AddControllersWithViews()
         .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
     );
-
+// config bearer token
 builder.Services.AddSwaggerGen(swagger =>
 {
     swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -77,7 +83,7 @@ builder.Services.AddSwaggerGen(swagger =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });

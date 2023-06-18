@@ -1,9 +1,7 @@
 ﻿using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BusinessObject.Other;
+using BE_TKDecor.Core.Response;
 
 namespace BE_TKDecor.Controllers
 {
@@ -24,7 +22,7 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _categoryRepository.GetAll();
             list = list.Where(x => x.IsDelete is not true).ToList();
-            return Ok(new ApiResponse<List<Category>> { Success = true, Data = list });
+            return Ok(new ApiResponse { Success = true, Data = list });
         }
     }
 }

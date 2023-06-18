@@ -10,9 +10,8 @@ namespace DataAccess.Repository.IRepository
     public interface IUserRepository
     {
         Task<List<User>> GetAll();
-        Task<bool> CheckLogin(string email, string password);
-        Task<User> FindById(int id);
-        Task<User> FindByEmail(string email);
+        Task<User?> FindById(int id);
+        Task<User?> FindByEmail(string email);
         Task Add(User user);
         Task Update(User user);
     }

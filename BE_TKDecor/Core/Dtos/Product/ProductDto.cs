@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.DTO
+namespace BE_TKDecor.Core.Dtos.Product
 {
-    public class ProductDTO
+    public class ProductDto
     {
         public int CategoryId { get; set; }
 

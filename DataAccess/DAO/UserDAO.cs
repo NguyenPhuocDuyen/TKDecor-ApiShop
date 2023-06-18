@@ -12,7 +12,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var users = await context.Users.Include(u => u.Role).ToListAsync();
-                users.ForEach(u => { u.Password = ""; });
                 return users;
             }
             catch (Exception ex)
@@ -21,36 +20,33 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<bool> CheckLogin(string email, string password)
-        {
-            try
-            {
-                bool isUserExists = false;
+        //public static async Task<bool> CheckLogin(string email, string password)
+        //{
+        //    try
+        //    {
+        //        bool isUserExists = false;
 
-                using var context = new TkdecorContext();
-                var user = await context.Users
-                    .SingleOrDefaultAsync(user => user.Email == email);
+        //        using var context = new TkdecorContext();
+        //        var user = await context.Users
+        //            .SingleOrDefaultAsync(user => user.Email == email);
 
-                if (user is not null)
-                    if (Password.VerifyPassword(password, user.Password)) return true;
+        //        if (user is not null)
+        //            if (Password.VerifyPassword(password, user.Password)) return true;
 
-                return isUserExists;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+        //        return isUserExists;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
 
-        public static async Task<User> FindById(int id)
+        public static async Task<User?> FindById(int id)
         {
             try
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.UserId == id);
-
-                if (user != null) user.Password = "";
-
                 return user;
             }
             catch (Exception ex)
@@ -59,15 +55,12 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<User> FindByEmail(string email)
+        public static async Task<User?> FindByEmail(string email)
         {
             try
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users.Include(u => u.Role).SingleOrDefaultAsync(user => user.Email == email);
-
-                if (user != null) user.Password = "";
-
                 return user;
             }
             catch (Exception ex)
