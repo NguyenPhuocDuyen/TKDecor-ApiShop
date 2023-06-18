@@ -249,6 +249,7 @@ namespace DataAccess.Data
                     product3DModel.Product = product;
 
                     product.Name = $"Product {i} {product.Name}";
+                    product.Slug = Slug.GenerateSlug(product.Name);
                     _db.Products.Add(product);
                 }
             }

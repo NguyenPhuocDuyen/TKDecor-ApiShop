@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using DataAccess.StatusContent;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Product;
+using AutoMapper;
 
 namespace BE_TKDecor.Controllers
 {
@@ -15,18 +16,30 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IProductRepository _productRepository;
 
-        public ProductsController(IProductRepository productRepository)
+        public ProductsController(IMapper mapper,
+            IProductRepository productRepository)
         {
+            _mapper = mapper;
             _productRepository = productRepository;
         }
 
-        //[HttpGet("FeaturedProducts")]
-        //public async Task<IActionResult> FeaturedProducts()
-        //{
+        [HttpGet("FeaturedProducts")]
+        public async Task<IActionResult> FeaturedProducts()
+        {
+            var products = await _productRepository.GetAll();
+            var sort = products
+                .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
+                .Take(9)
+                .ToList();
 
-        //}
+            var result = _mapper.Map<List<ProductGetDto>>(sort);
+
+            return Ok(new ApiResponse 
+            { Success = true , Data = result });
+        }
 
         //// GET: api/Products
         //[HttpGet("GetAll")]

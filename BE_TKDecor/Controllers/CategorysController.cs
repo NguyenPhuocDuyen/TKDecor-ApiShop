@@ -2,6 +2,8 @@
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using BE_TKDecor.Core.Response;
+using AutoMapper;
+using BE_TKDecor.Core.Dtos.Category;
 
 namespace BE_TKDecor.Controllers
 {
@@ -9,10 +11,13 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class CategorysController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategorysController(ICategoryRepository categoryRepository)
+        public CategorysController(IMapper mapper,
+            ICategoryRepository categoryRepository)
         {
+            _mapper = mapper;
             _categoryRepository = categoryRepository;
         }
 
@@ -22,7 +27,9 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _categoryRepository.GetAll();
             list = list.Where(x => x.IsDelete is not true).ToList();
-            return Ok(new ApiResponse { Success = true, Data = list });
+            var result = _mapper.Map<List<CategoryGetDto>>(list);
+
+            return Ok(new ApiResponse { Success = true, Data = result });
         }
     }
 }

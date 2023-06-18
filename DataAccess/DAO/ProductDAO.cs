@@ -16,8 +16,9 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var list = await context.Products
-                    .OrderByDescending(x => x.UpdatedAt)
                     .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
                     .ToListAsync();
                 return list;
             }
@@ -27,12 +28,14 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<Product> FindById(int id)
+        public static async Task<Product?> FindById(int id)
         {
             try
             {
                 using var context = new TkdecorContext();
-                var product = await context.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.ProductId == id);
+                var product = await context.Products
+                    .Include(x => x.Category)
+                    .FirstOrDefaultAsync(x => x.ProductId == id);
                 return product;
             }
             catch (Exception ex)
@@ -41,12 +44,14 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<Product> FindByName(string name)
+        public static async Task<Product?> FindByName(string name)
         {
             try
             {
                 using var context = new TkdecorContext();
-                var product = await context.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Name == name);
+                var product = await context.Products
+                    .Include(x => x.Category)
+                    .FirstOrDefaultAsync(x => x.Name == name);
                 return product;
             }
             catch (Exception ex)
@@ -55,12 +60,14 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<Product> FindBySlug(string slug)
+        public static async Task<Product?> FindBySlug(string slug)
         {
             try
             {
                 using var context = new TkdecorContext();
-                var product = await context.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Slug == slug);
+                var product = await context.Products
+                    .Include(x => x.Category)
+                    .FirstOrDefaultAsync(x => x.Slug == slug);
                 return product;
             }
             catch (Exception ex)
