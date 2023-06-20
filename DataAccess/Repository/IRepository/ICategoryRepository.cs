@@ -10,5 +10,11 @@ namespace DataAccess.Repository.IRepository
     public interface ICategoryRepository
     {
         Task<List<Category>> GetAll();
+        Task<bool> CheckProductExistsByCateId(int categoryId);
+        Task<Category?> FindById(int categoryId);
+        Task<Category?> FindByName(string categoryName);
+        Task Add(Category category);
+        Task Update(Category category);
+        Task Delete(Category category);
     }
 }

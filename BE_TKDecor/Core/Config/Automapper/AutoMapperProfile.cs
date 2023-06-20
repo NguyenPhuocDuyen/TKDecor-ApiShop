@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Dtos.Category;
+using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.User;
@@ -22,6 +23,7 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // category
             CreateMap<Category, CategoryGetDto>();
+            CreateMap<CategoryCreateDto, Category>();
 
             // product
             CreateMap<Product, ProductGetDto>()
@@ -40,6 +42,12 @@ namespace BE_TKDecor.Core.Config.Automapper
             // user address
             CreateMap<UserAddressCreateDto, UserAddress>();
             CreateMap<UserAddress, UserAddressGetDto>();
+
+            // coupon 
+            CreateMap<CouponCreateDto, Coupon>();
+            CreateMap<Coupon, CouponGetDto>()
+                .ForMember(dev => dev.CouponTypeName,
+                src => src.MapFrom(x => x.CouponType.Name));
         }
     }
 }

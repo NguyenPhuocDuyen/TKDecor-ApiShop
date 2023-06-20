@@ -11,6 +11,7 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
+using Humanizer;
 
 namespace BE_TKDecor.Controllers
 {
@@ -91,8 +92,29 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
+        [HttpPut("Update/{id}")]
+        public async Task<IActionResult> UpdateUserAddress(int id, UserAddress userAddressDto)
+        {
+            if (id != userAddressDto.UserAddressId)
+                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
+
+            var userAddressDb = await _userAddressRepository.FindById(id);
+            if (userAddressDb == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
+            userAddressDb.FullName = userAddressDto.FullName;
+            userAddressDb.Address = userAddressDto.Address;
+            userAddressDb.Phone = userAddressDto.Phone;
+            userAddressDb.UpdatedAt = DateTime.UtcNow;
+            try
+            {
+                await _userAddressRepository.Update(userAddressDb);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
         // DELETE: api/UserAddresses/5
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteUserAddress(int id)
         {
             var userAddress = await _userAddressRepository.FindById(id);
