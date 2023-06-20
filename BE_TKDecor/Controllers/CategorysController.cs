@@ -67,11 +67,11 @@ namespace BE_TKDecor.Controllers
             if (categoryName != null && categoryName.CategoryId != id)
                 return BadRequest(new ApiResponse { Message = "Category name already exists!" });
 
+            categoryDb.Name = categoryDto.Name;
+            categoryDb.ImageUrl = categoryDto.ImageUrl;
+            categoryDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                categoryDb.Name = categoryDto.Name;
-                categoryDb.ImageUrl = categoryDto.ImageUrl;
-                categoryDb.UpdatedAt = DateTime.UtcNow;
                 await _categoryRepository.Update(categoryDb);
                 return NoContent();
             }
@@ -89,9 +89,11 @@ namespace BE_TKDecor.Controllers
             if (checkProductHasInCategory)
                 return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
 
+            categoryDb.IsDelete = true;
+            categoryDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _categoryRepository.Delete(categoryDb);
+                await _categoryRepository.Update(categoryDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

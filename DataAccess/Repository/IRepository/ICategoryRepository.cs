@@ -15,6 +15,5 @@ namespace DataAccess.Repository.IRepository
         Task<Category?> FindByName(string categoryName);
         Task Add(Category category);
         Task Update(Category category);
-        Task Delete(Category category);
     }
 }

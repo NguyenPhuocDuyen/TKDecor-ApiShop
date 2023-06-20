@@ -64,18 +64,6 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Delete(Category category)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                category.IsDelete = true;
-                context.Update(category);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
         public static async Task<bool> CheckProductExistsByCateId(int categoryId)
         {
             try

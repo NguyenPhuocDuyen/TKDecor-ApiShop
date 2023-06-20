@@ -35,23 +35,15 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Delete(int id)
+        public static async Task Delete(ProductFavorite productFavorite)
         {
             try
             {
                 using var context = new TkdecorContext();
-                var productFavorite = await context.ProductFavorites
-                    .FirstOrDefaultAsync(x => x.ProductFavoriteId == id);
-                if (productFavorite != null)
-                {
-                    context.Remove(productFavorite);
-                }
+                context.Remove(productFavorite);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task Add(ProductFavorite productFavorite)
@@ -62,10 +54,7 @@ namespace DataAccess.DAO
                 await context.AddAsync(productFavorite);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

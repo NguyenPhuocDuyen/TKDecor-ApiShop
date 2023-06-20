@@ -20,10 +20,7 @@ namespace DataAccess.DAO
                     .ToListAsync();
                 return list;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Article?> FindById(int id)
@@ -36,10 +33,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.ArticleId == id);
                 return article;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Article?> FindByTitle(string title)
@@ -52,10 +46,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.Title == title);
                 return article;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Article?> FindBySlug(string slug)
@@ -68,10 +59,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.Slug == slug);
                 return article;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task Add(Article article)
@@ -82,10 +70,7 @@ namespace DataAccess.DAO
                 await context.AddAsync(article);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task Update(Article article)
@@ -96,10 +81,7 @@ namespace DataAccess.DAO
                 context.Update(article);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

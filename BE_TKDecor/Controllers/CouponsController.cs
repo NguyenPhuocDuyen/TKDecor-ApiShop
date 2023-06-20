@@ -72,14 +72,14 @@ namespace BE_TKDecor.Controllers
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
+            couponDb.CouponTypeId = couponDto.CouponTypeId;
+            couponDb.Value = couponDto.Value;
+            couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
+            couponDb.StartDate = couponDto.StartDate;
+            couponDb.EndDate = couponDto.EndDate;
+            couponDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                couponDb.CouponTypeId = couponDto.CouponTypeId;
-                couponDb.Value = couponDto.Value;
-                couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
-                couponDb.StartDate = couponDto.StartDate;
-                couponDb.EndDate = couponDto.EndDate;
-                couponDb.UpdatedAt = DateTime.UtcNow;
                 await _couponRepository.Update(couponDb);
                 return NoContent();
             }
@@ -94,9 +94,11 @@ namespace BE_TKDecor.Controllers
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
+            couponDb.UpdatedAt = DateTime.UtcNow;
+            couponDb.IsActive = false;
             try
             {
-                await _couponRepository.Delete(couponDb);
+                await _couponRepository.Update(couponDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

@@ -9,6 +9,5 @@ namespace DataAccess.Repository.IRepository
         Task<Coupon?> FindByCode(string code);
         Task Add(Coupon coupon);
         Task Update(Coupon coupon);
-        Task Delete(Coupon coupon);
     }
 }

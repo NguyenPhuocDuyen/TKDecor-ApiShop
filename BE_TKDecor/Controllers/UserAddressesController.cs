@@ -64,7 +64,6 @@ namespace BE_TKDecor.Controllers
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-
         }
 
         // POST: api/UserAddresses
@@ -101,6 +100,7 @@ namespace BE_TKDecor.Controllers
             var userAddressDb = await _userAddressRepository.FindById(id);
             if (userAddressDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
+
             userAddressDb.FullName = userAddressDto.FullName;
             userAddressDb.Address = userAddressDto.Address;
             userAddressDb.Phone = userAddressDto.Phone;
