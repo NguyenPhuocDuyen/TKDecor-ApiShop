@@ -17,8 +17,8 @@ namespace DataAccess.Repository
         public async Task<ProductFavorite?> FindProductFavorite(int userId, int productId)
             => await ProductFavoriteDAO.FindProductFavorite(userId, productId);
 
-        public async Task Delete(int id)
-            => await ProductFavoriteDAO.Delete(id);
+        public async Task Delete(ProductFavorite productFavorite)
+            => await ProductFavoriteDAO.Delete(productFavorite);
 
         public async Task Add(ProductFavorite productFavorite)
             => await ProductFavoriteDAO.Add(productFavorite);

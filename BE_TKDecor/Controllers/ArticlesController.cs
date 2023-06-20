@@ -64,21 +64,17 @@ namespace BE_TKDecor.Controllers
             if (articleDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
+            // update info article
             articleDb.Title = articleDto.Title;
             articleDb.Content = articleDto.Content;
             articleDb.Thumbnail = articleDto.Thumbnail;
             articleDb.UpdatedAt = DateTime.UtcNow;
-
             try
             {
                 await _articleRepository.Update(articleDb);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse { Message = ErrorContent.Data });
-            }
-
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Articles
@@ -93,6 +89,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
+            // create new article info
             Article newArticle = _mapper.Map<Article>(article);
             newArticle.UserId = user.UserId;
             newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
@@ -134,7 +131,6 @@ namespace BE_TKDecor.Controllers
 
             article.IsPublish = articleDto.Published;
             article.UpdatedAt = DateTime.UtcNow;
-
             try
             {
                 await _articleRepository.Update(article);

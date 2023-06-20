@@ -12,9 +12,6 @@ namespace DataAccess.Repository
         public async Task<bool> CheckProductExistsByCateId(int categoryId)
             => await CategoryDAO.CheckProductExistsByCateId(categoryId);
 
-        public async Task Delete(Category category)
-            => await CategoryDAO.Delete(category);
-
         public async Task<List<Category>> GetAll() => await CategoryDAO.GetAll();
 
         public async Task<Category?> FindById(int categoryId)

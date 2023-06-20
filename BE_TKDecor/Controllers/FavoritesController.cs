@@ -54,6 +54,9 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
+            // Get current information whether the user likes this product
+            // if not then add
+            // yes then delete
             var productFavoriteDb = await _productFavorite
                 .FindProductFavorite(user.UserId, product.ProductId);
             try
@@ -69,7 +72,7 @@ namespace BE_TKDecor.Controllers
                 }
                 else
                 {
-                    await _productFavorite.Delete(productFavoriteDb.ProductFavoriteId);
+                    await _productFavorite.Delete(productFavoriteDb);
                 }
                 return NoContent();
             }

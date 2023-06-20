@@ -26,6 +26,7 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<CategoryCreateDto, Category>();
 
             // product
+            CreateMap<ProductCreateDto, Product>();
             CreateMap<Product, ProductGetDto>()
                 .ForMember(dev => dev.CategoryName,
                 src => src.MapFrom(x => x.Category.Name));

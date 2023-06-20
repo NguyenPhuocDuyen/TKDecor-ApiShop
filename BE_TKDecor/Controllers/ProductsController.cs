@@ -15,6 +15,7 @@ namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ProductsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -28,6 +29,7 @@ namespace BE_TKDecor.Controllers
         }
 
         [HttpGet("FeaturedProducts")]
+        [AllowAnonymous]
         public async Task<IActionResult> FeaturedProducts()
         {
             var products = await _productRepository.GetAll();
@@ -38,12 +40,12 @@ namespace BE_TKDecor.Controllers
 
             var result = _mapper.Map<List<ProductGetDto>>(sort);
 
-            return Ok(new ApiResponse 
-            { Success = true , Data = result });
+            return Ok(new ApiResponse { Success = true, Data = result });
         }
 
         // GET: api/Products
         [HttpGet("GetAll")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var list = await _productRepository.GetAll();
@@ -52,53 +54,56 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        //// GET: api/Products/5
-        //[HttpGet("GetProductById/{id}")]
-        //public async Task<IActionResult> GetProductById(int id)
-        //{
-        //    var product = await _productRepository.FindById(id);
+        // GET: api/Products/5
+        [HttpGet("GetProductById/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductById(int id)
+        {
+            var product = await _productRepository.FindById(id);
 
-        //    if (product == null)
-        //        return NotFound(new ApiResponse<object> { Message = ErrorContent.ProductNotFound });
+            if (product == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-        //    if (product.IsDelete is true)
-        //        return NotFound(new ApiResponse<object> { Message = "Sản phẩm đã bị xoá!" });
+            if (product.IsDelete is true)
+                return NotFound(new ApiResponse { Message = "Product has been removed!" });
 
-        //    return Ok(new ApiResponse<Product> { Success = true, Data = product });
-        //}
+            var result = _mapper.Map<ProductGetDto>(product);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
-        //// GET: api/Products/5
-        //[HttpGet("GetProductBySlug/{slug}")]
-        //public async Task<IActionResult> GetProductBySlug(string slug)
-        //{
-        //    var product = await _productRepository.FindBySlug(slug);
+        // GET: api/Products/5
+        [HttpGet("GetProductBySlug/{slug}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetProductBySlug(string slug)
+        {
+            var product = await _productRepository.FindBySlug(slug);
 
-        //    if (product == null)
-        //        return NotFound(new ApiResponse<object> { Message = ErrorContent.ProductNotFound });
+            if (product == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-        //    return Ok(new ApiResponse<Product> { Success = true, Data = product });
-        //}
+            var result = _mapper.Map<ProductGetDto>(product);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
         //// PUT: api/Products/5
         //[HttpPut("UpdateProduct/{id}")]
-        //[Authorize(Roles = RoleContent.Admin + "," + RoleContent.Seller)]
         //public async Task<IActionResult> UpdateProduct(int id, ProductUpdateDto product)
         //{
         //    if (id != product.ProductId)
-        //        return BadRequest(new ApiResponse<object> { Message = ErrorContent.Error });
+        //        return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
         //    var productDb = await _productRepository.FindById(id);
         //    if (productDb == null)
-        //        return NotFound(new ApiResponse<object> { Message = ErrorContent.ProductNotFound });
+        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
         //    var p = await _productRepository.FindByName(product.Name);
         //    if (p != null)
-        //        return BadRequest(new ApiResponse<object> { Message = "Đã tồn tại tên sản phẩm!" });
+        //        return BadRequest(new ApiResponse { Message = "Đã tồn tại tên sản phẩm!" });
 
         //    var newSlug = Slug.GenerateSlug(product.Name);
         //    var proSlug = await _productRepository.FindBySlug(newSlug);
         //    if (proSlug != null && proSlug.ProductId != id)
-        //        return BadRequest(new ApiResponse<object> { Message = "Hãy đặt tên khác do trùng dữ liệu!" });
+        //        return BadRequest(new ApiResponse { Message = "Hãy đặt tên khác do trùng dữ liệu!" });
 
         //    productDb.CategoryId = product.CategoryId;
         //    productDb.Name = product.Name;
@@ -115,74 +120,61 @@ namespace BE_TKDecor.Controllers
         //        await _productRepository.Update(productDb);
         //        return NoContent();
         //    }
-        //    catch
-        //    {
-        //        return BadRequest(new ApiResponse<object> { Message = ErrorContent.Data });
-        //    }
+        //    catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         //}
 
-        //// POST: api/Products
-        //[HttpPost("AddProduct")]
-        //[Authorize(Roles = RoleContent.Admin + "," + RoleContent.Seller)]
-        //public async Task<ActionResult<Product>> AddProduct(ProductDto product)
-        //{
-        //    var p = await _productRepository.FindByName(product.Name);
-        //    if (p != null)
-        //        return BadRequest(new ApiResponse<object> { Message = "Đã tồn tại tên sản phẩm!" });
+        // POST: api/Products
+        [HttpPost("AddProduct")]
+        public async Task<ActionResult<Product>> AddProduct(ProductCreateDto productDto)
+        {
+            var p = await _productRepository.FindByName(productDto.Name);
+            if (p != null)
+                return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
-        //    var newSlug = Slug.GenerateSlug(product.Name);
-        //    var proSlug = await _productRepository.FindBySlug(newSlug);
-        //    if (proSlug != null)
-        //        return BadRequest(new ApiResponse<object> { Message = "Hãy đặt tên khác do trùng dữ liệu!" });
+            var newSlug = Slug.GenerateSlug(productDto.Name);
+            var proSlug = await _productRepository.FindBySlug(newSlug);
+            if (proSlug != null)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
-        //    Product newProduct = new()
-        //    {
-        //        CategoryId = product.CategoryId,
-        //        Name = product.Name,
-        //        Description = product.Description,
-        //        Slug = newSlug,
-        //        Quantity = product.Quantity,
-        //        Price = product.Price,
-        //        //Url3dModel = product.Url3dModel,
-        //        //ProductImages = product.ProductImages,
-        //        CreatedAt = DateTime.UtcNow,
-        //        UpdatedAt = DateTime.UtcNow,
-        //        IsDelete = false
-        //    };
+            Product newProduct = _mapper.Map<Product>(productDto);
+            newProduct.Slug = newSlug;
+            newProduct.ProductImages = new List<ProductImage>();
 
-        //    try
-        //    {
-        //        await _productRepository.Add(newProduct);
-        //        return NoContent();
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest(new ApiResponse<object> { Message = ErrorContent.Data });
-        //    }
+            //set image for product
+            foreach (var urlImage in productDto.Images)
+            {
+                ProductImage productImage = new()
+                {
+                    Product = newProduct,
+                    ImageUrl = urlImage,
+                };
+                newProduct.ProductImages.Add(productImage);
+            }
+            //Url3dModel = product.Url3dModel,
+            try
+            {
+                await _productRepository.Add(newProduct);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
 
-        //}
+        // DELETE: api/Products/5
+        [HttpDelete("DeleteProduct/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _productRepository.FindById(id);
+            if (product == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-        //// DELETE: api/Products/5
-        //[HttpDelete("DeleteProduct/{id}")]
-        //[Authorize(Roles = RoleContent.Admin + "," + RoleContent.Seller)]
-        //public async Task<IActionResult> DeleteProduct(int id)
-        //{
-        //    var product = await _productRepository.FindById(id);
-        //    if (product == null)
-        //        return NotFound(new ApiResponse<object> { Message = ErrorContent.ProductNotFound });
-
-        //    product.IsDelete = true;
-        //    product.UpdatedAt = DateTime.UtcNow;
-
-        //    try
-        //    {
-        //        await _productRepository.Update(product);
-        //        return NoContent();
-        //    }
-        //    catch
-        //    {
-        //        return BadRequest(new ApiResponse<object> { Message = ErrorContent.Data });
-        //    }
-        //}
+            product.IsDelete = true;
+            product.UpdatedAt = DateTime.UtcNow;
+            try
+            {
+                await _productRepository.Update(product);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
     }
 }

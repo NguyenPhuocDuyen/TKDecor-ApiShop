@@ -22,10 +22,7 @@ namespace DataAccess.DAO
                     .ToListAsync();
                 return list;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Product?> FindById(int id)
@@ -38,10 +35,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.ProductId == id);
                 return product;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Product?> FindByName(string name)
@@ -54,10 +48,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.Name == name);
                 return product;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task<Product?> FindBySlug(string slug)
@@ -70,10 +61,7 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.Slug == slug);
                 return product;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task Add(Product product)
@@ -84,10 +72,7 @@ namespace DataAccess.DAO
                 await context.AddAsync(product);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
         public static async Task Update(Product product)
@@ -98,10 +83,7 @@ namespace DataAccess.DAO
                 context.Update(product);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

@@ -14,9 +14,6 @@ namespace DataAccess.Repository
         public async Task Add(Coupon coupon)
             => await CouponDAO.Add(coupon);
 
-        public async Task Delete(Coupon coupon)
-            => await CouponDAO.Delete(coupon);
-
         public async Task<Coupon?> FindByCode(string code)
             => await CouponDAO.FindByCode(code);
 

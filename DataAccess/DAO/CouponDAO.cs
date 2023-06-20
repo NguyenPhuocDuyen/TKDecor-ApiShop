@@ -70,17 +70,5 @@ namespace DataAccess.DAO
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
-
-        public static async Task Delete(Coupon coupon)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                coupon.IsActive = false;
-                context.Update(coupon);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
     }
 }
