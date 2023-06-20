@@ -42,14 +42,14 @@ namespace BE_TKDecor.Controllers
             { Success = true , Data = result });
         }
 
-        //// GET: api/Products
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var list = await _productRepository.GetAll();
-        //    list = list.Where(x => x.IsDelete is not true).ToList();
-        //    return Ok(new ApiResponse<List<Product>> { Success = true, Data = list });
-        //}
+        // GET: api/Products
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _productRepository.GetAll();
+            list = list.Where(x => x.IsDelete is not true).ToList();
+            return Ok(new ApiResponse { Success = true, Data = list });
+        }
 
         //// GET: api/Products/5
         //[HttpGet("GetProductById/{id}")]
