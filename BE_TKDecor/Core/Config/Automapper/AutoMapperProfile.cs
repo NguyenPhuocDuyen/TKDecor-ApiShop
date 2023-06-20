@@ -22,6 +22,7 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // category
             CreateMap<Category, CategoryGetDto>();
+            CreateMap<CategoryCreateDto, Category>();
 
             // product
             CreateMap<Product, ProductGetDto>()
