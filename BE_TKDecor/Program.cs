@@ -56,6 +56,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
 builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

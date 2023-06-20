@@ -57,11 +57,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Update(int id, CategoryUpdateDto categoryDto)
         {
             if (id != categoryDto.CategoryId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.CategoryNotFound });
+                return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             var categoryDb = await _categoryRepository.FindById(categoryDto.CategoryId);
             if (categoryDb == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.CategoryNotFound });
+                return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             var categoryName = await _categoryRepository.FindByName(categoryDto.Name);
             if (categoryName != null && categoryName.CategoryId != id)
@@ -71,18 +71,19 @@ namespace BE_TKDecor.Controllers
             {
                 categoryDb.Name = categoryDto.Name;
                 categoryDb.ImageUrl = categoryDto.ImageUrl;
+                categoryDb.UpdatedAt = DateTime.UtcNow;
                 await _categoryRepository.Update(categoryDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        [HttpDelete("Delete")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var categoryDb = await _categoryRepository.FindById(id);
             if (categoryDb == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.CategoryNotFound });
+                return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             var checkProductHasInCategory = await _categoryRepository.CheckProductExistsByCateId(id);
             if (checkProductHasInCategory)

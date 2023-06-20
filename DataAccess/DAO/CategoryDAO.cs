@@ -69,7 +69,8 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                context.Remove(category);
+                category.IsDelete = true;
+                context.Update(category);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

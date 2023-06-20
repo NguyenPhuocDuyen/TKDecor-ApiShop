@@ -2,6 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using AutoMapper;
+using DataAccess.Repository.IRepository;
+using BE_TKDecor.Core.Dtos.Coupon;
+using BE_TKDecor.Core.Response;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using DataAccess.DAO;
 
 namespace BE_TKDecor.Controllers
 {
@@ -10,106 +15,91 @@ namespace BE_TKDecor.Controllers
     public class CouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
+        private readonly ICouponRepository _couponRepository;
 
-        public CouponsController(IMapper mapper)
+        public CouponsController(IMapper mapper,
+            ICouponRepository couponRepository)
         {
             _mapper = mapper;
+            _couponRepository = couponRepository;
         }
 
-        //// GET: api/Coupons
-        //[HttpGet]
-        //public async Task<IActionResult> GetCoupons()
-        //{
-        //    return await _context.Coupons.ToListAsync();
-        //}
+        // GET: api/Coupons/GetALl
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var coupons = await _couponRepository.GetAll();
+            var result = _mapper.Map<List<CouponGetDto>>(coupons);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
-        //// GET: api/Coupons/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Coupon>> GetCoupon(int id)
-        //{
-        //  if (_context.Coupons == null)
-        //  {
-        //      return NotFound();
-        //  }
-        //    var coupon = await _context.Coupons.FindAsync(id);
+        // GET: api/Coupons/5
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCoupon(int id)
+        {
+            var coupon = await _couponRepository.FindById(id);
+            if (coupon == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+            var result = _mapper.Map<CouponGetDto>(coupon);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
-        //    if (coupon == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // POST: api/Coupons
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(CouponCreateDto couponDto)
+        {
+            var couponCode = await _couponRepository.FindByCode(couponDto.Code);
+            if (couponCode != null)
+                return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
 
-        //    return coupon;
-        //}
+            Coupon newCoupon = _mapper.Map<Coupon>(couponCode);
+            try
+            {
+                await _couponRepository.Add(newCoupon);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
 
-        //// PUT: api/Coupons/5
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutCoupon(int id, Coupon coupon)
-        //{
-        //    if (id != coupon.CouponId)
-        //    {
-        //        return BadRequest();
-        //    }
+        // PUT: api/Coupons/5
+        [HttpPut("Update/{id}")]
+        public async Task<IActionResult> PutCoupon(int id, CouponUpdateDto couponDto)
+        {
+            if (id != couponDto.CouponId)
+                return BadRequest(new ApiResponse { Message = "ID does not match!" });
 
-        //    _context.Entry(coupon).State = EntityState.Modified;
+            var couponDb = await _couponRepository.FindById(id);
+            if (couponDb == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!CouponExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+            try
+            {
+                couponDb.CouponTypeId = couponDto.CouponTypeId;
+                couponDb.Value = couponDto.Value;
+                couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
+                couponDb.StartDate = couponDto.StartDate;
+                couponDb.EndDate = couponDto.EndDate;
+                couponDb.UpdatedAt = DateTime.UtcNow;
+                await _couponRepository.Update(couponDb);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
 
-        //    return NoContent();
-        //}
+        // DELETE: api/Coupons/5
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> DeleteCoupon(int id)
+        {
+            var couponDb = await _couponRepository.FindById(id);
+            if (couponDb == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-        //// POST: api/Coupons
-        //// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Coupon>> PostCoupon(Coupon coupon)
-        //{
-        //  if (_context.Coupons == null)
-        //  {
-        //      return Problem("Entity set 'TkdecorContext.Coupons'  is null.");
-        //  }
-        //    _context.Coupons.Add(coupon);
-        //    await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetCoupon", new { id = coupon.CouponId }, coupon);
-        //}
-
-        //// DELETE: api/Coupons/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteCoupon(int id)
-        //{
-        //    if (_context.Coupons == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var coupon = await _context.Coupons.FindAsync(id);
-        //    if (coupon == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Coupons.Remove(coupon);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
-
-        //private bool CouponExists(int id)
-        //{
-        //    return (_context.Coupons?.Any(e => e.CouponId == id)).GetValueOrDefault();
-        //}
+            try
+            {
+                await _couponRepository.Delete(couponDb);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
     }
 }

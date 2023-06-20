@@ -54,8 +54,8 @@ namespace BE_TKDecor.Controllers
         }
 
         // PUT: api/Articles/5
-        [HttpPut("UpdateArticle")]
-        public async Task<IActionResult> PutArticle(int id, ArticleUpdateDto articleDto)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(int id, ArticleUpdateDto articleDto)
         {
             if (id != articleDto.ArticleId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -107,7 +107,7 @@ namespace BE_TKDecor.Controllers
         }
 
         // DELETE: api/Articles/5
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
             var article = await _articleRepository.FindById(id);
