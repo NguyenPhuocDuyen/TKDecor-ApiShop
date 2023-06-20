@@ -48,7 +48,8 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _productRepository.GetAll();
             list = list.Where(x => x.IsDelete is not true).ToList();
-            return Ok(new ApiResponse { Success = true, Data = list });
+            var result = _mapper.Map<List<ProductGetDto>>(list);
+            return Ok(new ApiResponse { Success = true, Data = result });
         }
 
         //// GET: api/Products/5
