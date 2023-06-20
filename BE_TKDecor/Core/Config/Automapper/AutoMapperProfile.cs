@@ -4,6 +4,7 @@ using BE_TKDecor.Core.Dtos.Category;
 using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.User;
+using BE_TKDecor.Core.Dtos.UserAddress;
 using BusinessObject;
 using Microsoft.Build.Framework;
 
@@ -35,6 +36,10 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // product favorite 
             CreateMap<ProductFavorite, FavoriteGetDto>();
+
+            // user address
+            CreateMap<UserAddressCreateDto, UserAddress>();
+            CreateMap<UserAddress, UserAddressGetDto>();
         }
     }
 }

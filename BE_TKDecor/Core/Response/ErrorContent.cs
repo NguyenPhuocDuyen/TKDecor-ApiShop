@@ -16,8 +16,9 @@ namespace BE_TKDecor.Core.Response
 
         //not found
         public static string UserNotFound = "User not found!";
-        public static string ProductNotFound = "No products found!";
-        public static string ArticleNotFound = "No Article found!";
+        public static string ProductNotFound = "Products not found!";
+        public static string ArticleNotFound = "Article not found!";
+        public static string AddressNotFound = "Address not found!";
 
         public static string AccountIncorrect = "Email or password is incorrect!";
     }
