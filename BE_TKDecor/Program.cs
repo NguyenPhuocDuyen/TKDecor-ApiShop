@@ -55,6 +55,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
+builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()
