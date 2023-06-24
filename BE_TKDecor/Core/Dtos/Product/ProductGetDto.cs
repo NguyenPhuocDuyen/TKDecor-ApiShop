@@ -28,6 +28,6 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public bool? IsDelete { get; set; } = false;
 
-        //public virtual Product3DModel? Product3DModel { get; set; }
+        public List<string> ProductImages { get; set; } = new List<string>();
     }
 }

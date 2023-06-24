@@ -18,8 +18,8 @@ namespace BE_TKDecor.Core.Config.Automapper
             // user
             CreateMap<UserRegisterDto, User>();
             CreateMap<User, UserGetDto>()
-                .ForMember(dev => dev.RoleName, 
-                src => src.MapFrom(x => x.Role.Name));
+                .ForMember(dest => dest.RoleName, 
+                opt => opt.MapFrom(x => x.Role.Name));
 
             // category
             CreateMap<Category, CategoryGetDto>();
@@ -28,14 +28,16 @@ namespace BE_TKDecor.Core.Config.Automapper
             // product
             CreateMap<ProductCreateDto, Product>();
             CreateMap<Product, ProductGetDto>()
-                .ForMember(dev => dev.CategoryName,
-                src => src.MapFrom(x => x.Category.Name));
+                .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(x => x.Category.Name))
+                .ForMember(dest => dest.ProductImages, 
+                opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()));
 
             // article 
             CreateMap<ArticleCreateDto, Article>();
             CreateMap<Article, ArticleGetDto>()
-                .ForMember(dev => dev.UserName,
-                src => src.MapFrom(x => x.User.FullName));
+                .ForMember(dest => dest.UserName,
+                opt => opt.MapFrom(x => x.User.FullName));
 
             // product favorite 
             CreateMap<ProductFavorite, FavoriteGetDto>();
@@ -47,8 +49,8 @@ namespace BE_TKDecor.Core.Config.Automapper
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
             CreateMap<Coupon, CouponGetDto>()
-                .ForMember(dev => dev.CouponTypeName,
-                src => src.MapFrom(x => x.CouponType.Name));
+                .ForMember(dest => dest.CouponTypeName,
+                opt => opt.MapFrom(x => x.CouponType.Name));
         }
     }
 }
