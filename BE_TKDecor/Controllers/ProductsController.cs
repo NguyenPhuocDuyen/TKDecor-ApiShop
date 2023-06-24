@@ -55,9 +55,9 @@ namespace BE_TKDecor.Controllers
         }
 
         // GET: api/Products/5
-        [HttpGet("GetProductById/{id}")]
+        [HttpGet("GetById/{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetProductById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var product = await _productRepository.FindById(id);
 
@@ -72,9 +72,9 @@ namespace BE_TKDecor.Controllers
         }
 
         // GET: api/Products/5
-        [HttpGet("GetProductBySlug/{slug}")]
+        [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetProductBySlug(string slug)
+        public async Task<IActionResult> GetBySlug(string slug)
         {
             var product = await _productRepository.FindBySlug(slug);
 
@@ -124,8 +124,8 @@ namespace BE_TKDecor.Controllers
         //}
 
         // POST: api/Products
-        [HttpPost("AddProduct")]
-        public async Task<ActionResult<Product>> AddProduct(ProductCreateDto productDto)
+        [HttpPost("Create")]
+        public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
             var p = await _productRepository.FindByName(productDto.Name);
             if (p != null)
@@ -160,8 +160,8 @@ namespace BE_TKDecor.Controllers
         }
 
         // DELETE: api/Products/5
-        [HttpDelete("DeleteProduct/{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [HttpDelete("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
             var product = await _productRepository.FindById(id);
             if (product == null)

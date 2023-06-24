@@ -7,6 +7,7 @@ using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.StatusContent;
 using Utility;
+using BE_TKDecor.Core.Dtos;
 
 namespace BE_TKDecor.Controllers
 {
@@ -54,7 +55,7 @@ namespace BE_TKDecor.Controllers
         }
 
         // PUT: api/Articles/5
-        [HttpPut("Update")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(int id, ArticleUpdateDto articleDto)
         {
             if (id != articleDto.ArticleId)
