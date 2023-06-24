@@ -19,6 +19,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Category)
                     .Include(x => x.OrderDetails)
                     .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
                     .ToListAsync();
                 return list;
             }
@@ -32,6 +33,9 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 var product = await context.Products
                     .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
                     .FirstOrDefaultAsync(x => x.ProductId == id);
                 return product;
             }
@@ -45,6 +49,9 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 var product = await context.Products
                     .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
                     .FirstOrDefaultAsync(x => x.Name == name);
                 return product;
             }
@@ -58,6 +65,9 @@ namespace DataAccess.DAO
                 using var context = new TkdecorContext();
                 var product = await context.Products
                     .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
                     .FirstOrDefaultAsync(x => x.Slug == slug);
                 return product;
             }
