@@ -17,11 +17,10 @@ namespace BE_TKDecor.Controllers
             _sendMailService = sendMailService;
         }
 
-        // api/Mails/SendMail
+        // api/Mails/GetComment
         [HttpPost("GetComment")]
         public async Task<IActionResult> GetComment(MailSendDto mailSendDto)
         {
-            //send mail to confirm account
             //set data to send
             MailContent mailContent = new()
             {

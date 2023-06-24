@@ -1,11 +1,15 @@
-﻿namespace BE_TKDecor.Core.Dtos.Category
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BE_TKDecor.Core.Dtos.Category
 {
     public class CategoryUpdateDto
     {
         public int CategoryId { get; set; }
 
+        [MaxLength(255)]
         public string Name { get; set; } = null!;
 
+        [MaxLength(255)]
         public string ImageUrl { get; set; } = null!;
     }
 }

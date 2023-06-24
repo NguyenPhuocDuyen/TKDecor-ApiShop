@@ -13,30 +13,33 @@ namespace BE_TKDecor.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
-    public class CategorysController : ControllerBase
+    public class CategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ICategoryRepository _categoryRepository;
 
-        public CategorysController(IMapper mapper,
+        public CategoriesController(IMapper mapper,
             ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
             _categoryRepository = categoryRepository;
         }
 
-        // GET: api/<CategorysController>
+        // GET: api/Categorys/GetAll
         [HttpGet("GetAll")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var list = await _categoryRepository.GetAll();
-            list = list.Where(x => x.IsDelete is not true).ToList();
+            list = list.Where(x => x.IsDelete is not true)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
             var result = _mapper.Map<List<CategoryGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/Categorys/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CategoryCreateDto categoryDto)
         {
@@ -53,6 +56,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
+        // GET: api/Categorys/Update/1
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(int id, CategoryUpdateDto categoryDto)
         {
@@ -78,6 +82,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
+        // GET: api/Categorys/Delete/1
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {

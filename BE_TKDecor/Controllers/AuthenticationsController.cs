@@ -131,7 +131,7 @@ namespace BE_TKDecor.Controllers
             }
         }
 
-        // POST: api/Authentications/Login
+        // POST: api/Authentications/ResendConfirmationCode
         [HttpPost("ResendConfirmationCode")]
         public async Task<IActionResult> ResendConfirmationEmail(UserEmailDto userDto)
         {
@@ -296,6 +296,7 @@ namespace BE_TKDecor.Controllers
             }
         }
 
+        // POST: api/Authentications/RenewToken
         [HttpPost("RenewToken")]
         public async Task<IActionResult> RenewToken(TokenModel model)
         {

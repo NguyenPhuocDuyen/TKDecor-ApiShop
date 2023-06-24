@@ -30,12 +30,13 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var coupons = await _couponRepository.GetAll();
+            var coupons = (await _couponRepository.GetAll())
+                   .OrderByDescending(x => x.UpdatedAt).ToList();
             var result = _mapper.Map<List<CouponGetDto>>(coupons);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Coupons/5
+        // GET: api/Coupons/GetById/5
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCoupon(int id)
         {
@@ -46,7 +47,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // POST: api/Coupons
+        // POST: api/Coupons/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CouponCreateDto couponDto)
         {
@@ -63,7 +64,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // PUT: api/Coupons/5
+        // PUT: api/Coupons/Update/5
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> PutCoupon(int id, CouponUpdateDto couponDto)
         {
@@ -88,7 +89,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // DELETE: api/Coupons/5
+        // DELETE: api/Coupons/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteCoupon(int id)
         {

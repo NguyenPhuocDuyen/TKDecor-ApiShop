@@ -24,6 +24,8 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public float AverageRate { get; set; }
 
+        public int CountRate { get; set; }
+
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -1,9 +1,12 @@
-﻿namespace BE_TKDecor.Core.Dtos.Article
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BE_TKDecor.Core.Dtos.Article
 {
     public class ArticleUpdateDto
     {
         public int ArticleId { get; set; }
 
+        [MaxLength(255)]
         public string Title { get; set; } = null!;
 
         public string Content { get; set; } = null!;

@@ -29,19 +29,21 @@ namespace BE_TKDecor.Controllers
             _articleRepository = articleRepository;
         }
 
-        // GET: api/Articles
+        // GET: api/Articles/GetAll
         [HttpGet("GetAll")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var list = await _articleRepository.GetAll();
-            list = list.Where(x => x.IsDelete == false && x.IsPublish == true).ToList();
+            list = list.Where(x => x.IsDelete == false && x.IsPublish == true)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
             var result = _mapper.Map<List<ArticleGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Articles
+        // GET: api/Articles/GetBySlug/abc-def
         [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBySlug(string slug)
@@ -54,7 +56,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // PUT: api/Articles/5
+        // PUT: api/Articles/Update/5
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(int id, ArticleUpdateDto articleDto)
         {
@@ -78,7 +80,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // POST: api/Articles
+        // POST: api/Articles/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Article article)
         {
@@ -104,7 +106,7 @@ namespace BE_TKDecor.Controllers
 
         }
 
-        // DELETE: api/Articles/5
+        // DELETE: api/Articles/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
