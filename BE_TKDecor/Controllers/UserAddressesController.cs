@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
 using Humanizer;
+using BE_TKDecor.Core.Dtos;
 
 namespace BE_TKDecor.Controllers
 {
@@ -47,7 +48,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        [HttpPost("SetDefault")]
+        [HttpPost("SetDefault/{id}")]
         public async Task<IActionResult> SetDefault(int id)
         {
             var user = await GetUser();
