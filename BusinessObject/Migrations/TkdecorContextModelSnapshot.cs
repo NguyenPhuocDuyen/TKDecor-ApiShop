@@ -607,66 +607,6 @@ namespace BusinessObject.Migrations
                     b.ToTable("ProductImage", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.ProductInteraction", b =>
-                {
-                    b.Property<int>("ProductReviewInteractionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("product_review_interaction_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductReviewInteractionId"));
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int")
-                        .HasColumnName("product_id");
-
-                    b.Property<int>("ProductInteractionStatusId")
-                        .HasColumnType("int")
-                        .HasColumnName("product_interaction_status_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("ProductReviewInteractionId")
-                        .HasName("PK__ProductI__A2F12EDBBAC0359E");
-
-                    b.HasIndex(new[] { "ProductId" }, "IX_ProductInteraction_product_id");
-
-                    b.HasIndex(new[] { "ProductInteractionStatusId" }, "IX_ProductInteraction_product_interaction_status_id");
-
-                    b.HasIndex(new[] { "UserId" }, "IX_ProductInteraction_user_id");
-
-                    b.ToTable("ProductInteraction", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.ProductInteractionStatus", b =>
-                {
-                    b.Property<int>("ProductReviewInteractionStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("product_review_interaction_status_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductReviewInteractionStatusId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("name");
-
-                    b.HasKey("ProductReviewInteractionStatusId")
-                        .HasName("PK__ProductI__0CC0092882FD7968");
-
-                    b.ToTable("ProductInteractionStatus", (string)null);
-                });
-
             modelBuilder.Entity("BusinessObject.ProductReport", b =>
                 {
                     b.Property<int>("ProductReportId")
@@ -759,6 +699,66 @@ namespace BusinessObject.Migrations
                     b.HasIndex(new[] { "UserId" }, "IX_ProductReview_user_id");
 
                     b.ToTable("ProductReview", (string)null);
+                });
+
+            modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
+                {
+                    b.Property<int>("ProductReviewInteractionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("product_review_interaction_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductReviewInteractionId"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductInteractionStatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_interaction_status_id");
+
+                    b.Property<int>("ProductReviewId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_review_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("ProductReviewInteractionId")
+                        .HasName("PK__ProductI__A2F12EDBBAC0359E");
+
+                    b.HasIndex(new[] { "ProductInteractionStatusId" }, "IX_ProductReviewInteraction_product_interaction_status_id");
+
+                    b.HasIndex(new[] { "ProductReviewId" }, "IX_ProductReviewInteraction_product_review_id");
+
+                    b.HasIndex(new[] { "UserId" }, "IX_ProductReviewInteraction_user_id");
+
+                    b.ToTable("ProductReviewInteraction", (string)null);
+                });
+
+            modelBuilder.Entity("BusinessObject.ProductReviewInteractionStatus", b =>
+                {
+                    b.Property<int>("ProductReviewInteractionStatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("product_review_interaction_status_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductReviewInteractionStatusId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("name");
+
+                    b.HasKey("ProductReviewInteractionStatusId")
+                        .HasName("PK__ProductI__0CC0092882FD7968");
+
+                    b.ToTable("ProductReviewInteractionStatus", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.RefreshToken", b =>
@@ -1190,33 +1190,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("BusinessObject.ProductInteraction", b =>
-                {
-                    b.HasOne("BusinessObject.Product", "Product")
-                        .WithMany("ProductInteractions")
-                        .HasForeignKey("ProductId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductReviewInteraction_Product");
-
-                    b.HasOne("BusinessObject.ProductInteractionStatus", "ProductInteractionStatus")
-                        .WithMany("ProductInteractions")
-                        .HasForeignKey("ProductInteractionStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductInteraction_ProductInteractionStatus");
-
-                    b.HasOne("BusinessObject.User", "User")
-                        .WithMany("ProductInteractions")
-                        .HasForeignKey("UserId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductInteraction_User");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductInteractionStatus");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BusinessObject.ProductReport", b =>
                 {
                     b.HasOne("BusinessObject.Product", "ProductReported")
@@ -1259,6 +1232,33 @@ namespace BusinessObject.Migrations
                         .HasConstraintName("FK_ProductReview_User");
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
+                {
+                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductInteractionStatus")
+                        .WithMany("ProductReviewInteractions")
+                        .HasForeignKey("ProductInteractionStatusId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProductReviewInteraction_ProductReviewInteractionStatus");
+
+                    b.HasOne("BusinessObject.ProductReview", "ProductReview")
+                        .WithMany("ProductReviewInteractions")
+                        .HasForeignKey("ProductReviewId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProductReviewInteraction_Product");
+
+                    b.HasOne("BusinessObject.User", "User")
+                        .WithMany("ProductInteractions")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_ProductReviewInteraction_User");
+
+                    b.Navigation("ProductInteractionStatus");
+
+                    b.Navigation("ProductReview");
 
                     b.Navigation("User");
                 });
@@ -1353,8 +1353,6 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("ProductImages");
 
-                    b.Navigation("ProductInteractions");
-
                     b.Navigation("ProductReports");
 
                     b.Navigation("ProductReviews");
@@ -1366,14 +1364,16 @@ namespace BusinessObject.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BusinessObject.ProductInteractionStatus", b =>
-                {
-                    b.Navigation("ProductInteractions");
-                });
-
             modelBuilder.Entity("BusinessObject.ProductReview", b =>
                 {
+                    b.Navigation("ProductReviewInteractions");
+
                     b.Navigation("ReportProductReviews");
+                });
+
+            modelBuilder.Entity("BusinessObject.ProductReviewInteractionStatus", b =>
+                {
+                    b.Navigation("ProductReviewInteractions");
                 });
 
             modelBuilder.Entity("BusinessObject.ReportStatus", b =>

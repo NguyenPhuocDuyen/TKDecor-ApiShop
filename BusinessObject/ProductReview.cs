@@ -23,7 +23,9 @@ public partial class ProductReview
      
     public virtual Product Product { get; set; } = null!;
 
+    public virtual User User { get; set; } = null!;
+
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();
 
-    public virtual User User { get; set; } = null!;
+    public virtual ICollection<ProductReviewInteraction> ProductReviewInteractions { get; set; } = new List<ProductReviewInteraction>();
 }

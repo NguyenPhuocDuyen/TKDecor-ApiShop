@@ -2,8 +2,10 @@
 
 namespace BE_TKDecor.Core.Dtos.Product
 {
-    public class ProductCreateDto
+    public class ProductUpdateDto
     {
+        public int ProductId { get; set; }
+
         public int CategoryId { get; set; }
 
         //public int? Product3DModelId { get; set; }
