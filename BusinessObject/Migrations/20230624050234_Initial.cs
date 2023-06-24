@@ -72,7 +72,7 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductInteractionStatus",
+                name: "ProductReviewInteractionStatus",
                 columns: table => new
                 {
                     product_review_interaction_status_id = table.Column<int>(type: "int", nullable: false)
@@ -381,38 +381,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductInteraction",
-                columns: table => new
-                {
-                    product_review_interaction_id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
-                    product_interaction_status_id = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ProductI__A2F12EDBBAC0359E", x => x.product_review_interaction_id);
-                    table.ForeignKey(
-                        name: "FK_ProductInteraction_ProductInteractionStatus",
-                        column: x => x.product_interaction_status_id,
-                        principalTable: "ProductInteractionStatus",
-                        principalColumn: "product_review_interaction_status_id");
-                    table.ForeignKey(
-                        name: "FK_ProductInteraction_User",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "user_id");
-                    table.ForeignKey(
-                        name: "FK_ProductReviewInteraction_Product",
-                        column: x => x.product_id,
-                        principalTable: "Product",
-                        principalColumn: "product_id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProductReport",
                 columns: table => new
                 {
@@ -545,6 +513,38 @@ namespace BusinessObject.Migrations
                         column: x => x.product_id,
                         principalTable: "Product",
                         principalColumn: "product_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReviewInteraction",
+                columns: table => new
+                {
+                    product_review_interaction_id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    user_id = table.Column<int>(type: "int", nullable: false),
+                    product_review_id = table.Column<int>(type: "int", nullable: false),
+                    product_interaction_status_id = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__ProductI__A2F12EDBBAC0359E", x => x.product_review_interaction_id);
+                    table.ForeignKey(
+                        name: "FK_ProductReviewInteraction_Product",
+                        column: x => x.product_review_id,
+                        principalTable: "ProductReview",
+                        principalColumn: "product_review_id");
+                    table.ForeignKey(
+                        name: "FK_ProductReviewInteraction_ProductReviewInteractionStatus",
+                        column: x => x.product_interaction_status_id,
+                        principalTable: "ProductReviewInteractionStatus",
+                        principalColumn: "product_review_interaction_status_id");
+                    table.ForeignKey(
+                        name: "FK_ProductReviewInteraction_User",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
                 });
 
             migrationBuilder.CreateTable(
@@ -700,21 +700,6 @@ namespace BusinessObject.Migrations
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductInteraction_product_id",
-                table: "ProductInteraction",
-                column: "product_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductInteraction_product_interaction_status_id",
-                table: "ProductInteraction",
-                column: "product_interaction_status_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductInteraction_user_id",
-                table: "ProductInteraction",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProductReport_product_reported_id",
                 table: "ProductReport",
                 column: "product_reported_id");
@@ -737,6 +722,21 @@ namespace BusinessObject.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReview_user_id",
                 table: "ProductReview",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviewInteraction_product_interaction_status_id",
+                table: "ProductReviewInteraction",
+                column: "product_interaction_status_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviewInteraction_product_review_id",
+                table: "ProductReviewInteraction",
+                column: "product_review_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductReviewInteraction_user_id",
+                table: "ProductReviewInteraction",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -798,10 +798,10 @@ namespace BusinessObject.Migrations
                 name: "ProductImage");
 
             migrationBuilder.DropTable(
-                name: "ProductInteraction");
+                name: "ProductReport");
 
             migrationBuilder.DropTable(
-                name: "ProductReport");
+                name: "ProductReviewInteraction");
 
             migrationBuilder.DropTable(
                 name: "RefreshToken");
@@ -819,7 +819,7 @@ namespace BusinessObject.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "ProductInteractionStatus");
+                name: "ProductReviewInteractionStatus");
 
             migrationBuilder.DropTable(
                 name: "ProductReview");

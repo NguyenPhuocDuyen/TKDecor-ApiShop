@@ -20,12 +20,15 @@ namespace BE_TKDecor.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IProductRepository _productRepository;
+        private readonly IProductImageRepository _productImageRepository;
 
         public ProductsController(IMapper mapper,
-            IProductRepository productRepository)
+            IProductRepository productRepository,
+            IProductImageRepository productImageRepository)
         {
             _mapper = mapper;
             _productRepository = productRepository;
+            _productImageRepository = productImageRepository;
         }
 
         [HttpGet("FeaturedProducts")]
@@ -85,44 +88,6 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        //// PUT: api/Products/5
-        //[HttpPut("UpdateProduct/{id}")]
-        //public async Task<IActionResult> UpdateProduct(int id, ProductUpdateDto product)
-        //{
-        //    if (id != product.ProductId)
-        //        return BadRequest(new ApiResponse { Message = ErrorContent.Error });
-
-        //    var productDb = await _productRepository.FindById(id);
-        //    if (productDb == null)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-        //    var p = await _productRepository.FindByName(product.Name);
-        //    if (p != null)
-        //        return BadRequest(new ApiResponse { Message = "Đã tồn tại tên sản phẩm!" });
-
-        //    var newSlug = Slug.GenerateSlug(product.Name);
-        //    var proSlug = await _productRepository.FindBySlug(newSlug);
-        //    if (proSlug != null && proSlug.ProductId != id)
-        //        return BadRequest(new ApiResponse { Message = "Hãy đặt tên khác do trùng dữ liệu!" });
-
-        //    productDb.CategoryId = product.CategoryId;
-        //    productDb.Name = product.Name;
-        //    productDb.Description = product.Description;
-        //    productDb.Slug = newSlug;
-        //    productDb.Quantity = product.Quantity;
-        //    productDb.Price = product.Price;
-        //    //productDb.Url3dModel = product.Url3dModel;
-        //    //productDb.ProductImages = product.ProductImages;
-        //    productDb.UpdatedAt = DateTime.UtcNow;
-
-        //    try
-        //    {
-        //        await _productRepository.Update(productDb);
-        //        return NoContent();
-        //    }
-        //    catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        //}
-
         // POST: api/Products
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
@@ -141,7 +106,7 @@ namespace BE_TKDecor.Controllers
             newProduct.ProductImages = new List<ProductImage>();
 
             //set image for product
-            foreach (var urlImage in productDto.Images)
+            foreach (var urlImage in productDto.ProductImages)
             {
                 ProductImage productImage = new()
                 {
@@ -154,6 +119,77 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _productRepository.Add(newProduct);
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
+        // PUT: api/Products/5
+        [HttpPut("Update/{id}")]
+        public async Task<IActionResult> Update(int id, ProductUpdateDto productDto)
+        {
+            if (id != productDto.ProductId)
+                return BadRequest(new ApiResponse { Message = ErrorContent.Error });
+
+            var productDb = await _productRepository.FindById(id);
+            if (productDb == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+
+            var p = await _productRepository.FindByName(productDto.Name);
+            if (p != null && p.ProductId != id)
+                return BadRequest(new ApiResponse { Message = "Product name already exists!" });
+
+            var newSlug = Slug.GenerateSlug(productDto.Name);
+            var proSlug = await _productRepository.FindBySlug(newSlug);
+            if (proSlug != null && proSlug.ProductId != id)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+
+            productDb.CategoryId = productDto.CategoryId;
+            productDb.Name = productDto.Name;
+            productDb.Description = productDto.Description;
+            productDb.Slug = newSlug;
+            productDb.Quantity = productDto.Quantity;
+            productDb.Price = productDto.Price;
+            //productDb.Url3dModel = product.Url3dModel;
+            //productDb.ProductImages = product.ProductImages;
+            productDb.UpdatedAt = DateTime.UtcNow;
+
+            List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
+            try
+            {
+
+                // delete the old photo if it's not in the new photo list
+                foreach (var imageUrlOld in listImageUrlOld)
+                {
+                    if (!productDto.ProductImages.Contains(imageUrlOld))
+                    {
+                        var imageOld = productDb.ProductImages.FirstOrDefault(x => x.ImageUrl == imageUrlOld);
+                        if (imageOld != null)
+                        {
+                            productDb.ProductImages.Remove(imageOld);
+                            await _productImageRepository.Delete(imageOld);
+                        }
+                    }
+                }
+
+                // add a new photo if it's not in the list of photos
+                foreach (var imageUrlNew in productDto.ProductImages)
+                {
+                    if (!listImageUrlOld.Contains(imageUrlNew))
+                    {
+                        ProductImage imageNew = new()
+                        {
+                            ProductId = productDb.ProductId,
+                            Product = productDb,
+                            ImageUrl = imageUrlNew
+                        };
+                        productDb.ProductImages.Add(imageNew);
+                        //await _productImageRepository.Add(imageNew);
+                    }
+                }
+
+                // Update information except photos
+                await _productRepository.Update(productDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

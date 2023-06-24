@@ -2,6 +2,7 @@
 using BusinessObject;
 using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Numerics;
@@ -82,21 +83,24 @@ namespace DataAccess.Data
                 .Include(x => x.Product)
                 .ToListAsync();
 
-            foreach (var review in reviews)
+            if (user != null && reportStatusPeding != null)
             {
-                ReportProductReview reportProductReview = new()
+                foreach (var review in reviews)
                 {
-                    UserReportId = user.UserId,
-                    UserReport = user,
-                    ProductReviewReportedId = review.ProductReviewId,
-                    ProductReviewReported = review,
-                    ReportStatusId = reportStatusPeding.ReportStatusId,
-                    ReportStatus = reportStatusPeding,
-                    Reason = "",
-                };
-                _db.ReportProductReviews.Add(reportProductReview);
+                    ReportProductReview reportProductReview = new()
+                    {
+                        UserReportId = user.UserId,
+                        UserReport = user,
+                        ProductReviewReportedId = review.ProductReviewId,
+                        ProductReviewReported = review,
+                        ReportStatusId = reportStatusPeding.ReportStatusId,
+                        ReportStatus = reportStatusPeding,
+                        Reason = "",
+                    };
+                    _db.ReportProductReviews.Add(reportProductReview);
+                }
+                _db.SaveChanges();
             }
-            _db.SaveChanges();
         }
 
         private async Task AddProductReview()
@@ -109,7 +113,6 @@ namespace DataAccess.Data
                 .Include(x => x.Product);
 
             var productReviewSetDefaults = new Faker<ProductReview>();
-            productReviewSetDefaults.RuleFor(x => x.Rate, new Random().Next(3, 5));
             productReviewSetDefaults.RuleFor(x => x.Description, f => f.Lorem.Paragraph());
 
             foreach (var od in orderDetail)
@@ -119,6 +122,7 @@ namespace DataAccess.Data
                 productReview.User = od.Order.User;
                 productReview.ProductId = od.Product.ProductId;
                 productReview.Product = od.Product;
+                productReview.Rate = new Random().Next(2, 6);
                 _db.ProductReviews.Add(productReview);
             }
             _db.SaveChanges();
@@ -172,17 +176,17 @@ namespace DataAccess.Data
                 .Where(x => x.Role.Name == RoleContent.Customer)
                 .ToListAsync();
 
-                var prouducts = await _db.Products.ToListAsync();
+                var prouductReviews = await _db.ProductReviews.ToListAsync();
                 foreach (var u in users)
                 {
-                    foreach (var p in prouducts)
+                    foreach (var pr in prouductReviews)
                     {
-                        ProductInteraction productInteraction = new()
+                        ProductReviewInteraction productInteraction = new()
                         {
                             UserId = u.UserId,
                             User = u,
-                            ProductId = p.ProductId,
-                            Product = p,
+                            ProductReviewId = pr.ProductId,
+                            ProductReview = pr,
                             ProductInteractionStatusId = likeStatus.ProductReviewInteractionStatusId,
                             ProductInteractionStatus = likeStatus
                         };
@@ -542,10 +546,10 @@ namespace DataAccess.Data
             };
             _db.OrderStatuses.AddRange(ordersStatus);
 
-            List<ProductInteractionStatus> productInteractionStatuses = new()
+            List<ProductReviewInteractionStatus> productInteractionStatuses = new()
             {
-                new ProductInteractionStatus{Name = ProductInteractionStatusContent.Like},
-                new ProductInteractionStatus{Name = ProductInteractionStatusContent.DisLike}
+                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.Like},
+                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.DisLike}
             };
             _db.ProductInteractionStatuses.AddRange(productInteractionStatuses);
 

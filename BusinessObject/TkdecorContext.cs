@@ -44,9 +44,9 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
-    public virtual DbSet<ProductInteraction> ProductInteractions { get; set; }
+    public virtual DbSet<ProductReviewInteraction> ProductInteractions { get; set; }
 
-    public virtual DbSet<ProductInteractionStatus> ProductInteractionStatuses { get; set; }
+    public virtual DbSet<ProductReviewInteractionStatus> ProductInteractionStatuses { get; set; }
 
     public virtual DbSet<ProductReport> ProductReports { get; set; }
 
@@ -460,44 +460,44 @@ public partial class TkdecorContext : DbContext
                 .HasConstraintName("FK_ProductImage_Product");
         });
 
-        modelBuilder.Entity<ProductInteraction>(entity =>
+        modelBuilder.Entity<ProductReviewInteraction>(entity =>
         {
             entity.HasKey(e => e.ProductReviewInteractionId).HasName("PK__ProductI__A2F12EDBBAC0359E");
 
-            entity.ToTable("ProductInteraction");
+            entity.ToTable("ProductReviewInteraction");
 
-            entity.HasIndex(e => e.ProductId, "IX_ProductInteraction_product_id");
+            entity.HasIndex(e => e.ProductReviewId, "IX_ProductReviewInteraction_product_review_id");
 
-            entity.HasIndex(e => e.ProductInteractionStatusId, "IX_ProductInteraction_product_interaction_status_id");
+            entity.HasIndex(e => e.ProductInteractionStatusId, "IX_ProductReviewInteraction_product_interaction_status_id");
 
-            entity.HasIndex(e => e.UserId, "IX_ProductInteraction_user_id");
+            entity.HasIndex(e => e.UserId, "IX_ProductReviewInteraction_user_id");
 
             entity.Property(e => e.ProductReviewInteractionId).HasColumnName("product_review_interaction_id");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.ProductReviewId).HasColumnName("product_review_id");
             entity.Property(e => e.ProductInteractionStatusId).HasColumnName("product_interaction_status_id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductInteractions)
-                .HasForeignKey(d => d.ProductId)
+            entity.HasOne(d => d.ProductReview).WithMany(p => p.ProductReviewInteractions)
+                .HasForeignKey(d => d.ProductReviewId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReviewInteraction_Product");
 
-            entity.HasOne(d => d.ProductInteractionStatus).WithMany(p => p.ProductInteractions)
+            entity.HasOne(d => d.ProductInteractionStatus).WithMany(p => p.ProductReviewInteractions)
                 .HasForeignKey(d => d.ProductInteractionStatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductInteraction_ProductInteractionStatus");
+                .HasConstraintName("FK_ProductReviewInteraction_ProductReviewInteractionStatus");
 
             entity.HasOne(d => d.User).WithMany(p => p.ProductInteractions)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductInteraction_User");
+                .HasConstraintName("FK_ProductReviewInteraction_User");
         });
 
-        modelBuilder.Entity<ProductInteractionStatus>(entity =>
+        modelBuilder.Entity<ProductReviewInteractionStatus>(entity =>
         {
             entity.HasKey(e => e.ProductReviewInteractionStatusId).HasName("PK__ProductI__0CC0092882FD7968");
 
-            entity.ToTable("ProductInteractionStatus");
+            entity.ToTable("ProductReviewInteractionStatus");
 
             entity.Property(e => e.ProductReviewInteractionStatusId).HasColumnName("product_review_interaction_status_id");
             entity.Property(e => e.Name)
