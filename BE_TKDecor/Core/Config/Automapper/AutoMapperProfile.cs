@@ -31,7 +31,9 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.CategoryName,
                 opt => opt.MapFrom(x => x.Category.Name))
                 .ForMember(dest => dest.ProductImages, 
-                opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()));
+                opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
+                .ForMember(dest => dest.AverageRate, 
+                opt => opt.MapFrom(src => src.ProductReviews.Average(review => review.Rate)));
 
             // article 
             CreateMap<ArticleCreateDto, Article>();

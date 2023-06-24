@@ -22,6 +22,8 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public decimal Price { get; set; }
 
+        public float AverageRate { get; set; }
+
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
