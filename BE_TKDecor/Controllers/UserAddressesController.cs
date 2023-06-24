@@ -42,12 +42,14 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = await _userAddressRepository.GetByUserId(user.UserId);
+            var list = (await _userAddressRepository.GetByUserId(user.UserId))
+                .OrderByDescending(x => x.UpdatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/UserAddresses/SetDefault/2
         [HttpPost("SetDefault/{id}")]
         public async Task<IActionResult> SetDefault(int id)
         {
@@ -67,7 +69,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // POST: api/UserAddresses
+        // POST: api/UserAddresses/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
         {
@@ -92,6 +94,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
+        // POST: api/UserAddresses/Update/1
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> UpdateUserAddress(int id, UserAddress userAddressDto)
         {
@@ -114,7 +117,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // DELETE: api/UserAddresses/5
+        // DELETE: api/UserAddresses/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteUserAddress(int id)
         {

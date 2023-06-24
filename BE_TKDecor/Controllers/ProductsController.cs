@@ -31,6 +31,20 @@ namespace BE_TKDecor.Controllers
             _productImageRepository = productImageRepository;
         }
 
+        // GET: api/Products/GetAll
+        [HttpGet("GetAll")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _productRepository.GetAll();
+            list = list.Where(x => x.IsDelete is not true)
+                    .OrderByDescending(x => x.UpdatedAt)
+                    .ToList();
+            var result = _mapper.Map<List<ProductGetDto>>(list);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
+        // GET: api/Products/FeaturedProducts
         [HttpGet("FeaturedProducts")]
         [AllowAnonymous]
         public async Task<IActionResult> FeaturedProducts()
@@ -46,18 +60,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Products
-        [HttpGet("GetAll")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAll()
-        {
-            var list = await _productRepository.GetAll();
-            list = list.Where(x => x.IsDelete is not true).ToList();
-            var result = _mapper.Map<List<ProductGetDto>>(list);
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
-
-        // GET: api/Products/5
+        // GET: api/Products/GetById/5
         [HttpGet("GetById/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
@@ -74,7 +77,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Products/5
+        // GET: api/Products/GetBySlug/5
         [HttpGet("GetBySlug/{slug}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBySlug(string slug)
@@ -88,7 +91,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // POST: api/Products
+        // POST: api/Products/Create
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
@@ -124,7 +127,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // PUT: api/Products/5
+        // PUT: api/Products/Update/5
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(int id, ProductUpdateDto productDto)
         {
@@ -151,7 +154,6 @@ namespace BE_TKDecor.Controllers
             productDb.Quantity = productDto.Quantity;
             productDb.Price = productDto.Price;
             //productDb.Url3dModel = product.Url3dModel;
-            //productDb.ProductImages = product.ProductImages;
             productDb.UpdatedAt = DateTime.UtcNow;
 
             List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
@@ -184,7 +186,6 @@ namespace BE_TKDecor.Controllers
                             ImageUrl = imageUrlNew
                         };
                         productDb.ProductImages.Add(imageNew);
-                        //await _productImageRepository.Add(imageNew);
                     }
                 }
 
@@ -195,7 +196,7 @@ namespace BE_TKDecor.Controllers
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
-        // DELETE: api/Products/5
+        // DELETE: api/Products/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {

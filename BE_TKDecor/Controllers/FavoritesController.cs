@@ -30,6 +30,7 @@ namespace BE_TKDecor.Controllers
             _productFavorite = productFavorite;
         }
 
+        // GET: api/Favorites/GetFavoriteOfUser
         [HttpGet("GetFavoriteOfUser")]
         public async Task<IActionResult> GetFavoriteOfUser()
         {
@@ -37,13 +38,15 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = await _productFavorite.GetFavoriteOfUser(user.UserId);
+            var list = (await _productFavorite.GetFavoriteOfUser(user.UserId))
+                .OrderByDescending(x => x.Created);
 
             var result = _mapper.Map<List<FavoriteGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/Favorites/SetFavorite
         [HttpPost("SetFavorite")]
         public async Task<IActionResult> SetFavorite(FavoriteSetDto favoriteDto)
         {

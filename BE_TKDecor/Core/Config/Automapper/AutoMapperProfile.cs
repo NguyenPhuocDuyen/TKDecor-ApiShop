@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
+using BE_TKDecor.Core.Dtos.Cart;
 using BE_TKDecor.Core.Dtos.Category;
 using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
@@ -18,7 +19,7 @@ namespace BE_TKDecor.Core.Config.Automapper
             // user
             CreateMap<UserRegisterDto, User>();
             CreateMap<User, UserGetDto>()
-                .ForMember(dest => dest.RoleName, 
+                .ForMember(dest => dest.RoleName,
                 opt => opt.MapFrom(x => x.Role.Name));
 
             // category
@@ -30,10 +31,12 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<Product, ProductGetDto>()
                 .ForMember(dest => dest.CategoryName,
                 opt => opt.MapFrom(x => x.Category.Name))
-                .ForMember(dest => dest.ProductImages, 
+                .ForMember(dest => dest.ProductImages,
                 opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
-                .ForMember(dest => dest.AverageRate, 
-                opt => opt.MapFrom(src => src.ProductReviews.Average(review => review.Rate)));
+                .ForMember(dest => dest.AverageRate,
+                opt => opt.MapFrom(src => src.ProductReviews.Average(review => review.Rate)))
+                .ForMember(dest => dest.CountRate,
+                opt => opt.MapFrom(src => src.ProductReviews.Count));
 
             // article 
             CreateMap<ArticleCreateDto, Article>();
@@ -53,6 +56,16 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<Coupon, CouponGetDto>()
                 .ForMember(dest => dest.CouponTypeName,
                 opt => opt.MapFrom(x => x.CouponType.Name));
+
+            // cart 
+            CreateMap<CartCreateDto, Cart>();
+            CreateMap<Cart, CartGetDto>()
+                .ForMember(dest => dest.ProductName,
+                opt => opt.MapFrom(x => x.Product.Name))
+                .ForMember(dest => dest.ProductPrice,
+                opt => opt.MapFrom(x => x.Product.Price))
+                .ForMember(dest => dest.ProductImages,
+                opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
         }
     }
 }

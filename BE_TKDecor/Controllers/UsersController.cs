@@ -42,6 +42,7 @@ namespace BE_TKDecor.Controllers
             { Success = true, Data = result });
         }
 
+        // GET: api/Users/UpdateUserInfo
         [HttpPost("UpdateUserInfo")]
         public async Task<IActionResult> UpdateUserInfo(UserUpdateDto userDto)
         {
