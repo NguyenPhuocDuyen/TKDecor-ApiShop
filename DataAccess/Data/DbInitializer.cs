@@ -539,10 +539,10 @@ namespace DataAccess.Data
             List<OrderStatus> ordersStatus = new()
             {
                 new OrderStatus {Name = OrderStatusContent.Ordered},
-                new OrderStatus {Name = OrderStatusContent.DeliveringOrders},
-                new OrderStatus {Name = OrderStatusContent.OrderReceived},
-                new OrderStatus {Name = OrderStatusContent.OrderRefund},
-                new OrderStatus {Name = OrderStatusContent.OrderCanceled},
+                new OrderStatus {Name = OrderStatusContent.Delivering},
+                new OrderStatus {Name = OrderStatusContent.Received},
+                new OrderStatus {Name = OrderStatusContent.Refund},
+                new OrderStatus {Name = OrderStatusContent.Canceled},
             };
             _db.OrderStatuses.AddRange(ordersStatus);
 

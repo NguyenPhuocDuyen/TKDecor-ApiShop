@@ -1,16 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class ProductFavoriteDAO
+    internal class ProductFavoriteDAO
     {
-        public static async Task<List<ProductFavorite>> GetFavoriteOfUser(int userId)
+        internal static async Task<List<ProductFavorite>> GetFavoriteOfUser(int userId)
         {
             try
             {
@@ -22,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<ProductFavorite?> FindProductFavorite(int userId, int productId)
+        internal static async Task<ProductFavorite?> FindProductFavorite(int userId, int productId)
         {
             try
             {
@@ -35,7 +30,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Delete(ProductFavorite productFavorite)
+        internal static async Task Delete(ProductFavorite productFavorite)
         {
             try
             {
@@ -46,7 +41,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(ProductFavorite productFavorite)
+        internal static async Task Add(ProductFavorite productFavorite)
         {
             try
             {

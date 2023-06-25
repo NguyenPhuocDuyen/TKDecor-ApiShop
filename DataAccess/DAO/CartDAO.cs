@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    public class CartDAO
+    internal class CartDAO
     {
-        public static async Task<List<Cart>> GetCartsByUserId(int userId)
+        internal static async Task<List<Cart>> GetCartsByUserId(int userId)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Cart?> FindById(int id)
+        internal static async Task<Cart?> FindById(int id)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Cart?> FindByUserIdAndProductId(int userId, int productId)
+        internal static async Task<Cart?> FindByUserIdAndProductId(int userId, int productId)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(Cart cart)
+        internal static async Task Add(Cart cart)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(Cart cart)
+        internal static async Task Update(Cart cart)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Delete(Cart cart)
+        internal static async Task Delete(Cart cart)
         {
             try
             {

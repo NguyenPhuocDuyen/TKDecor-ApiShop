@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    public class RefreshTokenDAO
+    internal class RefreshTokenDAO
     {
-        public static async Task<RefreshToken?> FindByToken(string token)
+        internal static async Task<RefreshToken?> FindByToken(string token)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task Add(RefreshToken refreshToken)
+        internal static async Task Add(RefreshToken refreshToken)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task Update(RefreshToken refreshToken)
+        internal static async Task Update(RefreshToken refreshToken)
         {
             try
             {
