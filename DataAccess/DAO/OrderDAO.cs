@@ -5,6 +5,23 @@ namespace DataAccess.DAO
 {
     internal class OrderDAO
     {
+        internal static async Task<List<Order>> GetAll()
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var orders = await context.Orders
+                    .Include(x => x.OrderStatus)
+                    .Include(x => x.User)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.Product)
+                            .ThenInclude(x => x.ProductImages)
+                    .ToListAsync();
+                return orders;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        } 
+
         internal static async Task<Order?> FindById(int id)
         {
             try

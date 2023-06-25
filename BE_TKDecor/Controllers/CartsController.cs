@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
 using Microsoft.AspNetCore.Identity;
+using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleContent.Customer)]
     public class CartsController : ControllerBase
     {
         private readonly IMapper _mapper;

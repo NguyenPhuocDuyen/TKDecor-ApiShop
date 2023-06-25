@@ -3,6 +3,7 @@ using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
+using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
@@ -11,7 +12,7 @@ namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleContent.Customer)]
     public class FavoritesController : Controller
     {
         private readonly IMapper _mapper;
