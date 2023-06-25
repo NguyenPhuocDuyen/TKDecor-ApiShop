@@ -12,8 +12,8 @@ namespace DataAccess.Repository
         public async Task Delete(Cart cart)
             => await CartDAO.Delete(cart);
 
-        public async Task<Cart?> FindByUserIdAndId(int userId, int id)
-            => await CartDAO.FindByUserIdAndId(userId, id);
+        public async Task<Cart?> FindById(int id)
+            => await CartDAO.FindById(id);
 
         public async Task<Cart?> FindByUserIdAndProductId(int userId, int productId)
             => await CartDAO.FindByUserIdAndProductId(userId, productId);

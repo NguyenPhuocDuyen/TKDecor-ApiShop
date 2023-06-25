@@ -15,10 +15,9 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var list = await context.Articles
+                return await context.Articles
                     .Include(x => x.User)
                     .ToListAsync();
-                return list;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
@@ -28,10 +27,9 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var article = await context.Articles
+                return await context.Articles
                     .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.ArticleId == id);
-                return article;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
@@ -41,10 +39,9 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var article = await context.Articles
+                return await context.Articles
                     .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.Title == title);
-                return article;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
@@ -54,10 +51,9 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var article = await context.Articles
+                return await context.Articles
                     .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.Slug == slug);
-                return article;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

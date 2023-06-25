@@ -10,7 +10,7 @@ namespace DataAccess.DAO
 {
     public class RoleDAO
     {
-        public static async Task<Role> FindByName(string name)
+        public static async Task<Role?> FindByName(string name)
         {
             Role? role;
             try

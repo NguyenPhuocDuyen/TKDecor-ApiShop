@@ -11,7 +11,7 @@ namespace DataAccess.Repository.IRepository
     {
         Task<List<Cart>> GetCartsByUserId(int userId);
         Task<Cart?> FindByUserIdAndProductId(int userId, int productId);
-        Task<Cart?> FindByUserIdAndId(int userId, int id);
+        Task<Cart?> FindById(int id);
         Task Add(Cart cart);
         Task Update(Cart cart);
         Task Delete(Cart cart);

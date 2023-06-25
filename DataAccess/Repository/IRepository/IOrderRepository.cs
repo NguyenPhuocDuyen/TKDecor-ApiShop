@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BusinessObject;
 
 namespace DataAccess.Repository.IRepository
 {
     public interface IOrderRepository
     {
+        Task Add(Order order);
     }
 }

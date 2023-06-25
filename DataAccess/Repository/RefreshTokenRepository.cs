@@ -6,7 +6,7 @@ namespace DataAccess.Repository
 {
     public class RefreshTokenRepository : IRefreshTokenRepository
     {
-        public async Task<RefreshToken> FindByToken(string token)
+        public async Task<RefreshToken?> FindByToken(string token)
             => await RefreshTokenDAO.FindByToken(token);
 
         public async Task Add(RefreshToken refreshToken) 
