@@ -19,8 +19,7 @@ namespace BE_TKDecor.Core.Config.Automapper
             // user
             CreateMap<UserRegisterDto, User>();
             CreateMap<User, UserGetDto>()
-                .ForMember(dest => dest.RoleName,
-                opt => opt.MapFrom(x => x.Role.Name));
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(x => x.Role.Name));
 
             // category
             CreateMap<Category, CategoryGetDto>();
@@ -29,20 +28,15 @@ namespace BE_TKDecor.Core.Config.Automapper
             // product
             CreateMap<ProductCreateDto, Product>();
             CreateMap<Product, ProductGetDto>()
-                .ForMember(dest => dest.CategoryName,
-                opt => opt.MapFrom(x => x.Category.Name))
-                .ForMember(dest => dest.ProductImages,
-                opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
-                .ForMember(dest => dest.AverageRate,
-                opt => opt.MapFrom(src => src.ProductReviews.Average(review => review.Rate)))
-                .ForMember(dest => dest.CountRate,
-                opt => opt.MapFrom(src => src.ProductReviews.Count));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
+                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
+                .ForMember(dest => dest.AverageRate, opt => opt.MapFrom(src => src.ProductReviews.Any() ? src.ProductReviews.Average(review => review.Rate) : 0))
+                .ForMember(dest => dest.CountRate, opt => opt.MapFrom(src => src.ProductReviews.Count));
 
             // article 
             CreateMap<ArticleCreateDto, Article>();
             CreateMap<Article, ArticleGetDto>()
-                .ForMember(dest => dest.UserName,
-                opt => opt.MapFrom(x => x.User.FullName));
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(x => x.User.FullName));
 
             // product favorite 
             CreateMap<ProductFavorite, FavoriteGetDto>();
@@ -54,18 +48,14 @@ namespace BE_TKDecor.Core.Config.Automapper
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
             CreateMap<Coupon, CouponGetDto>()
-                .ForMember(dest => dest.CouponTypeName,
-                opt => opt.MapFrom(x => x.CouponType.Name));
+                .ForMember(dest => dest.CouponTypeName, opt => opt.MapFrom(x => x.CouponType.Name));
 
             // cart 
             CreateMap<CartCreateDto, Cart>();
             CreateMap<Cart, CartGetDto>()
-                .ForMember(dest => dest.ProductName,
-                opt => opt.MapFrom(x => x.Product.Name))
-                .ForMember(dest => dest.ProductPrice,
-                opt => opt.MapFrom(x => x.Product.Price))
-                .ForMember(dest => dest.ProductImages,
-                opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(x => x.Product.Name))
+                .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(x => x.Product.Price))
+                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
         }
     }
 }
