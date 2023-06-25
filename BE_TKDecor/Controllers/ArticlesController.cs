@@ -13,7 +13,7 @@ namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Seller + "," + RoleContent.Admin)]
+    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ArticlesController : ControllerBase
     {
         private readonly IMapper _mapper;

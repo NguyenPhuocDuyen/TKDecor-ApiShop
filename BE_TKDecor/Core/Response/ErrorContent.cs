@@ -15,6 +15,7 @@ namespace BE_TKDecor.Core.Response
         public static string NotMatchId = "Not match id!";
 
         //not found
+        public static string RoleNotFound = "Role not found!";
         public static string UserNotFound = "User not found!";
         public static string ProductNotFound = "Products not found!";
         public static string ArticleNotFound = "Article not found!";

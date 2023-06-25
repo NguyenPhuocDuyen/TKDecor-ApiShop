@@ -9,11 +9,14 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using DataAccess.DAO;
 using System.Security.AccessControl;
 using BE_TKDecor.Core.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class CouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -28,6 +31,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Coupons/GetALl
         [HttpGet("GetAll")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var coupons = (await _couponRepository.GetAll())
@@ -38,6 +42,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Coupons/GetById/5
         [HttpGet("GetById/{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCoupon(int id)
         {
             var coupon = await _couponRepository.FindById(id);

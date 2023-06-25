@@ -17,5 +17,8 @@ namespace DataAccess.Repository
 
         public async Task<List<Order>> GetByUserId(int userId)
             => await OrderDAO.GetByUserId(userId);
+
+        public async Task<List<Order>> GetAll()
+            => await OrderDAO.GetAll();
     }
 }

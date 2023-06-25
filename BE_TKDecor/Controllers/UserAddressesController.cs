@@ -13,12 +13,13 @@ using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
 using Humanizer;
 using BE_TKDecor.Core.Dtos;
+using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleContent.Customer)]
     public class UserAddressesController : ControllerBase
     {
         private readonly IMapper _mapper;

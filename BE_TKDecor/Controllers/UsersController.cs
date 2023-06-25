@@ -2,11 +2,8 @@
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.Mail;
-using Microsoft.Extensions.Options;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Core.Config.JWT;
 using AutoMapper;
 
 namespace BE_TKDecor.Controllers
@@ -19,12 +16,8 @@ namespace BE_TKDecor.Controllers
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
 
-        public UsersController(ISendMailService sendMailService,
-            IOptions<JwtSettings> options,
-            IMapper mapper,
-            IUserRepository userRepository,
-            IRoleRepository roleRepository,
-            IRefreshTokenRepository refreshTokenRepository)
+        public UsersController(IMapper mapper,
+            IUserRepository userRepository)
         {
             _mapper = mapper;
             _userRepository = userRepository;
