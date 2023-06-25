@@ -1,16 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class CouponDAO
+    internal class CouponDAO
     {
-        public static async Task<List<Coupon>> GetAll()
+        internal static async Task<List<Coupon>> GetAll()
         {
             try
             {
@@ -23,7 +18,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Coupon?> FindById(int id)
+        internal static async Task<Coupon?> FindById(int id)
         {
             try
             {
@@ -36,7 +31,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Coupon?> FindByCode(string code)
+        internal static async Task<Coupon?> FindByCode(string code)
         {
             try
             {
@@ -49,7 +44,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(Coupon coupon)
+        internal static async Task Add(Coupon coupon)
         {
             try
             {
@@ -60,7 +55,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(Coupon coupon)
+        internal static async Task Update(Coupon coupon)
         {
             try
             {

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class ProductImageDAO
+    internal class ProductImageDAO
     {
-        public static async Task Delete(ProductImage productImage)
+        internal static async Task Delete(ProductImage productImage)
         {
             try
             {

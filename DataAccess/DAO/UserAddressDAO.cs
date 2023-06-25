@@ -1,16 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class UserAddressDAO
+    internal class UserAddressDAO
     {
-        public static async Task<List<UserAddress>> GetByUserId(int userId)
+        internal static async Task<List<UserAddress>> GetByUserId(int userId)
         {
             try
             {
@@ -22,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<UserAddress?> FindById(int id)
+        internal static async Task<UserAddress?> FindById(int id)
         {
             try
             {
@@ -34,7 +29,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(UserAddress userAddress)
+        internal static async Task Add(UserAddress userAddress)
         {
             try
             {
@@ -45,7 +40,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(UserAddress userAddress)
+        internal static async Task Update(UserAddress userAddress)
         {
             try
             {
@@ -56,7 +51,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Delete(UserAddress userAddress)
+        internal static async Task Delete(UserAddress userAddress)
         {
             try
             {
@@ -67,7 +62,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task SetDefault(int userId, int? userAddressId)
+        internal static async Task SetDefault(int userId, int? userAddressId)
         {
             try
             {

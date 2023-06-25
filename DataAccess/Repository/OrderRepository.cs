@@ -8,5 +8,14 @@ namespace DataAccess.Repository
     {
         public async Task Add(Order order)
             => await OrderDAO.Add(order);
+
+        public async Task Update(Order order)
+            => await OrderDAO.Update(order);
+
+        public async Task<Order?> FindById(int id)
+            => await OrderDAO.FindById(id);
+
+        public async Task<List<Order>> GetByUserId(int userId)
+            => await OrderDAO.GetByUserId(userId);
     }
 }

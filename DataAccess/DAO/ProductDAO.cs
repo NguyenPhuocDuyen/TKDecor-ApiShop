@@ -1,16 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class ProductDAO
+    internal class ProductDAO
     {
-        public static async Task<List<Product>> GetAll()
+        internal static async Task<List<Product>> GetAll()
         {
             try
             {
@@ -27,7 +22,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Product?> FindById(int id)
+        internal static async Task<Product?> FindById(int id)
         {
             try
             {
@@ -44,7 +39,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Product?> FindByName(string name)
+        internal static async Task<Product?> FindByName(string name)
         {
             try
             {
@@ -61,7 +56,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Product?> FindBySlug(string slug)
+        internal static async Task<Product?> FindBySlug(string slug)
         {
             try
             {
@@ -78,7 +73,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(Product product)
+        internal static async Task Add(Product product)
         {
             try
             {
@@ -89,7 +84,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(Product product)
+        internal static async Task Update(Product product)
         {
             try
             {

@@ -4,6 +4,9 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IOrderRepository
     {
+        Task<List<Order>> GetByUserId(int userId);
+        Task<Order?> FindById(int id);
         Task Add(Order order);
+        Task Update(Order order);
     }
 }

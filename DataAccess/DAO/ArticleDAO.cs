@@ -1,16 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    public class ArticleDAO
+    internal class ArticleDAO
     {
-        public static async Task<List<Article>> GetAll()
+        internal static async Task<List<Article>> GetAll()
         {
             try
             {
@@ -22,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Article?> FindById(int id)
+        internal static async Task<Article?> FindById(int id)
         {
             try
             {
@@ -34,7 +29,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Article?> FindByTitle(string title)
+        internal static async Task<Article?> FindByTitle(string title)
         {
             try
             {
@@ -46,7 +41,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Article?> FindBySlug(string slug)
+        internal static async Task<Article?> FindBySlug(string slug)
         {
             try
             {
@@ -58,7 +53,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(Article article)
+        internal static async Task Add(Article article)
         {
             try
             {
@@ -69,7 +64,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(Article article)
+        internal static async Task Update(Article article)
         {
             try
             {

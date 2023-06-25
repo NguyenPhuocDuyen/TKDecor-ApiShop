@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    public class CategoryDAO
+    internal class CategoryDAO
     {
-        public static async Task<List<Category>> GetAll()
+        internal static async Task<List<Category>> GetAll()
         {
             try
             {
@@ -18,7 +18,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Category?> FindById(int categoryId)
+        internal static async Task<Category?> FindById(int categoryId)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<Category?> FindByName(string name)
+        internal static async Task<Category?> FindByName(string name)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Add(Category category)
+        internal static async Task Add(Category category)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task Update(Category category)
+        internal static async Task Update(Category category)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public static async Task<bool> CheckProductExistsByCateId(int categoryId)
+        internal static async Task<bool> CheckProductExistsByCateId(int categoryId)
         {
             try
             {

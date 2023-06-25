@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
-using BE_TKDecor.Core.Dtos;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.StatusContent;
+using BE_TKDecor.Core.Dtos.Order;
 
 namespace BE_TKDecor.Controllers
 {
@@ -38,6 +38,19 @@ namespace BE_TKDecor.Controllers
             _orderRepository = orderRepository;
             _orderStatusRepository = orderStatusRepository;
             _cartRepository = cartRepository;
+        }
+
+        // POST: api/Orders/GetOrder
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var user = await GetUser();
+            if (user == null)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var orders = await _orderRepository.GetByUserId(user.UserId);
+            var result = _mapper.Map<List<OrderGetDto>>(orders);
+            return Ok(new ApiResponse { Success = true, Data = result });
         }
 
         // POST: api/Orders/MakeOrder
@@ -135,6 +148,62 @@ namespace BE_TKDecor.Controllers
                     if (cart != null)
                         await _cartRepository.Delete(cart);
                 }
+                return NoContent();
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
+        // POST: api/Orders/UpdateStatusOrder
+        [HttpPut("UpdateStatusOrder/{id}")]
+        public async Task<IActionResult> UpdateStatusOrder(int id, OrderUpdateStatusDto orderUpdateStatusDto)
+        {
+            if (id != orderUpdateStatusDto.OrderId)
+                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
+
+            var user = await GetUser();
+            if (user == null)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var order = await _orderRepository.FindById(id);
+            if (order == null || order.UserId != user.UserId)
+                return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
+
+            if (order.OrderStatus.Name == orderUpdateStatusDto.OrderStatusName)
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+
+            // list order status
+            var orderStatus = await _orderStatusRepository.GetAll();
+
+            // check order status exists
+            var newOrderStatus = orderStatus.FirstOrDefault(x => x.Name == orderUpdateStatusDto.OrderStatusName);
+            if (newOrderStatus == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
+
+            // update order status
+            if (order.OrderStatus.Name == OrderStatusContent.Ordered)
+            {
+                // Cancellation of orders only when the order is in the Ordered status
+                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Canceled)
+                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+            }
+            else if (order.OrderStatus.Name == OrderStatusContent.Delivering)
+            {
+                // Orders can only be accepted or refunded when the order is in the Delivering status
+                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Received
+                    || orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Refund)
+                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+            }
+            else
+            {
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+            }
+
+            order.OrderStatus = newOrderStatus;
+            order.OrderStatusId = newOrderStatus.OrderStatusId;
+            order.UpdatedAt = DateTime.UtcNow;
+            try
+            {
+                await _orderRepository.Update(order);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

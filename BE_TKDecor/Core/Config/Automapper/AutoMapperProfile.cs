@@ -4,6 +4,7 @@ using BE_TKDecor.Core.Dtos.Cart;
 using BE_TKDecor.Core.Dtos.Category;
 using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
+using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
@@ -56,6 +57,13 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(x => x.Product.Name))
                 .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(x => x.Product.Price))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
+
+            // order
+            CreateMap<Order, OrderGetDto>();
+            CreateMap<OrderDetail, OrderDetailGetDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.ProductImages.Select(pi => pi.ImageUrl).ToList()));
+
         }
     }
 }

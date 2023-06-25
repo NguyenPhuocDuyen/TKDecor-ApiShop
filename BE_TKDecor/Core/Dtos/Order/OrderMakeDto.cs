@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BE_TKDecor.Core.Dtos
+namespace BE_TKDecor.Core.Dtos.Order
 {
     public class OrderMakeDto
     {

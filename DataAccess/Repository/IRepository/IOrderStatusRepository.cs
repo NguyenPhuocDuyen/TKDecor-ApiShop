@@ -9,6 +9,7 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IOrderStatusRepository
     {
+        Task<List<OrderStatus>> GetAll();
         Task<OrderStatus?> FindByName(string name);
     }
 }

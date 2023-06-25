@@ -1,12 +1,11 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using Utility;
 
 namespace DataAccess.DAO
 {
-    public class UserDAO
+    internal class UserDAO
     {
-        public static async Task<List<User>> GetAll()
+        internal static async Task<List<User>> GetAll()
         {
             try
             {
@@ -20,7 +19,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<User?> FindById(int id)
+        internal static async Task<User?> FindById(int id)
         {
             try
             {
@@ -35,7 +34,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task<User?> FindByEmail(string email)
+        internal static async Task<User?> FindByEmail(string email)
         {
             try
             {
@@ -50,7 +49,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task Add(User user)
+        internal static async Task Add(User user)
         {
             try
             {
@@ -64,7 +63,7 @@ namespace DataAccess.DAO
             }
         }
 
-        public static async Task Update(User user)
+        internal static async Task Update(User user)
         {
             try
             {
