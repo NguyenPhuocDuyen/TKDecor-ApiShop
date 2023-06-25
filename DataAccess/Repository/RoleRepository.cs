@@ -11,6 +11,6 @@ namespace DataAccess.Repository
 {
     public class RoleRepository : IRoleRepository
     {
-        public async Task<Role> FindByName(string name) => await RoleDAO.FindByName(name);
+        public async Task<Role?> FindByName(string name) => await RoleDAO.FindByName(name);
     }
 }

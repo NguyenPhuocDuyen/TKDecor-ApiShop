@@ -5,20 +5,6 @@ namespace DataAccess.DAO
 {
     public class CartDAO
     {
-        public static async Task<Cart?> FindByUserIdAndId(int userId, int id)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                var cart = await context.Carts
-                    .Include(x => x.Product)
-                        .ThenInclude(x => x.ProductImages)
-                    .FirstOrDefaultAsync(x => x.UserId == userId && x.CartId == id);
-                return cart;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
         public static async Task<List<Cart>> GetCartsByUserId(int userId)
         {
             try
@@ -29,6 +15,20 @@ namespace DataAccess.DAO
                         .ThenInclude(x => x.ProductImages)
                     .Where(x => x.UserId == userId).ToListAsync();
                 return carts;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        public static async Task<Cart?> FindById(int id)
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var cart = await context.Carts
+                    .Include(x => x.Product)
+                        .ThenInclude(x => x.ProductImages)
+                    .FirstOrDefaultAsync(x => x.CartId == id);
+                return cart;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

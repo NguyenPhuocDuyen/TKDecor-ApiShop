@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     public class RefreshTokenDAO
     {
-        public static async Task<RefreshToken> FindByToken(string token)
+        public static async Task<RefreshToken?> FindByToken(string token)
         {
             try
             {

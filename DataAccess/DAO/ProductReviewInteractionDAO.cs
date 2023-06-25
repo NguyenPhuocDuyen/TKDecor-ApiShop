@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    internal class ProductInteractionDAO
+    internal class ProductReviewInteractionDAO
     {
     }
 }

@@ -116,8 +116,8 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var cartDb = await _cartRepository.FindByUserIdAndId(user.UserId, id);
-            if (cartDb == null)
+            var cartDb = await _cartRepository.FindById(id);
+            if (cartDb == null || cartDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             // Variable check number of valid products
@@ -152,8 +152,8 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // Find and delete cart
-            var cartDb = await _cartRepository.FindByUserIdAndId(user.UserId, id);
-            if (cartDb == null)
+            var cartDb = await _cartRepository.FindById(id);
+            if (cartDb == null || cartDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             try

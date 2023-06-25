@@ -1,13 +1,12 @@
-﻿using DataAccess.Repository.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BusinessObject;
+using DataAccess.DAO;
+using DataAccess.Repository.IRepository;
 
 namespace DataAccess.Repository
 {
     public class OrderRepository : IOrderRepository
     {
+        public async Task Add(Order order)
+            => await OrderDAO.Add(order);
     }
 }

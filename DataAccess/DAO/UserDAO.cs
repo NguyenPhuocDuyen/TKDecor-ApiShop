@@ -20,27 +20,6 @@ namespace DataAccess.DAO
             }
         }
 
-        //public static async Task<bool> CheckLogin(string email, string password)
-        //{
-        //    try
-        //    {
-        //        bool isUserExists = false;
-
-        //        using var context = new TkdecorContext();
-        //        var user = await context.Users
-        //            .SingleOrDefaultAsync(user => user.Email == email);
-
-        //        if (user is not null)
-        //            if (Password.VerifyPassword(password, user.Password)) return true;
-
-        //        return isUserExists;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(ex.Message);
-        //    }
-        //}
-
         public static async Task<User?> FindById(int id)
         {
             try
