@@ -34,14 +34,14 @@ namespace BE_TKDecor.Controllers
         // GET: api/Products/GetAll
         [HttpGet("GetAll")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll(int pageSize = 12, int pageIndex = 1)
+        public async Task<IActionResult> GetAll()
         {
             var list = await _productRepository.GetAll();
             list = list.Where(x => x.IsDelete is not true)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
-
-            list = list.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
+            // paging skip 12*0 and take 12 after skip
+            //list = list.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
 
             var result = _mapper.Map<List<ProductGetDto>>(list);
             return Ok(new ApiResponse { Success = true, Data = result });
