@@ -24,7 +24,9 @@ namespace BE_TKDecor.Core.Response
         public static string CouponNotFound = "Coupon not found!";
         public static string CartNotFound = "Cart not found!";
         public static string OrderNotFound = "Order not found!";
+        public static string ProductReviewNotFound = "Product review not found!";
         public static string OrderStatusNotFound = "Order status not found!";
+        
         public static string OrderStatusUnable = "Unable to update order status!";
 
         public static string AccountIncorrect = "Email or password is incorrect!";

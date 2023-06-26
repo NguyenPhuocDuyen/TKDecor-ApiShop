@@ -6,6 +6,7 @@ using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
+using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BusinessObject;
@@ -64,6 +65,11 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.ProductImages.Select(pi => pi.ImageUrl).ToList()));
 
+            // product review
+            //CreateMap<ProductReviewCreateDto,  ProductReview>();
+            CreateMap<ProductReview,  ProductReviewGetDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
         }
     }
 }

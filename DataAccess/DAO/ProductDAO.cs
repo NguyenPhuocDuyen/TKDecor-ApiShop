@@ -16,6 +16,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                        .ThenInclude(x => x.User)
                     .ToListAsync();
                 return list;
             }
@@ -33,6 +34,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                        .ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.ProductId == id);
                 return product;
             }
@@ -50,6 +52,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                        .ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.Name == name);
                 return product;
             }
@@ -67,6 +70,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                        .ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.Slug == slug);
                 return product;
             }
