@@ -33,5 +33,28 @@ namespace BE_TKDecor.Core.Dtos.Product
         public bool? IsDelete { get; set; } = false;
 
         public List<string> ProductImages { get; set; } = new List<string>();
+
+        public virtual ICollection<ProductReviewGetDto> ProductReviews { get; set; } = new List<ProductReviewGetDto>();
+    }
+
+    public class ProductReviewGetDto
+    {
+        public int ProductReviewId { get; set; }
+
+        public string? UserAvatarUrl { get; set; }
+
+        public string UserName { get; set; } = null!;
+
+        public int Rate { get; set; }
+
+        public string Description { get; set; } = null!;
+
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool? IsDelete { get; set; } = false;
+
+        //public virtual ICollection<ProductReviewInteraction> ProductReviewInteractions { get; set; } = new List<ProductReviewInteraction>();
     }
 }
