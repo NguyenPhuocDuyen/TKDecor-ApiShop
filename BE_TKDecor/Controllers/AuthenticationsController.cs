@@ -3,7 +3,6 @@ using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.StatusContent;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -94,11 +93,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Add(newUser);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ConfirmMail
@@ -124,11 +119,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ResendConfirmationCode
@@ -170,11 +161,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/Login
@@ -245,11 +232,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ConfirmForgotPassword
@@ -289,11 +272,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/RenewToken
@@ -376,11 +355,7 @@ namespace BE_TKDecor.Controllers
                     Data = token
                 });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse
-                { Message = "Something went wrong" });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Error }); }
         }
 
         private async Task<TokenModel> GenerateToken(User user)

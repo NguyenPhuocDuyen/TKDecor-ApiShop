@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using AutoMapper;
+using Utility;
 
 namespace BE_TKDecor.Controllers
 {
@@ -52,10 +53,30 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
+        // GET: api/Users/ChangePassword
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(UserChangePasswordDto userDto)
+        {
+            var user = await GetUser();
+            if (user == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            //check correct password
+            bool isCorrectPassword = Password.VerifyPassword(userDto.Password, user.Password);
+            if (!isCorrectPassword)
+                return BadRequest(new ApiResponse
+                { Message = ErrorContent.AccountIncorrect });
+
+            user.Password = Password.HashPassword(userDto.NewPassword);
+            try
             {
-                return BadRequest(new ApiResponse { Message = ErrorContent.Data });
+                await _userRepository.Update(user);
+                return NoContent();
             }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         private async Task<User?> GetUser()
