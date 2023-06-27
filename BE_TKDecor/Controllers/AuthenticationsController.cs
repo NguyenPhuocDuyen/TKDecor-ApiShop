@@ -3,7 +3,6 @@ using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.StatusContent;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -67,7 +66,7 @@ namespace BE_TKDecor.Controllers
             // take customer role
             Role? role = await _roleRepository.FindByName(RoleContent.Customer);
             // get random code
-            string code = GenerateRandomCode();
+            string code = RandomCode.GenerateRandomCode();
 
             // initial new user
             User newUser = _mapper.Map<User>(userDto);
@@ -94,11 +93,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Add(newUser);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ConfirmMail
@@ -124,11 +119,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ResendConfirmationCode
@@ -147,7 +138,7 @@ namespace BE_TKDecor.Controllers
 
             //check code expires to create new code: 5 minutes
             if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
-                user.EmailConfirmationCode = GenerateRandomCode();
+                user.EmailConfirmationCode = RandomCode.GenerateRandomCode();
 
             user.EmailConfirmationSentAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
@@ -170,11 +161,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/Login
@@ -219,7 +206,7 @@ namespace BE_TKDecor.Controllers
                 { Message = ErrorContent.UserNotFound });
 
             // create code authen forgot password
-            string code = GenerateRandomCode();
+            string code = RandomCode.GenerateRandomCode();
             //property authen mail
             user.ResetPasswordCode = code;
             user.ResetPasswordSentAt = DateTime.UtcNow;
@@ -245,11 +232,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/ConfirmForgotPassword
@@ -289,11 +272,7 @@ namespace BE_TKDecor.Controllers
                 await _userRepository.Update(user);
                 return NoContent();
             }
-            catch
-            {
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.Data });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Authentications/RenewToken
@@ -376,11 +355,7 @@ namespace BE_TKDecor.Controllers
                     Data = token
                 });
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new ApiResponse
-                { Message = "Something went wrong" });
-            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Error }); }
         }
 
         private async Task<TokenModel> GenerateToken(User user)
@@ -438,13 +413,6 @@ namespace BE_TKDecor.Controllers
             rng.GetBytes(random);
 
             return Convert.ToBase64String(random);
-        }
-
-        private static string GenerateRandomCode()
-        {
-            Random random = new();
-            int code = random.Next(1000000, 9999999);
-            return code.ToString();
         }
 
         private static DateTime ConvertUnixTimeToDateTime(long utcExpireDate)
