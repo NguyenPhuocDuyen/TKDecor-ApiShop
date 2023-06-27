@@ -66,7 +66,7 @@ namespace BE_TKDecor.Controllers
             // take customer role
             Role? role = await _roleRepository.FindByName(RoleContent.Customer);
             // get random code
-            string code = GenerateRandomCode();
+            string code = RandomCode.GenerateRandomCode();
 
             // initial new user
             User newUser = _mapper.Map<User>(userDto);
@@ -138,7 +138,7 @@ namespace BE_TKDecor.Controllers
 
             //check code expires to create new code: 5 minutes
             if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
-                user.EmailConfirmationCode = GenerateRandomCode();
+                user.EmailConfirmationCode = RandomCode.GenerateRandomCode();
 
             user.EmailConfirmationSentAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
@@ -206,7 +206,7 @@ namespace BE_TKDecor.Controllers
                 { Message = ErrorContent.UserNotFound });
 
             // create code authen forgot password
-            string code = GenerateRandomCode();
+            string code = RandomCode.GenerateRandomCode();
             //property authen mail
             user.ResetPasswordCode = code;
             user.ResetPasswordSentAt = DateTime.UtcNow;
@@ -413,13 +413,6 @@ namespace BE_TKDecor.Controllers
             rng.GetBytes(random);
 
             return Convert.ToBase64String(random);
-        }
-
-        private static string GenerateRandomCode()
-        {
-            Random random = new();
-            int code = random.Next(1000000, 9999999);
-            return code.ToString();
         }
 
         private static DateTime ConvertUnixTimeToDateTime(long utcExpireDate)
