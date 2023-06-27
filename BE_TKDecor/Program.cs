@@ -1,4 +1,5 @@
-﻿using BE_TKDecor.Core.Config.Automapper;
+﻿using BE_TKDecor;
+using BE_TKDecor.Core.Config.Automapper;
 using BE_TKDecor.Core.Config.JWT;
 using DataAccess.Data;
 using DataAccess.Repository;
@@ -12,6 +13,9 @@ using Utility.Mail;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// add signalR
+builder.Services.AddSignalR();
+
 // config automapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -64,6 +68,7 @@ builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IReportStatusRepository, ReportStatusRepository>();
 builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
 builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()
@@ -138,5 +143,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// add
+app.MapHub<SignalRServer>("/signalRServer");
 
 app.Run();
