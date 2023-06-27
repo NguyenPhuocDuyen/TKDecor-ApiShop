@@ -1,5 +1,4 @@
-﻿using BusinessObject;
-using DataAccess.Repository.IRepository;
+﻿using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using BE_TKDecor.Core.Response;
 using AutoMapper;

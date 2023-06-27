@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
-using DataAccess.Repository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
-using Microsoft.AspNetCore.Identity;
 using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
