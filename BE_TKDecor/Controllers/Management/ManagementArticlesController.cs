@@ -17,23 +17,23 @@ namespace BE_TKDecor.Controllers.Management
     {
 
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IArticleRepository _articleRepository;
+        private readonly IUserRepository _user;
+        private readonly IArticleRepository _article;
 
         public ManagementArticlesController(IMapper mapper,
-            IUserRepository userRepository,
-            IArticleRepository articleRepository)
+            IUserRepository user,
+            IArticleRepository article)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _articleRepository = articleRepository;
+            _user = user;
+            _article = article;
         }
 
         // GET: api/ManagementArticles/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _articleRepository.GetAll();
+            var list = await _article.GetAll();
             list = list.OrderByDescending(x => x.UpdatedAt).ToList();
             var result = _mapper.Map<List<ArticleGetDto>>(list);
 
@@ -44,7 +44,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Article article)
         {
-            var articleDb = await _articleRepository.FindByTitle(article.Title);
+            var articleDb = await _article.FindByTitle(article.Title);
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Article already exist!" });
 
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Controllers.Management
             newArticle.IsPublish = true;
             try
             {
-                await _articleRepository.Add(newArticle);
+                await _article.Add(newArticle);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -73,7 +73,7 @@ namespace BE_TKDecor.Controllers.Management
             if (id != articleDto.ArticleId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var articleDb = await _articleRepository.FindById(id);
+            var articleDb = await _article.FindById(id);
             if (articleDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
@@ -84,7 +84,7 @@ namespace BE_TKDecor.Controllers.Management
             articleDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _articleRepository.Update(articleDb);
+                await _article.Update(articleDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -94,7 +94,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
-            var article = await _articleRepository.FindById(id);
+            var article = await _article.FindById(id);
             if (article == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
@@ -102,7 +102,7 @@ namespace BE_TKDecor.Controllers.Management
             article.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _articleRepository.Update(article);
+                await _article.Update(article);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -112,7 +112,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("SetPublish")]
         public async Task<IActionResult> SetPublish(ArticleSetPublishDto articleDto)
         {
-            var article = await _articleRepository.FindById(articleDto.ArticleId);
+            var article = await _article.FindById(articleDto.ArticleId);
             if (article == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
@@ -120,7 +120,7 @@ namespace BE_TKDecor.Controllers.Management
             article.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _articleRepository.Update(article);
+                await _article.Update(article);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -134,7 +134,7 @@ namespace BE_TKDecor.Controllers.Management
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

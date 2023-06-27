@@ -15,20 +15,20 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementCategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _category;
 
         public ManagementCategoriesController(IMapper mapper,
-            ICategoryRepository categoryRepository)
+            ICategoryRepository category)
         {
             _mapper = mapper;
-            _categoryRepository = categoryRepository;
+            _category = category;
         }
 
         // GET: api/ManagementCategories/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _categoryRepository.GetAll();
+            var list = await _category.GetAll();
             list = list.OrderByDescending(x => x.UpdatedAt).ToList();
             var result = _mapper.Map<List<CategoryGetDto>>(list);
 
@@ -39,14 +39,14 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CategoryCreateDto categoryDto)
         {
-            var categoryDb = await _categoryRepository.FindByName(categoryDto.Name);
+            var categoryDb = await _category.FindByName(categoryDto.Name);
             if (categoryDb != null)
                 return BadRequest(new ApiResponse { Message = "Category name already exists!" });
 
             Category newCategory = _mapper.Map<Category>(categoryDto);
             try
             {
-                await _categoryRepository.Add(newCategory);
+                await _category.Add(newCategory);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -59,11 +59,11 @@ namespace BE_TKDecor.Controllers.Management
             if (id != categoryDto.CategoryId)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
-            var categoryDb = await _categoryRepository.FindById(categoryDto.CategoryId);
+            var categoryDb = await _category.FindById(categoryDto.CategoryId);
             if (categoryDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
-            var categoryName = await _categoryRepository.FindByName(categoryDto.Name);
+            var categoryName = await _category.FindByName(categoryDto.Name);
             if (categoryName != null && categoryName.CategoryId != id)
                 return BadRequest(new ApiResponse { Message = "Category name already exists!" });
 
@@ -72,7 +72,7 @@ namespace BE_TKDecor.Controllers.Management
             categoryDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _categoryRepository.Update(categoryDb);
+                await _category.Update(categoryDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -82,11 +82,11 @@ namespace BE_TKDecor.Controllers.Management
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var categoryDb = await _categoryRepository.FindById(id);
+            var categoryDb = await _category.FindById(id);
             if (categoryDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
-            var checkProductHasInCategory = await _categoryRepository.CheckProductExistsByCateId(id);
+            var checkProductHasInCategory = await _category.CheckProductExistsByCateId(id);
             if (checkProductHasInCategory)
                 return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
 
@@ -94,7 +94,7 @@ namespace BE_TKDecor.Controllers.Management
             categoryDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _categoryRepository.Update(categoryDb);
+                await _category.Update(categoryDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

@@ -63,6 +63,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
 builder.Services.AddScoped<IReportStatusRepository, ReportStatusRepository>();
 builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
+builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

@@ -63,6 +63,7 @@ namespace BE_TKDecor.Controllers
                 productReview.Rate = productReviewDto.Rate;
                 productReview.Description = productReviewDto.Description;
                 productReview.UpdatedAt = DateTime.UtcNow;
+                productReview.IsDelete = false;
             }
 
             try
