@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Response;
-using DataAccess.Repository;
 using DataAccess.Repository.IRepository;
 using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;

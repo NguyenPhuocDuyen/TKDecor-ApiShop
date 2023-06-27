@@ -24,22 +24,22 @@ namespace BE_TKDecor.Controllers
         private readonly JwtSettings _jwtSettings;
         private readonly ISendMailService _sendMailService;
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly IUserRepository _user;
+        private readonly IRoleRepository _role;
+        private readonly IRefreshTokenRepository _refreshToken;
 
         public AuthenticationsController(ISendMailService sendMailService,
             IOptions<JwtSettings> options,
             IMapper mapper,
-            IUserRepository userRepository,
-            IRoleRepository roleRepository,
-            IRefreshTokenRepository refreshTokenRepository)
+            IUserRepository user,
+            IRoleRepository role,
+            IRefreshTokenRepository refreshToken)
         {
             _sendMailService = sendMailService;
             _mapper = mapper;
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
-            _refreshTokenRepository = refreshTokenRepository;
+            _user = user;
+            _role = role;
+            _refreshToken = refreshToken;
             _jwtSettings = options.Value;
         }
 
@@ -49,7 +49,7 @@ namespace BE_TKDecor.Controllers
         {
             userDto.Email = userDto.Email.ToLower().Trim();
             //get user in database by email
-            User? u = await _userRepository.FindByEmail(userDto.Email);
+            User? u = await _user.FindByEmail(userDto.Email);
             //check exists
             if (u != null)
             {
@@ -64,7 +64,7 @@ namespace BE_TKDecor.Controllers
             }
 
             // take customer role
-            Role? role = await _roleRepository.FindByName(RoleContent.Customer);
+            Role? role = await _role.FindByName(RoleContent.Customer);
             // get random code
             string code = RandomCode.GenerateRandomCode();
 
@@ -90,7 +90,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 // add user
-                await _userRepository.Add(newUser);
+                await _user.Add(newUser);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -102,7 +102,7 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> ConfirmMail(UserConfirmMailDto userDto)
         {
             // get user by email confirm token 
-            var user = await _userRepository.FindByEmail(userDto.Email.ToLower().Trim());
+            var user = await _user.FindByEmail(userDto.Email.ToLower().Trim());
             if (user == null)
                 return NotFound(new ApiResponse
                 { Message = ErrorContent.UserNotFound });
@@ -116,7 +116,7 @@ namespace BE_TKDecor.Controllers
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -127,7 +127,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> ResendConfirmationEmail(UserEmailDto userDto)
         {
             // get user by email confirm token 
-            var user = await _userRepository.FindByEmail(userDto.Email.ToLower().Trim());
+            var user = await _user.FindByEmail(userDto.Email.ToLower().Trim());
             if (user == null)
                 return NotFound(new ApiResponse
                 { Message = ErrorContent.UserNotFound });
@@ -158,7 +158,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 // add user
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -170,7 +170,7 @@ namespace BE_TKDecor.Controllers
         {
             //get user by email
             userDto.Email = userDto.Email.ToLower().Trim();
-            var u = await _userRepository.FindByEmail(userDto.Email);
+            var u = await _user.FindByEmail(userDto.Email);
 
             //check user null
             if (u == null)
@@ -200,7 +200,7 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> ForgotPassword(UserEmailDto userDto)
         {
             // get user by email confirm token 
-            var user = await _userRepository.FindByEmail(userDto.Email);
+            var user = await _user.FindByEmail(userDto.Email);
             if (user == null)
                 return NotFound(new ApiResponse
                 { Message = ErrorContent.UserNotFound });
@@ -229,7 +229,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 //update user/
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -241,7 +241,7 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult> ConfirmForgotPassword(UserConfirmForgotPasswordDto userDto)
         {
             // get user by email
-            var user = await _userRepository.FindByEmail(userDto.Email);
+            var user = await _user.FindByEmail(userDto.Email);
 
             if (user == null)
                 return NotFound(new ApiResponse
@@ -269,7 +269,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 //update to database and return info user
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -319,7 +319,7 @@ namespace BE_TKDecor.Controllers
                     { Message = "Access token has not yet expired" });
 
                 //check 4: Check refreshtoken exist in DB
-                var storedToken = await _refreshTokenRepository.FindByToken(model.RefreshToken);
+                var storedToken = await _refreshToken.FindByToken(model.RefreshToken);
                 if (storedToken == null)
                     return Ok(new ApiResponse
                     { Message = "Refresh token does not exist" });
@@ -342,10 +342,10 @@ namespace BE_TKDecor.Controllers
                 //Update token is used
                 storedToken.IsRevoked = true;
                 storedToken.IsUsed = true;
-                await _refreshTokenRepository.Update(storedToken);
+                await _refreshToken.Update(storedToken);
 
                 //create new token
-                var user = await _userRepository.FindById(storedToken.UserId);
+                var user = await _user.FindById(storedToken.UserId);
                 var token = await GenerateToken(user);
 
                 return Ok(new ApiResponse
@@ -397,7 +397,7 @@ namespace BE_TKDecor.Controllers
                 IssuedAt = DateTime.UtcNow,
                 ExpiredAt = DateTime.UtcNow.AddDays(7)
             };
-            await _refreshTokenRepository.Add(refreshTokenEntity);
+            await _refreshToken.Add(refreshTokenEntity);
 
             return new TokenModel
             {

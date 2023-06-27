@@ -13,28 +13,28 @@ namespace BE_TKDecor.Controllers
     [Authorize(Roles = RoleContent.Customer)]
     public class ProductReportsController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IProductReportRepository _productReportRepository;
-        private readonly IReportStatusRepository _reportStatusRepository;
+        private readonly IUserRepository _user;
+        private readonly IProductRepository _product;
+        private readonly IProductReportRepository _productReport;
+        private readonly IReportStatusRepository _reportStatus;
 
-        public ProductReportsController(IUserRepository userRepository,
-            IProductRepository productRepository,
-            IProductReportRepository productReportRepository,
-            IReportStatusRepository reportStatusRepository
+        public ProductReportsController(IUserRepository user,
+            IProductRepository product,
+            IProductReportRepository productReport,
+            IReportStatusRepository reportStatus
             )
         {
-            _userRepository = userRepository;
-            _productRepository = productRepository;
-            _productReportRepository = productReportRepository;
-            _reportStatusRepository = reportStatusRepository;
+            _user = user;
+            _product = product;
+            _productReport = productReport;
+            _reportStatus = reportStatus;
         }
 
         // POST: api/ProductReports/MakeProductReport
         [HttpPost("MakeProductReport")]
         public async Task<ActionResult<ProductReport>> MakeProductReport(ProductReportCreateDto reportDto)
         {
-            var product = await _productRepository.FindById(reportDto.ProductReportedId);
+            var product = await _product.FindById(reportDto.ProductReportedId);
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
@@ -42,12 +42,12 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var reportStatus = await _reportStatusRepository.GetAll();
+            var reportStatus = await _reportStatus.GetAll();
             var statusPeding = reportStatus.FirstOrDefault(x => x.Name == ReportStatusContent.Pending);
             if (statusPeding == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
-            var report = await _productReportRepository.FindByUserIdAndProductId(user.UserId, product.ProductId);
+            var report = await _productReport.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
             bool isAdd = true;
             // create a new report of that user for that product
@@ -76,11 +76,11 @@ namespace BE_TKDecor.Controllers
             {
                 if (isAdd)
                 {
-                    await _productReportRepository.Add(report);
+                    await _productReport.Add(report);
                 }
                 else
                 {
-                    await _productReportRepository.Update(report);
+                    await _productReport.Update(report);
                 }
 
                 return NoContent();
@@ -96,7 +96,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

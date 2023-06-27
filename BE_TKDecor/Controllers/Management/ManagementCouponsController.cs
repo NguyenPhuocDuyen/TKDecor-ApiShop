@@ -15,13 +15,13 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementCouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ICouponRepository _couponRepository;
+        private readonly ICouponRepository _coupon;
 
         public ManagementCouponsController(IMapper mapper,
-            ICouponRepository couponRepository)
+            ICouponRepository coupon)
         {
             _mapper = mapper;
-            _couponRepository = couponRepository;
+            _coupon = coupon;
         }
 
         // GET: api/ManagementCoupons/GetALl
@@ -29,7 +29,7 @@ namespace BE_TKDecor.Controllers.Management
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var coupons = (await _couponRepository.GetAll())
+            var coupons = (await _coupon.GetAll())
                    .OrderByDescending(x => x.UpdatedAt).ToList();
             var result = _mapper.Map<List<CouponGetDto>>(coupons);
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -39,14 +39,14 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CouponCreateDto couponDto)
         {
-            var couponCode = await _couponRepository.FindByCode(couponDto.Code);
+            var couponCode = await _coupon.FindByCode(couponDto.Code);
             if (couponCode != null)
                 return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
 
             Coupon newCoupon = _mapper.Map<Coupon>(couponCode);
             try
             {
-                await _couponRepository.Add(newCoupon);
+                await _coupon.Add(newCoupon);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Controllers.Management
             if (id != couponDto.CouponId)
                 return BadRequest(new ApiResponse { Message = "ID does not match!" });
 
-            var couponDb = await _couponRepository.FindById(id);
+            var couponDb = await _coupon.FindById(id);
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
@@ -71,7 +71,7 @@ namespace BE_TKDecor.Controllers.Management
             couponDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _couponRepository.Update(couponDb);
+                await _coupon.Update(couponDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteCoupon(int id)
         {
-            var couponDb = await _couponRepository.FindById(id);
+            var couponDb = await _coupon.FindById(id);
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
@@ -89,7 +89,7 @@ namespace BE_TKDecor.Controllers.Management
             couponDb.IsActive = false;
             try
             {
-                await _couponRepository.Update(couponDb);
+                await _coupon.Update(couponDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

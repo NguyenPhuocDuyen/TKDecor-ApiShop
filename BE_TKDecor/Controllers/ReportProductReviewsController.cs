@@ -3,7 +3,6 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
-using DataAccess.Repository;
 using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
@@ -12,20 +11,20 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class ReportProductReviewsController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IProductReviewRepository _productReviewRepository;
-        private readonly IReportProductReviewRepository _reportProductReviewRepository;
-        private readonly IReportStatusRepository _reportStatusRepository;
+        private readonly IUserRepository _user;
+        private readonly IProductReviewRepository _productReview;
+        private readonly IReportProductReviewRepository _reportProductReview;
+        private readonly IReportStatusRepository _reportStatus;
 
-        public ReportProductReviewsController(IUserRepository userRepository,
-            IProductReviewRepository productReviewRepository,
-            IReportProductReviewRepository reportProductReviewRepository,
-            IReportStatusRepository reportStatusRepository)
+        public ReportProductReviewsController(IUserRepository user,
+            IProductReviewRepository productReview,
+            IReportProductReviewRepository reportProductReview,
+            IReportStatusRepository reportStatus)
         {
-            _userRepository = userRepository;
-            _productReviewRepository = productReviewRepository;
-            _reportProductReviewRepository = reportProductReviewRepository;
-            _reportStatusRepository = reportStatusRepository;
+            _user = user;
+            _productReview = productReview;
+            _reportProductReview = reportProductReview;
+            _reportStatus = reportStatus;
         }
 
         // POST: api/ReportProductReviews/MakeReport
@@ -36,14 +35,14 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var productReview = await _productReviewRepository.FindById(reportDto.ProductReviewReportedId);
+            var productReview = await _productReview.FindById(reportDto.ProductReviewReportedId);
             if (productReview == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
-            var report = await _reportProductReviewRepository
+            var report = await _reportProductReview
                 .FindByUserIdAndProductReviewId(user.UserId, reportDto.ProductReviewReportedId);
 
-            var reportStatus = await _reportStatusRepository.GetAll();
+            var reportStatus = await _reportStatus.GetAll();
             var statusPeding = reportStatus.FirstOrDefault(x => x.Name == ReportStatusContent.Pending);
             if (statusPeding == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
@@ -75,11 +74,11 @@ namespace BE_TKDecor.Controllers
             {
                 if (isAdd)
                 {
-                    await _reportProductReviewRepository.Add(report);
+                    await _reportProductReview.Add(report);
                 }
                 else
                 {
-                    await _reportProductReviewRepository.Update(report);
+                    await _reportProductReview.Update(report);
                 }
 
                 return NoContent();
@@ -95,7 +94,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }
