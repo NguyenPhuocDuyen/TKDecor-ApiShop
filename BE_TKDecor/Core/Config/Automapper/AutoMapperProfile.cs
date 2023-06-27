@@ -4,6 +4,7 @@ using BE_TKDecor.Core.Dtos.Cart;
 using BE_TKDecor.Core.Dtos.Category;
 using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
+using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.ProductReport;
@@ -82,6 +83,9 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
                 .ForMember(dest => dest.ReportStatusName, opt => opt.MapFrom(src => src.ReportStatus.Name))
                 .ForMember(dest => dest.ProductReviewReportedDescription, opt => opt.MapFrom(src => src.ProductReviewReported.Description));
+
+            // notification
+            CreateMap<Notification, NotificationGetDto>();
         }
     }
 }
