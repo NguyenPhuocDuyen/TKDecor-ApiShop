@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
     {
         public int CouponId { get; set; }
 
-        public int CouponTypeId { get; set; }
+        //public int CouponTypeId { get; set; }
 
         public string CouponTypeName { get; set; } = null!;
 

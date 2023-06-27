@@ -6,6 +6,7 @@ using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
+using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
@@ -60,16 +61,22 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
 
             // order
-            CreateMap<Order, OrderGetDto>();
+            CreateMap<Order, OrderGetDto>()
+                .ForMember(dest => dest.OrderStatusName, opt => opt.MapFrom(src => src.OrderStatus.Name));
             CreateMap<OrderDetail, OrderDetailGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.ProductImages.Select(pi => pi.ImageUrl).ToList()));
 
             // product review
-            //CreateMap<ProductReviewCreateDto,  ProductReview>();
             CreateMap<ProductReview,  ProductReviewGetDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
+
+            // product report
+            CreateMap<ProductReport, ProductReportGetDto>()
+                .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
+                .ForMember(dest => dest.ReportStatusName, opt => opt.MapFrom(src => src.ReportStatus.Name))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductReported.Name));
         }
     }
 }
