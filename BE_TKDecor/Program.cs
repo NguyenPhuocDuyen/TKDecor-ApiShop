@@ -61,6 +61,8 @@ builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
+builder.Services.AddScoped<IReportStatusRepository, ReportStatusRepository>();
+builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

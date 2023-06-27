@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
-using AutoMapper;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductReviewsController : ControllerBase
     {
         private readonly IUserRepository _userRepository;

@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleContent.Customer)]
     public class OrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -40,9 +40,8 @@ namespace BE_TKDecor.Controllers
         }
 
         // POST: api/Orders/GetOrder
-        [HttpGet("GetAllForCustomer")]
-        [Authorize(Roles = RoleContent.Customer)]
-        public async Task<IActionResult> GetAllForCustomer()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
             if (user == null)
@@ -53,19 +52,8 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // POST: api/Orders/GetOrder
-        [HttpGet("GetAllForSeller")]
-        [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
-        public async Task<IActionResult> GetAllForSeller()
-        {
-            var orders = await _orderRepository.GetAll();
-            var result = _mapper.Map<List<OrderGetDto>>(orders);
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
-
         // POST: api/Orders/MakeOrder
         [HttpPost("MakeOrder")]
-        [Authorize(Roles = RoleContent.Customer)]
         public async Task<IActionResult> MakeOrder(OrderMakeDto orderDto)
         {
             var user = await GetUser();
@@ -171,15 +159,9 @@ namespace BE_TKDecor.Controllers
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var isCustomer = user.Role.Name == RoleContent.Customer;
-
             // seller and admin have the right to accept orders for delivery
             var order = await _orderRepository.FindById(id);
-            if (order == null || order.UserId != user.UserId && isCustomer)
+            if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
             if (order.OrderStatus.Name == orderUpdateStatusDto.OrderStatusName)
@@ -195,38 +177,22 @@ namespace BE_TKDecor.Controllers
 
             // update order status
             // customer can cancel, refund, receive the order
-            if (isCustomer)
+            if (order.OrderStatus.Name == OrderStatusContent.Ordered)
             {
-                if (order.OrderStatus.Name == OrderStatusContent.Ordered)
-                {
-                    // Cancellation of orders only when the order is in the Ordered status
-                    if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Canceled)
-                        return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-                }
-                else if (order.OrderStatus.Name == OrderStatusContent.Delivering)
-                {
-                    // Orders can only be accepted or refunded when the order is in the Delivering status
-                    if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Received
-                        || orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Refund)
-                        return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-                }
-                else
-                {
+                // Cancellation of orders only when the order is in the Ordered status
+                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Canceled)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-                }
+            }
+            else if (order.OrderStatus.Name == OrderStatusContent.Delivering)
+            {
+                // Orders can only be accepted or refunded when the order is in the Delivering status
+                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Received
+                    && orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Refund)
+                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
             else
             {
-                // Admin or seller can confirm the order for delivery
-                if (order.OrderStatus.Name == OrderStatusContent.Ordered)
-                {
-                    if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Delivering)
-                        return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-                }
-                else
-                {
-                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-                }
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
             order.OrderStatus = newOrderStatus;
