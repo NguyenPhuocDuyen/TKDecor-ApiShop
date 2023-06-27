@@ -16,15 +16,15 @@ namespace BE_TKDecor.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _user;
         private readonly ISendMailService _sendMailService;
 
         public UsersController(IMapper mapper,
-            IUserRepository userRepository,
+            IUserRepository user,
             ISendMailService sendMailService)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _user = user;
             _sendMailService = sendMailService;
         }
 
@@ -54,7 +54,7 @@ namespace BE_TKDecor.Controllers
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -78,7 +78,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 // update user
-                await _userRepository.Update(user);
+                await _user.Update(user);
 
                 //send mail to changepassword
                 //set data to send
@@ -126,7 +126,7 @@ namespace BE_TKDecor.Controllers
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -140,7 +140,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

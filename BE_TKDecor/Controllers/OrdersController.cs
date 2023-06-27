@@ -15,28 +15,28 @@ namespace BE_TKDecor.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserAddressRepository _userAddressRepository;
-        private readonly ICouponRepository _couponRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IOrderStatusRepository _orderStatusRepository;
-        private readonly ICartRepository _cartRepository;
+        private readonly IUserRepository _user;
+        private readonly IUserAddressRepository _userAddress;
+        private readonly ICouponRepository _coupon;
+        private readonly IOrderRepository _order;
+        private readonly IOrderStatusRepository _orderStatus;
+        private readonly ICartRepository _cart;
 
         public OrdersController(IMapper mapper,
-            IUserRepository userRepository,
-            IUserAddressRepository userAddressRepository,
-            ICouponRepository couponRepository,
-            IOrderRepository orderRepository,
-            IOrderStatusRepository orderStatusRepository,
-            ICartRepository cartRepository)
+            IUserRepository user,
+            IUserAddressRepository userAddress,
+            ICouponRepository coupon,
+            IOrderRepository order,
+            IOrderStatusRepository orderStatus,
+            ICartRepository cart)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _userAddressRepository = userAddressRepository;
-            _couponRepository = couponRepository;
-            _orderRepository = orderRepository;
-            _orderStatusRepository = orderStatusRepository;
-            _cartRepository = cartRepository;
+            _user = user;
+            _userAddress = userAddress;
+            _coupon = coupon;
+            _order = order;
+            _orderStatus = orderStatus;
+            _cart = cart;
         }
 
         // POST: api/Orders/GetOrder
@@ -47,7 +47,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var orders = await _orderRepository.GetByUserId(user.UserId);
+            var orders = await _order.GetByUserId(user.UserId);
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -64,22 +64,22 @@ namespace BE_TKDecor.Controllers
             Coupon? coupon = null;
             if (orderDto.CodeCoupon != null)
             {
-                coupon = await _couponRepository.FindByCode(orderDto.CodeCoupon);
+                coupon = await _coupon.FindByCode(orderDto.CodeCoupon);
                 if (coupon == null)
                     return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
             }
             // check address
-            var address = await _userAddressRepository.FindById(orderDto.AddressId);
+            var address = await _userAddress.FindById(orderDto.AddressId);
             if (address == null || address.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             // get  status order ordered
-            var orderedStatus = await _orderStatusRepository.FindByName(OrderStatusContent.Ordered);
+            var orderedStatus = await _orderStatus.FindByName(OrderStatusContent.Ordered);
             if (orderedStatus == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
             // get cart of user
-            var cartsDb = await _cartRepository.GetCartsByUserId(user.UserId);
+            var cartsDb = await _cart.GetCartsByUserId(user.UserId);
 
             //create new order
             Order newOrder = new()
@@ -139,13 +139,13 @@ namespace BE_TKDecor.Controllers
             try
             {
                 // create order
-                await _orderRepository.Add(newOrder);
+                await _order.Add(newOrder);
                 // delete item in cart
                 foreach (var cartId in orderDto.ListCartIdSelect)
                 {
                     var cart = cartsDb.FirstOrDefault(x => x.CartId == cartId);
                     if (cart != null)
-                        await _cartRepository.Delete(cart);
+                        await _cart.Delete(cart);
                 }
                 return NoContent();
             }
@@ -160,7 +160,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             // seller and admin have the right to accept orders for delivery
-            var order = await _orderRepository.FindById(id);
+            var order = await _order.FindById(id);
             if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
@@ -168,7 +168,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
 
             // list order status
-            var orderStatus = await _orderStatusRepository.GetAll();
+            var orderStatus = await _orderStatus.GetAll();
 
             // check order status exists
             var newOrderStatus = orderStatus.FirstOrDefault(x => x.Name == orderUpdateStatusDto.OrderStatusName);
@@ -200,7 +200,7 @@ namespace BE_TKDecor.Controllers
             order.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _orderRepository.Update(order);
+                await _order.Update(order);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -214,7 +214,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

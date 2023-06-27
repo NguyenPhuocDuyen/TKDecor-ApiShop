@@ -1,8 +1,6 @@
 ﻿using BE_TKDecor.Core.Dtos.Mail;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Mail;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace BE_TKDecor.Controllers
 {

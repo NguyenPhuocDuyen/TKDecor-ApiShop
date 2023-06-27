@@ -95,7 +95,7 @@ namespace DataAccess.Data
                         ProductReviewReported = review,
                         ReportStatusId = reportStatusPeding.ReportStatusId,
                         ReportStatus = reportStatusPeding,
-                        Reason = "",
+                        Reason = "I want to report",
                     };
                     _db.ReportProductReviews.Add(reportProductReview);
                 }

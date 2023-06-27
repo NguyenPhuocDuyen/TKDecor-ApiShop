@@ -15,24 +15,23 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementOrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IOrderStatusRepository _orderStatusRepository;
+        private readonly IOrderRepository _order;
+        private readonly IOrderStatusRepository _orderStatus;
 
         public ManagementOrdersController(IMapper mapper,
-            IOrderRepository orderRepository,
-            IOrderStatusRepository orderStatusRepository,
-            ICartRepository cartRepository)
+            IOrderRepository order,
+            IOrderStatusRepository orderStatus)
         {
             _mapper = mapper;
-            _orderRepository = orderRepository;
-            _orderStatusRepository = orderStatusRepository;
+            _order = order;
+            _orderStatus = orderStatus;
         }
 
         // POST: api/ManagementOrders/GetOrder
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var orders = await _orderRepository.GetAll();
+            var orders = await _order.GetAll();
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -44,7 +43,7 @@ namespace BE_TKDecor.Controllers.Management
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var order = await _orderRepository.FindById(id);
+            var order = await _order.FindById(id);
             if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
@@ -52,7 +51,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
 
             // list order status
-            var orderStatus = await _orderStatusRepository.GetAll();
+            var orderStatus = await _orderStatus.GetAll();
 
             // check order status exists
             var newOrderStatus = orderStatus.FirstOrDefault(x => x.Name == orderUpdateStatusDto.OrderStatusName);
@@ -78,7 +77,7 @@ namespace BE_TKDecor.Controllers.Management
             order.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _orderRepository.Update(order);
+                await _order.Update(order);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

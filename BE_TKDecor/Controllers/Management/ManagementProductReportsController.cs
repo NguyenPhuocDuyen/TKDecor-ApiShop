@@ -14,23 +14,17 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementProductReportsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IProductReportRepository _productReportRepository;
-        private readonly IReportStatusRepository _reportStatusRepository;
+        private readonly IProductReportRepository _productReport;
+        private readonly IReportStatusRepository _reportStatus;
 
         public ManagementProductReportsController(IMapper mapper,
-            IUserRepository userRepository,
-            IProductRepository productRepository,
-            IProductReportRepository productReportRepository,
-            IReportStatusRepository reportStatusRepository
+            IProductReportRepository productReport,
+            IReportStatusRepository reportStatus
             )
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _productRepository = productRepository;
-            _productReportRepository = productReportRepository;
-            _reportStatusRepository = reportStatusRepository;
+            _productReport = productReport;
+            _reportStatus = reportStatus;
         }
 
 
@@ -38,7 +32,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var reports = await _productReportRepository.GetAll();
+            var reports = await _productReport.GetAll();
             reports = reports.OrderByDescending(x => x.UpdatedAt).ToList();
 
             var result = _mapper.Map<List<ProductReportGetDto>>(reports);
@@ -52,14 +46,14 @@ namespace BE_TKDecor.Controllers.Management
             if (id != reportDto.ProductReportId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var report = await _productReportRepository.FindById(id);
+            var report = await _productReport.FindById(id);
             if (report == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReportNotFound });
 
             if (report.ReportStatus.Name != ReportStatusContent.Pending)
                 return BadRequest(new ApiResponse { Message = "Product Report has been processed!" });
 
-            var reportStatus = (await _reportStatusRepository.GetAll())
+            var reportStatus = (await _reportStatus.GetAll())
                 .FirstOrDefault(x => x.Name == reportDto.ReportStatus);
             if (reportStatus == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.Error });
@@ -69,7 +63,7 @@ namespace BE_TKDecor.Controllers.Management
             report.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _productReportRepository.Update(report);
+                await _productReport.Update(report);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

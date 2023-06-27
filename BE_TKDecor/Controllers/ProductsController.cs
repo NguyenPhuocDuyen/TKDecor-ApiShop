@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.Repository;
 using Utility;
 using Microsoft.AspNetCore.Authorization;
 using DataAccess.StatusContent;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Product;
 using AutoMapper;
-using System.Net.WebSockets;
 
 namespace BE_TKDecor.Controllers
 {
@@ -19,16 +16,16 @@ namespace BE_TKDecor.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IProductRepository _productRepository;
-        private readonly IProductImageRepository _productImageRepository;
+        private readonly IProductRepository _product;
+        private readonly IProductImageRepository _productImage;
 
         public ProductsController(IMapper mapper,
-            IProductRepository productRepository,
-            IProductImageRepository productImageRepository)
+            IProductRepository product,
+            IProductImageRepository productImage)
         {
             _mapper = mapper;
-            _productRepository = productRepository;
-            _productImageRepository = productImageRepository;
+            _product = product;
+            _productImage = productImage;
         }
 
         // GET: api/Products/GetAll
@@ -36,7 +33,7 @@ namespace BE_TKDecor.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _productRepository.GetAll();
+            var list = await _product.GetAll();
             list = list.Where(x => x.IsDelete is not true)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
@@ -52,7 +49,7 @@ namespace BE_TKDecor.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> FeaturedProducts()
         {
-            var products = await _productRepository.GetAll();
+            var products = await _product.GetAll();
             var sort = products
                 .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
                 .Take(9)
@@ -68,7 +65,7 @@ namespace BE_TKDecor.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _productRepository.FindById(id);
+            var product = await _product.FindById(id);
 
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
@@ -85,7 +82,7 @@ namespace BE_TKDecor.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetBySlug(string slug)
         {
-            var product = await _productRepository.FindBySlug(slug);
+            var product = await _product.FindBySlug(slug);
 
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
@@ -98,12 +95,12 @@ namespace BE_TKDecor.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
-            var p = await _productRepository.FindByName(productDto.Name);
+            var p = await _product.FindByName(productDto.Name);
             if (p != null)
                 return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
-            var proSlug = await _productRepository.FindBySlug(newSlug);
+            var proSlug = await _product.FindBySlug(newSlug);
             if (proSlug != null)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
@@ -124,7 +121,7 @@ namespace BE_TKDecor.Controllers
             //Url3dModel = product.Url3dModel,
             try
             {
-                await _productRepository.Add(newProduct);
+                await _product.Add(newProduct);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -137,16 +134,16 @@ namespace BE_TKDecor.Controllers
             if (id != productDto.ProductId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
-            var productDb = await _productRepository.FindById(id);
+            var productDb = await _product.FindById(id);
             if (productDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-            var p = await _productRepository.FindByName(productDto.Name);
+            var p = await _product.FindByName(productDto.Name);
             if (p != null && p.ProductId != id)
                 return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
-            var proSlug = await _productRepository.FindBySlug(newSlug);
+            var proSlug = await _product.FindBySlug(newSlug);
             if (proSlug != null && proSlug.ProductId != id)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
@@ -172,7 +169,7 @@ namespace BE_TKDecor.Controllers
                         if (imageOld != null)
                         {
                             productDb.ProductImages.Remove(imageOld);
-                            await _productImageRepository.Delete(imageOld);
+                            await _productImage.Delete(imageOld);
                         }
                     }
                 }
@@ -193,7 +190,7 @@ namespace BE_TKDecor.Controllers
                 }
 
                 // Update information except photos
-                await _productRepository.Update(productDb);
+                await _product.Update(productDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -203,7 +200,7 @@ namespace BE_TKDecor.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _productRepository.FindById(id);
+            var product = await _product.FindById(id);
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
@@ -211,7 +208,7 @@ namespace BE_TKDecor.Controllers
             product.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _productRepository.Update(product);
+                await _product.Update(product);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

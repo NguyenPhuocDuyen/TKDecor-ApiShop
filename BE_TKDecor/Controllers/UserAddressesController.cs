@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
-using Humanizer;
-using BE_TKDecor.Core.Dtos;
 using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
@@ -23,16 +15,16 @@ namespace BE_TKDecor.Controllers
     public class UserAddressesController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserAddressRepository _userAddressRepository;
+        private readonly IUserRepository _user;
+        private readonly IUserAddressRepository _userAddress;
 
         public UserAddressesController(IMapper mapper,
-            IUserRepository userRepository,
-            IUserAddressRepository userAddressRepository)
+            IUserRepository user,
+            IUserAddressRepository userAddress)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _userAddressRepository = userAddressRepository;
+            _user = user;
+            _userAddress = userAddress;
         }
 
         // GET: api/UserAddresses/GetUserAddresses
@@ -43,7 +35,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _userAddressRepository.GetByUserId(user.UserId))
+            var list = (await _userAddress.GetByUserId(user.UserId))
                 .OrderByDescending(x => x.UpdatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
@@ -58,13 +50,13 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var address = await _userAddressRepository.FindById(id);
+            var address = await _userAddress.FindById(id);
             if (address == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             try
             {
-                await _userAddressRepository.SetDefault(user.UserId, id);
+                await _userAddress.SetDefault(user.UserId, id);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -82,12 +74,12 @@ namespace BE_TKDecor.Controllers
             newAddress.UserId = user.UserId;
             try
             {
-                await _userAddressRepository.Add(newAddress);
+                await _userAddress.Add(newAddress);
 
-                var listAddress = await _userAddressRepository.GetByUserId(user.UserId);
+                var listAddress = await _userAddress.GetByUserId(user.UserId);
                 if (listAddress.Count <= 1)
                 {
-                    await _userAddressRepository.SetDefault(user.UserId, null);
+                    await _userAddress.SetDefault(user.UserId, null);
                 }
 
                 return NoContent();
@@ -102,7 +94,7 @@ namespace BE_TKDecor.Controllers
             if (id != userAddressDto.UserAddressId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var userAddressDb = await _userAddressRepository.FindById(id);
+            var userAddressDb = await _userAddress.FindById(id);
             if (userAddressDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
@@ -112,7 +104,7 @@ namespace BE_TKDecor.Controllers
             userAddressDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userAddressRepository.Update(userAddressDb);
+                await _userAddress.Update(userAddressDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -122,13 +114,13 @@ namespace BE_TKDecor.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteUserAddress(int id)
         {
-            var userAddress = await _userAddressRepository.FindById(id);
+            var userAddress = await _userAddress.FindById(id);
             if (userAddress == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             try
             {
-                await _userAddressRepository.Delete(userAddress);
+                await _userAddress.Delete(userAddress);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -142,7 +134,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

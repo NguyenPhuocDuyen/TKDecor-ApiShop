@@ -12,17 +12,17 @@ namespace BE_TKDecor.Controllers
     [Authorize]
     public class ProductReviewsController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IProductReviewRepository _productReviewRepository;
+        private readonly IUserRepository _user;
+        private readonly IProductRepository _product;
+        private readonly IProductReviewRepository _productReview;
 
-        public ProductReviewsController(IUserRepository userRepository,
-            IProductRepository productRepository,
-            IProductReviewRepository productReviewRepository)
+        public ProductReviewsController(IUserRepository user,
+            IProductRepository product,
+            IProductReviewRepository productReview)
         {
-            _userRepository = userRepository;
-            _productRepository = productRepository;
-            _productReviewRepository = productReviewRepository;
+            _user = user;
+            _product = product;
+            _productReview = productReview;
         }
 
         // POST: api/ProductReviews/Review
@@ -33,15 +33,15 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var product = await _productRepository.FindById(productReviewDto.ProductId);
+            var product = await _product.FindById(productReviewDto.ProductId);
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-            var canReview = await _productReviewRepository.CanReview(user.UserId, product.ProductId);
+            var canReview = await _productReview.CanReview(user.UserId, product.ProductId);
             if (!canReview)
                 return BadRequest(new ApiResponse { Message = "You are not allowed to review the product without buying it!" });
 
-            var productReview = await _productReviewRepository.GetByUserIdAndProductId(user.UserId, product.ProductId);
+            var productReview = await _productReview.GetByUserIdAndProductId(user.UserId, product.ProductId);
 
             bool isAdd = true;
 
@@ -63,17 +63,18 @@ namespace BE_TKDecor.Controllers
                 productReview.Rate = productReviewDto.Rate;
                 productReview.Description = productReviewDto.Description;
                 productReview.UpdatedAt = DateTime.UtcNow;
+                productReview.IsDelete = false;
             }
 
             try
             {
                 if (isAdd)
                 {
-                    await _productReviewRepository.Add(productReview);
+                    await _productReview.Add(productReview);
                 }
                 else
                 {
-                    await _productReviewRepository.Update(productReview);
+                    await _productReview.Update(productReview);
                 }
                 return NoContent();
             }
@@ -88,7 +89,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var productReview = await _productReviewRepository.FindById(id);
+            var productReview = await _productReview.FindById(id);
             if (productReview == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
@@ -96,7 +97,7 @@ namespace BE_TKDecor.Controllers
             productReview.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _productReviewRepository.Update(productReview);
+                await _productReview.Update(productReview);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -110,7 +111,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

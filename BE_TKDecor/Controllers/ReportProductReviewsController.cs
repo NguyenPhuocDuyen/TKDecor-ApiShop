@@ -1,65 +1,63 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Core.Dtos.ReportProductReview;
 using DataAccess.StatusContent;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Customer)]
-    public class ProductReportsController : ControllerBase
+    public class ReportProductReviewsController : ControllerBase
     {
         private readonly IUserRepository _user;
-        private readonly IProductRepository _product;
-        private readonly IProductReportRepository _productReport;
+        private readonly IProductReviewRepository _productReview;
+        private readonly IReportProductReviewRepository _reportProductReview;
         private readonly IReportStatusRepository _reportStatus;
 
-        public ProductReportsController(IUserRepository user,
-            IProductRepository product,
-            IProductReportRepository productReport,
-            IReportStatusRepository reportStatus
-            )
+        public ReportProductReviewsController(IUserRepository user,
+            IProductReviewRepository productReview,
+            IReportProductReviewRepository reportProductReview,
+            IReportStatusRepository reportStatus)
         {
             _user = user;
-            _product = product;
-            _productReport = productReport;
+            _productReview = productReview;
+            _reportProductReview = reportProductReview;
             _reportStatus = reportStatus;
         }
 
-        // POST: api/ProductReports/MakeProductReport
-        [HttpPost("MakeProductReport")]
-        public async Task<ActionResult<ProductReport>> MakeProductReport(ProductReportCreateDto reportDto)
+        // POST: api/ReportProductReviews/MakeReport
+        [HttpPost("MakeReport")]
+        public async Task<ActionResult<ReportProductReview>> MakeReportProductReview(ReportProductReviewCreateDto reportDto)
         {
-            var product = await _product.FindById(reportDto.ProductReportedId);
-            if (product == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
             var user = await GetUser();
             if (user == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var productReview = await _productReview.FindById(reportDto.ProductReviewReportedId);
+            if (productReview == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
+
+            var report = await _reportProductReview
+                .FindByUserIdAndProductReviewId(user.UserId, reportDto.ProductReviewReportedId);
 
             var reportStatus = await _reportStatus.GetAll();
             var statusPeding = reportStatus.FirstOrDefault(x => x.Name == ReportStatusContent.Pending);
             if (statusPeding == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
-            var report = await _productReport.FindByUserIdAndProductId(user.UserId, product.ProductId);
-
             bool isAdd = true;
-            // create a new report of that user for that product
-            // if there is no report that product is in the peding state
+            // create a new report of that user for that product review
+            // if there is no report that product review is in the peding state
             if (report == null || (report.ReportStatus.Name != ReportStatusContent.Pending))
             {
-                report = new ProductReport()
+                report = new ReportProductReview()
                 {
                     UserReportId = user.UserId,
                     UserReport = user,
-                    ProductReportedId = product.ProductId,
-                    ProductReported = product,
+                    ProductReviewReportedId = productReview.ProductReviewId,
+                    ProductReviewReported = productReview,
                     ReportStatusId = statusPeding.ReportStatusId,
                     ReportStatus = statusPeding,
                     Reason = reportDto.Reason
@@ -76,11 +74,11 @@ namespace BE_TKDecor.Controllers
             {
                 if (isAdd)
                 {
-                    await _productReport.Add(report);
+                    await _reportProductReview.Add(report);
                 }
                 else
                 {
-                    await _productReport.Update(report);
+                    await _reportProductReview.Update(report);
                 }
 
                 return NoContent();

@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
-using DataAccess.Repository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
-using Microsoft.AspNetCore.Identity;
 using DataAccess.StatusContent;
 
 namespace BE_TKDecor.Controllers
@@ -18,19 +15,19 @@ namespace BE_TKDecor.Controllers
     public class CartsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly ICartRepository _cartRepository;
-        private readonly IProductRepository _productRepository;
+        private readonly IUserRepository _user;
+        private readonly ICartRepository _cart;
+        private readonly IProductRepository _product;
 
         public CartsController(IMapper mapper,
-            IUserRepository userRepository,
-            ICartRepository cartRepository,
-            IProductRepository productRepository)
+            IUserRepository user,
+            ICartRepository cart,
+            IProductRepository product)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _cartRepository = cartRepository;
-            _productRepository = productRepository;
+            _user = user;
+            _cart = cart;
+            _product = product;
         }
 
         // GET: api/Carts/GetAll
@@ -41,7 +38,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var carts = (await _cartRepository.GetCartsByUserId(user.UserId))
+            var carts = (await _cart.GetCartsByUserId(user.UserId))
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
             var result = _mapper.Map<List<CartGetDto>>(carts);
@@ -57,12 +54,12 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // get current product info
-            var product = await _productRepository.FindById(cartDto.ProductId);
+            var product = await _product.FindById(cartDto.ProductId);
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             // get product information in cart
-            var cartDb = await _cartRepository.FindByUserIdAndProductId(user.UserId, product.ProductId);
+            var cartDb = await _cart.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
             // Variable check number of valid products
             bool quanlityIsValid = true;
@@ -94,11 +91,11 @@ namespace BE_TKDecor.Controllers
             {
                 if (isAdd)
                 {
-                    await _cartRepository.Add(cartDb);
+                    await _cart.Add(cartDb);
                 }
                 else
                 {
-                    await _cartRepository.Update(cartDb);
+                    await _cart.Update(cartDb);
                 }
 
                 if (!quanlityIsValid)
@@ -117,7 +114,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var cartDb = await _cartRepository.FindById(id);
+            var cartDb = await _cart.FindById(id);
             if (cartDb == null || cartDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
@@ -134,7 +131,7 @@ namespace BE_TKDecor.Controllers
 
             try
             {
-                await _cartRepository.Update(cartDb);
+                await _cart.Update(cartDb);
 
                 if (!quanlityIsValid)
                     return Ok(new ApiResponse { Success = true, Message = "Exceeding the number, still plus max!" });
@@ -153,13 +150,13 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // Find and delete cart
-            var cartDb = await _cartRepository.FindById(id);
+            var cartDb = await _cart.FindById(id);
             if (cartDb == null || cartDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             try
             {
-                await _cartRepository.Delete(cartDb);
+                await _cart.Delete(cartDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -173,7 +170,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _userRepository.FindById(int.Parse(userId));
+                    return await _user.FindById(int.Parse(userId));
             }
             return null;
         }

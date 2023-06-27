@@ -4,7 +4,6 @@ using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
 using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE_TKDecor.Controllers.Management
@@ -15,23 +14,23 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementUsersController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IUserRepository _user;
+        private readonly IRoleRepository _role;
 
         public ManagementUsersController(IMapper mapper,
-            IUserRepository userRepository,
-            IRoleRepository roleRepository)
+            IUserRepository user,
+            IRoleRepository role)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _user = user;
+            _role = role;
         }
 
         // GET: api/ManagementUsers/GetAllUser
         [HttpGet("GetAllUser")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var user = await _userRepository.GetAll();
+            var user = await _user.GetAll();
             var result = _mapper.Map<List<UserGetDto>>(user);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -43,11 +42,11 @@ namespace BE_TKDecor.Controllers.Management
             if (userId != userDto.UserId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
-            var user = await _userRepository.FindById(userId);
+            var user = await _user.FindById(userId);
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var role = await _roleRepository.FindByName(userDto.RoleName);
+            var role = await _role.FindByName(userDto.RoleName);
             if (role == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.RoleNotFound });
 
@@ -56,7 +55,7 @@ namespace BE_TKDecor.Controllers.Management
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userRepository.Update(user);
+                await _user.Update(user);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

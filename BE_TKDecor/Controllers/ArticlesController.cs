@@ -11,20 +11,20 @@ namespace BE_TKDecor.Controllers
     public class ArticlesController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IArticleRepository _articleRepository;
+        private readonly IArticleRepository _article;
 
         public ArticlesController(IMapper mapper,
-            IArticleRepository articleRepository)
+            IArticleRepository article)
         {
             _mapper = mapper;
-            _articleRepository = articleRepository;
+            _article = article;
         }
 
         // GET: api/Articles/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _articleRepository.GetAll();
+            var list = await _article.GetAll();
             list = list.Where(x => x.IsDelete == false && x.IsPublish == true)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
@@ -37,7 +37,7 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetBySlug/{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
         {
-            var article = await _articleRepository.FindBySlug(slug);
+            var article = await _article.FindBySlug(slug);
             if (article == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
