@@ -63,7 +63,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product.Add(newProduct);
-                await _signalRHub.Clients.All.SendAsync("LoadNotification");
+                //await _signalRHub.Clients.All.SendAsync("LoadNotification");
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
