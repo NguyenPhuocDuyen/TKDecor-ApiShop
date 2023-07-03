@@ -6,7 +6,7 @@ namespace DataAccess.DAO
 {
     internal class ProductReviewDAO
     {
-        internal static async Task<ProductReview?> GetByUserIdAndProductId(int userId, int productId)
+        internal static async Task<ProductReview?> FindByUserIdAndProductId(long userId, long productId)
         {
             try
             {
@@ -18,7 +18,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<ProductReview?> FindById(int id)
+        internal static async Task<ProductReview?> FindById(long id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<bool> CanReview(int userId, int productId)
+        internal static async Task<bool> CanReview(long userId, long productId)
         {
             try
             {

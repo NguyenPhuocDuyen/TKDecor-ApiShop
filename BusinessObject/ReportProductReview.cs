@@ -3,21 +3,17 @@ using System.Collections.Generic;
 
 namespace BusinessObject;
 
-public partial class ReportProductReview
+public partial class ReportProductReview : BaseEntity
 {
-    public int ReportProductReviewId { get; set; }
+    public long ReportProductReviewId { get; set; }
 
-    public int UserReportId { get; set; }
+    public long UserReportId { get; set; }
 
-    public int ProductReviewReportedId { get; set; }
+    public long ProductReviewReportedId { get; set; }
 
-    public int ReportStatusId { get; set; }
+    public long ReportStatusId { get; set; }
 
     public string Reason { get; set; } = null!;
-
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual ProductReview ProductReviewReported { get; set; } = null!;
 

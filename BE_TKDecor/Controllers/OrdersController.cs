@@ -47,7 +47,8 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var orders = await _order.GetByUserId(user.UserId);
+            var orders = await _order.FindByUserId(user.UserId);
+            orders = orders.Where(x => x.IsDelete == false).ToList();
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -79,7 +80,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
             // get cart of user
-            var cartsDb = await _cart.GetCartsByUserId(user.UserId);
+            var cartsDb = await _cart.FindCartsByUserId(user.UserId);
 
             //create new order
             Order newOrder = new()
@@ -145,7 +146,10 @@ namespace BE_TKDecor.Controllers
                 {
                     var cart = cartsDb.FirstOrDefault(x => x.CartId == cartId);
                     if (cart != null)
-                        await _cart.Delete(cart);
+                    {
+                        cart.IsDelete = true;
+                        await _cart.Update(cart);
+                    }
                 }
                 return NoContent();
             }

@@ -10,6 +10,6 @@ namespace BE_TKDecor.Core.Dtos.Category
         public string Name { get; set; } = null!;
 
         [MaxLength(255)]
-        public string ImageUrl { get; set; } = null!;
+        public string Thumbnail { get; set; } = null!;
     }
 }

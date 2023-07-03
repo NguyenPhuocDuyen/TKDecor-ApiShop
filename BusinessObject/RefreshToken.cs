@@ -7,7 +7,7 @@ public partial class RefreshToken
 {
     public Guid RefreshTokenId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     public string Token { get; set; } = null!;
 

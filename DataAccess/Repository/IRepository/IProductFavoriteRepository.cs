@@ -9,9 +9,9 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IProductFavoriteRepository
     {
-        Task<List<ProductFavorite>> GetFavoriteOfUser(int userId);
-        Task<ProductFavorite?> FindProductFavorite(int userId, int productId);
+        Task<List<ProductFavorite>> FindFavoriteOfUser(long userId);
+        Task<ProductFavorite?> FindProductFavorite(long userId, long productId);
         Task Add(ProductFavorite productFavorite);
-        Task Delete(ProductFavorite productFavorite);
+        Task Update(ProductFavorite productFavorite);
     }
 }

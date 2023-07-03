@@ -35,7 +35,8 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _userAddress.GetByUserId(user.UserId))
+            var list = (await _userAddress.FindByUserId(user.UserId))
+                .Where(x => x.IsDelete == false)
                 .OrderByDescending(x => x.UpdatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
@@ -51,7 +52,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var address = await _userAddress.FindById(id);
-            if (address == null)
+            if (address == null || address.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             try
@@ -76,7 +77,7 @@ namespace BE_TKDecor.Controllers
             {
                 await _userAddress.Add(newAddress);
 
-                var listAddress = await _userAddress.GetByUserId(user.UserId);
+                var listAddress = await _userAddress.FindByUserId(user.UserId);
                 if (listAddress.Count <= 1)
                 {
                     await _userAddress.SetDefault(user.UserId, null);
@@ -95,7 +96,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var userAddressDb = await _userAddress.FindById(id);
-            if (userAddressDb == null)
+            if (userAddressDb == null || userAddressDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             userAddressDb.FullName = userAddressDto.FullName;
@@ -118,9 +119,11 @@ namespace BE_TKDecor.Controllers
             if (userAddress == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
+            userAddress.IsDelete = true;
+            userAddress.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _userAddress.Delete(userAddress);
+                await _userAddress.Update(userAddress);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

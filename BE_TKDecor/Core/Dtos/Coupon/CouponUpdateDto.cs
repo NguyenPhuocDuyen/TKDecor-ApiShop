@@ -15,8 +15,8 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [Range(1, int.MaxValue)]
         public int RemainingUsageCount { get; set; }
 
-        public DateTime? StartDate { get; set; } = DateTime.UtcNow;
+        public DateTime StartDate { get; set; }
 
-        public DateTime? EndDate { get; set; } = DateTime.UtcNow.AddMonths(1);
+        public DateTime EndDate { get; set; }
     }
 }

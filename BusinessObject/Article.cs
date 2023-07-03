@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace BusinessObject;
 
-namespace BusinessObject;
-
-public partial class Article
+public partial class Article : BaseEntity
 {
-    public int ArticleId { get; set; }
+    public long ArticleId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     public string Title { get; set; } = null!;
 
@@ -15,15 +12,9 @@ public partial class Article
 
     public string Thumbnail { get; set; } = null!;
 
-    public string? Slug { get; set; } 
+    public string Slug { get; set; } = null!;
 
-    public bool? IsPublish { get; set; } = false;
-
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public bool? IsDelete { get; set; } = false;
+    public bool IsPublish { get; set; } = false;
      
     public virtual User User { get; set; } = null!;
 }

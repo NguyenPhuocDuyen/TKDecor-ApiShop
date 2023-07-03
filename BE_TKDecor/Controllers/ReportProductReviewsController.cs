@@ -66,6 +66,7 @@ namespace BE_TKDecor.Controllers
             else
             {
                 isAdd = false;
+                report.IsDelete = false;
                 report.Reason = reportDto.Reason;
                 report.UpdatedAt = DateTime.UtcNow;
             }

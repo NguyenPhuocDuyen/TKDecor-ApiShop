@@ -41,7 +41,7 @@ namespace BE_TKDecor.Controllers
             if (!canReview)
                 return BadRequest(new ApiResponse { Message = "You are not allowed to review the product without buying it!" });
 
-            var productReview = await _productReview.GetByUserIdAndProductId(user.UserId, product.ProductId);
+            var productReview = await _productReview.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
             bool isAdd = true;
 
@@ -60,6 +60,7 @@ namespace BE_TKDecor.Controllers
             else
             {
                 isAdd = false;
+                productReview.IsDelete = false;
                 productReview.Rate = productReviewDto.Rate;
                 productReview.Description = productReviewDto.Description;
                 productReview.UpdatedAt = DateTime.UtcNow;

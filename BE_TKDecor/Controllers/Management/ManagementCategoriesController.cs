@@ -68,7 +68,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = "Category name already exists!" });
 
             categoryDb.Name = categoryDto.Name;
-            categoryDb.ImageUrl = categoryDto.ImageUrl;
+            categoryDb.Thumbnail = categoryDto.Thumbnail;
             categoryDb.UpdatedAt = DateTime.UtcNow;
             try
             {

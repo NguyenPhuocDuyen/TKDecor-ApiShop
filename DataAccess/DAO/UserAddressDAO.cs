@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class UserAddressDAO
     {
-        internal static async Task<List<UserAddress>> GetByUserId(int userId)
+        internal static async Task<List<UserAddress>> FindByUserId(long userId)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<UserAddress?> FindById(int id)
+        internal static async Task<UserAddress?> FindById(long id)
         {
             try
             {
@@ -46,43 +46,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 context.Update(userAddress);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Delete(UserAddress userAddress)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Remove(userAddress);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task SetDefault(int userId, int? userAddressId)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                var listAddressOfUser = context.UserAddresses.Where(x => x.UserId == userId);
-                var addressDefault = listAddressOfUser.FirstOrDefault();
-                foreach (var address in listAddressOfUser)
-                {
-                    address.IsDefault = false;
-                    if (userAddressId != null)
-                    {
-                        if (userAddressId == address.UserAddressId)
-                        {
-                            addressDefault = address;
-                        }
-                    }
-                }
-                if (addressDefault != null)
-                    addressDefault.IsDefault = true;
-                
                 await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

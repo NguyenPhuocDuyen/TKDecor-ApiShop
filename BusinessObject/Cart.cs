@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace BusinessObject;
 
-namespace BusinessObject;
-
-public partial class Cart
+public partial class Cart : BaseEntity
 {
-    public int CartId { get; set; }
+    public long CartId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
-    public int ProductId { get; set; }
+    public long ProductId { get; set; }
 
     public int Quantity { get; set; }
-
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public virtual Product Product { get; set; } = null!;
 

@@ -5,7 +5,7 @@ namespace BusinessObject;
 
 public partial class ProductReviewInteractionStatus
 {
-    public int ProductReviewInteractionStatusId { get; set; }
+    public long ProductReviewInteractionStatusId { get; set; }
 
     public string Name { get; set; } = null!;
 

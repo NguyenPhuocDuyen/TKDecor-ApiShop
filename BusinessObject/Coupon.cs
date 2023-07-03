@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿namespace BusinessObject;
 
-namespace BusinessObject;
-
-public partial class Coupon
+public partial class Coupon : BaseEntity
 {
-    [Key]
-    public int CouponId { get; set; }
+    public long CouponId { get; set; }
 
-    public int CouponTypeId { get; set; }
+    public long CouponTypeId { get; set; }
 
     public string Code { get; set; } = null!;
 
@@ -17,15 +12,11 @@ public partial class Coupon
 
     public int RemainingUsageCount { get; set; }
 
-    public DateTime? StartDate { get; set; } = DateTime.UtcNow;
+    public DateTime StartDate { get; set; } = DateTime.UtcNow;
 
-    public DateTime? EndDate { get; set; } = DateTime.UtcNow.AddMonths(1);
+    public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(7);
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public bool? IsActive { get; set; } = false;
+    public bool IsActive { get; set; } = false;
 
     public virtual CouponType CouponType { get; set; } = null!;
 }

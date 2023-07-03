@@ -1,6 +1,6 @@
-﻿using BE_TKDecor;
-using BE_TKDecor.Core.Config.Automapper;
+﻿using BE_TKDecor.Core.Config.Automapper;
 using BE_TKDecor.Core.Config.JWT;
+using BE_TKDecor.Hubs;
 using DataAccess.Data;
 using DataAccess.Repository;
 using DataAccess.Repository.IRepository;
@@ -144,7 +144,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// add
-app.MapHub<SignalRServer>("/signalRServer");
+// add hub
+app.MapHub<UserHub>("/hubs/user");
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

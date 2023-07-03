@@ -12,11 +12,11 @@ namespace DataAccess.Repository
         public async Task Update(Order order)
             => await OrderDAO.Update(order);
 
-        public async Task<Order?> FindById(int id)
+        public async Task<Order?> FindById(long id)
             => await OrderDAO.FindById(id);
 
-        public async Task<List<Order>> GetByUserId(int userId)
-            => await OrderDAO.GetByUserId(userId);
+        public async Task<List<Order>> FindByUserId(long userId)
+            => await OrderDAO.FindByUserId(userId);
 
         public async Task<List<Order>> GetAll()
             => await OrderDAO.GetAll();

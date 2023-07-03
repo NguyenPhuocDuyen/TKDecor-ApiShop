@@ -25,7 +25,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _product.GetAll();
-            list = list.Where(x => x.IsDelete is not true)
+            list = list.Where(x => x.IsDelete == false)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
             // paging skip 12*0 and take 12 after skip
@@ -40,6 +40,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> FeaturedProducts()
         {
             var products = await _product.GetAll();
+            products = products.Where(x => x.IsDelete == false).ToList();
             var sort = products
                 .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
                 .Take(9)
@@ -56,11 +57,8 @@ namespace BE_TKDecor.Controllers
         {
             var product = await _product.FindById(id);
 
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-            if (product.IsDelete is true)
-                return NotFound(new ApiResponse { Message = "Product has been removed!" });
 
             var result = _mapper.Map<ProductGetDto>(product);
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -72,7 +70,7 @@ namespace BE_TKDecor.Controllers
         {
             var product = await _product.FindBySlug(slug);
 
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var result = _mapper.Map<ProductGetDto>(product);

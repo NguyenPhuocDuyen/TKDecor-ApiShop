@@ -38,7 +38,8 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var carts = (await _cart.GetCartsByUserId(user.UserId))
+            var carts = (await _cart.FindCartsByUserId(user.UserId))
+                    .Where(x => x.IsDelete == false)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
             var result = _mapper.Map<List<CartGetDto>>(carts);
@@ -68,16 +69,25 @@ namespace BE_TKDecor.Controllers
             bool isAdd = false;
 
             // If not, create a new one, if yes, add the quantity
-            if (cartDb is null)
+            if (cartDb == null)
             {
                 cartDb = _mapper.Map<Cart>(cartDto);
+                cartDb.IsDelete = false;
                 cartDb.UserId = user.UserId;
                 isAdd = true;
             }
             else
             {
-                // Existing old cart plus quantity
-                cartDb.Quantity += cartDto.Quantity;
+                if (cartDb.IsDelete == true)
+                {
+                    cartDb.IsDelete = false;
+                    cartDb.Quantity = cartDto.Quantity;
+                }
+                else
+                {
+                    // Existing old cart plus quantity
+                    cartDb.Quantity += cartDto.Quantity;
+                }
             }
 
             // Exceeded the number of existing products added
@@ -115,7 +125,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var cartDb = await _cart.FindById(id);
-            if (cartDb == null || cartDb.UserId != user.UserId)
+            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete == true)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             // Variable check number of valid products
@@ -154,9 +164,11 @@ namespace BE_TKDecor.Controllers
             if (cartDb == null || cartDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
+            cartDb.IsDelete = true;
+            cartDb.UpdatedAt = DateTime.UtcNow;
             try
             {
-                await _cart.Delete(cartDb);
+                await _cart.Update(cartDb);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

@@ -18,7 +18,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Coupon?> FindById(int id)
+        internal static async Task<Coupon?> FindById(long id)
         {
             try
             {

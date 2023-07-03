@@ -10,8 +10,8 @@ namespace DataAccess.Repository.IRepository
     public interface IProductReportRepository
     {
         Task<List<ProductReport>> GetAll();
-        Task<ProductReport?> FindById(int id);
-        Task<ProductReport?> FindByUserIdAndProductId(int userId, int productId);
+        Task<ProductReport?> FindById(long id);
+        Task<ProductReport?> FindByUserIdAndProductId(long userId, long productId);
         Task Add(ProductReport productReport);
         Task Update(ProductReport productReport);
     }

@@ -38,8 +38,9 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _productFavorite.GetFavoriteOfUser(user.UserId))
-                .OrderByDescending(x => x.Created);
+            var list = (await _productFavorite.FindFavoriteOfUser(user.UserId))
+                .Where(x => x.IsDelete == false)
+                .OrderByDescending(x => x.UpdatedAt);
 
             var result = _mapper.Map<List<FavoriteGetDto>>(list);
 
@@ -53,6 +54,7 @@ namespace BE_TKDecor.Controllers
             var product = await _product.FindById(favoriteDto.ProductId);
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+
             var user = await GetUser();
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
@@ -75,7 +77,8 @@ namespace BE_TKDecor.Controllers
                 }
                 else
                 {
-                    await _productFavorite.Delete(productFavoriteDb);
+                    productFavoriteDb.IsDelete = !productFavoriteDb.IsDelete;
+                    await _productFavorite.Update(productFavoriteDb);
                 }
                 return NoContent();
             }
