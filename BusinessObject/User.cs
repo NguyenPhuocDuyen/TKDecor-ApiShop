@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace BusinessObject;
 
-public partial class User
+public partial class User : BaseEntity
 {
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
-    public int RoleId { get; set; }
+    public long RoleId { get; set; }
 
     public string Email { get; set; } = null!;
 
@@ -15,35 +15,31 @@ public partial class User
 
     public string FullName { get; set; } = null!;
 
-    public string? AvatarUrl { get; set; }
+    public string AvatarUrl { get; set; } = null!;
 
-    public bool? IsSubscriber { get; set; } = false;
+    public bool IsSubscriber { get; set; } = false;
 
-    public bool? EmailConfirmed { get; set; } = false;
+    public bool EmailConfirmed { get; set; } = false;
 
     public string? EmailConfirmationCode { get; set; }
 
     public DateTime? EmailConfirmationSentAt { get; set; }
 
-    public bool? ResetPasswordRequired { get; set; } = false;
+    public bool ResetPasswordRequired { get; set; } = false;
 
     public string? ResetPasswordCode { get; set; }
 
     public DateTime? ResetPasswordSentAt { get; set; }
 
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public bool? IsDelete { get; set; } = false;
+    public virtual Role Role { get; set; } = null!;
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
-    public virtual ICollection<Message> MessageReceivers { get; set; } = new List<Message>();
+    public virtual ICollection<Chat> MessageReceivers { get; set; } = new List<Chat>();
 
-    public virtual ICollection<Message> MessageSenders { get; set; } = new List<Message>();
+    public virtual ICollection<Chat> MessageSenders { get; set; } = new List<Chat>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
@@ -60,8 +56,6 @@ public partial class User
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();
-
-    public virtual Role Role { get; set; } = null!;
 
     public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 }

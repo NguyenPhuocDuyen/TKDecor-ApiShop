@@ -15,13 +15,13 @@ namespace BusinessObject.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    category_id = table.Column<int>(type: "int", nullable: false)
+                    category_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    image_url = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    update_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,9 +32,9 @@ namespace BusinessObject.Migrations
                 name: "CouponType",
                 columns: table => new
                 {
-                    coupon_type_id = table.Column<int>(type: "int", nullable: false)
+                    coupon_type_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,9 +45,9 @@ namespace BusinessObject.Migrations
                 name: "OrderStatus",
                 columns: table => new
                 {
-                    order_status_id = table.Column<int>(type: "int", nullable: false)
+                    order_status_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,13 +58,14 @@ namespace BusinessObject.Migrations
                 name: "Product3DModel",
                 columns: table => new
                 {
-                    product_3d_model_id = table.Column<int>(type: "int", nullable: false)
+                    product_3d_model_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    video_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    model_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    thumbnail_url = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                    video_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    model_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    thumbnail_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,9 +76,9 @@ namespace BusinessObject.Migrations
                 name: "ProductReviewInteractionStatus",
                 columns: table => new
                 {
-                    product_review_interaction_status_id = table.Column<int>(type: "int", nullable: false)
+                    product_review_interaction_status_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,9 +89,9 @@ namespace BusinessObject.Migrations
                 name: "ReportStatus",
                 columns: table => new
                 {
-                    report_status_id = table.Column<int>(type: "int", nullable: false)
+                    report_status_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -101,9 +102,9 @@ namespace BusinessObject.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    role_id = table.Column<int>(type: "int", nullable: false)
+                    role_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -114,17 +115,18 @@ namespace BusinessObject.Migrations
                 name: "Coupon",
                 columns: table => new
                 {
-                    coupon_id = table.Column<int>(type: "int", nullable: false)
+                    coupon_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    coupon_type_id = table.Column<int>(type: "int", nullable: false),
-                    code = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    coupon_type_id = table.Column<long>(type: "bigint", nullable: false),
+                    code = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
                     value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
                     remaining_usage_count = table.Column<int>(type: "int", nullable: false),
-                    start_date = table.Column<DateTime>(type: "datetime", nullable: true),
-                    end_date = table.Column<DateTime>(type: "datetime", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_active = table.Column<bool>(type: "bit", nullable: true)
+                    start_date = table.Column<DateTime>(type: "datetime", nullable: false),
+                    end_date = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_active = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -140,18 +142,18 @@ namespace BusinessObject.Migrations
                 name: "Product",
                 columns: table => new
                 {
-                    product_id = table.Column<int>(type: "int", nullable: false)
+                    product_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    category_id = table.Column<int>(type: "int", nullable: false),
-                    product_3d_model_id = table.Column<int>(type: "int", nullable: true),
-                    name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    slug = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    category_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_3d_model_id = table.Column<long>(type: "bigint", nullable: true),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     price = table.Column<decimal>(type: "decimal(10,0)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -172,23 +174,23 @@ namespace BusinessObject.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    user_id = table.Column<int>(type: "int", nullable: false)
+                    user_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    role_id = table.Column<int>(type: "int", nullable: false),
-                    email = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    password = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    full_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    avatar_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    is_subscriber = table.Column<bool>(type: "bit", nullable: true),
-                    email_confirmed = table.Column<bool>(type: "bit", nullable: true),
-                    email_confirmation_code = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    role_id = table.Column<long>(type: "bigint", nullable: false),
+                    email = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    password = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    avatar_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    is_subscriber = table.Column<bool>(type: "bit", nullable: false),
+                    email_confirmed = table.Column<bool>(type: "bit", nullable: false),
+                    email_confirmation_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     email_confirmation_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    reset_password_required = table.Column<bool>(type: "bit", nullable: true),
-                    reset_password_code = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    reset_password_required = table.Column<bool>(type: "bit", nullable: false),
+                    reset_password_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     reset_password_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -204,11 +206,10 @@ namespace BusinessObject.Migrations
                 name: "ProductImage",
                 columns: table => new
                 {
-                    productImage_id = table.Column<int>(type: "int", nullable: false)
+                    productImage_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    product_id = table.Column<int>(type: "int", nullable: false),
-                    image_url = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    image_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -224,17 +225,17 @@ namespace BusinessObject.Migrations
                 name: "Article",
                 columns: table => new
                 {
-                    article_id = table.Column<int>(type: "int", nullable: false)
+                    article_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    slug = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    is_publish = table.Column<bool>(type: "bit", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    is_publish = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -250,13 +251,14 @@ namespace BusinessObject.Migrations
                 name: "Cart",
                 columns: table => new
                 {
-                    cart_id = table.Column<int>(type: "int", nullable: false)
+                    cart_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_id = table.Column<long>(type: "bigint", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -277,14 +279,15 @@ namespace BusinessObject.Migrations
                 name: "Message",
                 columns: table => new
                 {
-                    message_id = table.Column<int>(type: "int", nullable: false)
+                    message_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    sender_id = table.Column<int>(type: "int", nullable: false),
-                    receiver_id = table.Column<int>(type: "int", nullable: false),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    is_read = table.Column<bool>(type: "bit", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                    sender_id = table.Column<long>(type: "bigint", nullable: false),
+                    receiver_id = table.Column<long>(type: "bigint", nullable: false),
+                    message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    is_read = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -305,13 +308,14 @@ namespace BusinessObject.Migrations
                 name: "Notification",
                 columns: table => new
                 {
-                    notification_id = table.Column<int>(type: "int", nullable: false)
+                    notification_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
                     message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    is_read = table.Column<bool>(type: "bit", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    is_read = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -327,16 +331,17 @@ namespace BusinessObject.Migrations
                 name: "Order",
                 columns: table => new
                 {
-                    order_id = table.Column<int>(type: "int", nullable: false)
+                    order_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    order_status_id = table.Column<int>(type: "int", nullable: false),
-                    full_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    phone = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    order_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     total_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -357,15 +362,17 @@ namespace BusinessObject.Migrations
                 name: "ProductFavorite",
                 columns: table => new
                 {
-                    ProductFavoriteId = table.Column<int>(type: "int", nullable: false)
+                    product_d = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    ProductId = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductFavorite", x => x.ProductFavoriteId);
+                    table.PrimaryKey("PK_ProductFavorite", x => x.product_d);
                     table.ForeignKey(
                         name: "FK_ProductFavorite_Product_ProductId",
                         column: x => x.ProductId,
@@ -384,14 +391,15 @@ namespace BusinessObject.Migrations
                 name: "ProductReport",
                 columns: table => new
                 {
-                    product_report_id = table.Column<int>(type: "int", nullable: false)
+                    product_report_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_report_id = table.Column<int>(type: "int", nullable: false),
-                    product_reported_id = table.Column<int>(type: "int", nullable: false),
-                    report_status_id = table.Column<int>(type: "int", nullable: false),
+                    user_report_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_reported_id = table.Column<long>(type: "bigint", nullable: false),
+                    report_status_id = table.Column<long>(type: "bigint", nullable: false),
                     reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -417,15 +425,15 @@ namespace BusinessObject.Migrations
                 name: "ProductReview",
                 columns: table => new
                 {
-                    product_review_id = table.Column<int>(type: "int", nullable: false)
+                    product_review_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_id = table.Column<long>(type: "bigint", nullable: false),
                     rate = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_delete = table.Column<bool>(type: "bit", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -447,7 +455,7 @@ namespace BusinessObject.Migrations
                 columns: table => new
                 {
                     refresh_token_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_id = table.Column<int>(type: "int", nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
                     token = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     jwt_id = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_used = table.Column<bool>(type: "bit", nullable: false),
@@ -469,15 +477,16 @@ namespace BusinessObject.Migrations
                 name: "UserAddress",
                 columns: table => new
                 {
-                    user_address_id = table.Column<int>(type: "int", nullable: false)
+                    user_address_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    full_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    phone = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    is_default = table.Column<bool>(type: "bit", nullable: true)
+                    is_default = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -493,10 +502,10 @@ namespace BusinessObject.Migrations
                 name: "OrderDetail",
                 columns: table => new
                 {
-                    order_detail_id = table.Column<int>(type: "int", nullable: false)
+                    order_detail_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    order_id = table.Column<int>(type: "int", nullable: false),
-                    product_id = table.Column<int>(type: "int", nullable: false),
+                    order_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_id = table.Column<long>(type: "bigint", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     payment_price = table.Column<decimal>(type: "decimal(10,0)", nullable: false)
                 },
@@ -519,13 +528,14 @@ namespace BusinessObject.Migrations
                 name: "ProductReviewInteraction",
                 columns: table => new
                 {
-                    product_review_interaction_id = table.Column<int>(type: "int", nullable: false)
+                    product_review_interaction_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<int>(type: "int", nullable: false),
-                    product_review_id = table.Column<int>(type: "int", nullable: false),
-                    product_interaction_status_id = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_review_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_interaction_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -551,14 +561,15 @@ namespace BusinessObject.Migrations
                 name: "ReportProductReview",
                 columns: table => new
                 {
-                    report_product_review_id = table.Column<int>(type: "int", nullable: false)
+                    report_product_review_id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    user_report_id = table.Column<int>(type: "int", nullable: false),
-                    product_review_reported_id = table.Column<int>(type: "int", nullable: false),
-                    report_status_id = table.Column<int>(type: "int", nullable: false),
+                    user_report_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_review_reported_id = table.Column<long>(type: "bigint", nullable: false),
+                    report_status_id = table.Column<long>(type: "bigint", nullable: false),
                     reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true)
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -584,13 +595,6 @@ namespace BusinessObject.Migrations
                 name: "IX_Article_slug",
                 table: "Article",
                 column: "slug",
-                unique: true,
-                filter: "[slug] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Article_title",
-                table: "Article",
-                column: "title",
                 unique: true);
 
             migrationBuilder.CreateIndex(

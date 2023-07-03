@@ -5,7 +5,7 @@ namespace BusinessObject;
 
 public partial class OrderStatus
 {
-    public int OrderStatusId { get; set; }
+    public long OrderStatusId { get; set; }
 
     public string Name { get; set; } = null!;
 

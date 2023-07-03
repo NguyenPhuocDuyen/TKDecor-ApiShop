@@ -38,7 +38,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetBySlug(string slug)
         {
             var article = await _article.FindBySlug(slug);
-            if (article == null)
+            if (article == null || article.IsDelete == true)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             var result = _mapper.Map<ArticleGetDto>(article);

@@ -14,10 +14,10 @@ namespace DataAccess.Repository
         public async Task Add(ProductReport productReport)
             => await ProductReportDAO.Add(productReport);
 
-        public async Task<ProductReport?> FindById(int id)
+        public async Task<ProductReport?> FindById(long id)
             => await ProductReportDAO.FindById(id);
 
-        public async Task<ProductReport?> FindByUserIdAndProductId(int userId, int productId)
+        public async Task<ProductReport?> FindByUserIdAndProductId(long userId, long productId)
             => await ProductReportDAO.FindByUserIdAndProductId(userId, productId);
 
         public async Task<List<ProductReport>> GetAll()

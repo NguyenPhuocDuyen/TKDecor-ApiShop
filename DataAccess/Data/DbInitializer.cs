@@ -333,20 +333,20 @@ namespace DataAccess.Data
 
         private async Task AddMessages()
         {
-            if (_db.Messages.Any()) return;
+            if (_db.Chats.Any()) return;
 
-            var messageSetDefaults = new Faker<Message>();
-            messageSetDefaults.RuleFor(x => x.Content, f => f.Lorem.Sentence());
+            var messageSetDefaults = new Faker<Chat>();
+            messageSetDefaults.RuleFor(x => x.Message, f => f.Lorem.Sentence());
 
             var users = await _db.Users.ToListAsync();
             foreach (var sender in users)
             {
                 foreach (var receiver in users)
                 {
-                    Message message = messageSetDefaults.Generate();
+                    Chat message = messageSetDefaults.Generate();
                     message.Sender = sender;
                     message.Receiver = receiver;
-                    _db.Messages.Add(message);
+                    _db.Chats.Add(message);
                 }
             }
             _db.SaveChanges();
@@ -421,7 +421,7 @@ namespace DataAccess.Data
 
             var categorySetDefaults = new Faker<Category>();
             categorySetDefaults.RuleFor(x => x.Name, f => f.Lorem.Word());
-            categorySetDefaults.RuleFor(x => x.ImageUrl, "https://takepsd.com/wp-content/uploads/2020/11/116020272.jpg");
+            categorySetDefaults.RuleFor(x => x.Thumbnail, "https://takepsd.com/wp-content/uploads/2020/11/116020272.jpg");
             for (int i = 0; i < 10; i++)
             {
                 Category category = categorySetDefaults.Generate();

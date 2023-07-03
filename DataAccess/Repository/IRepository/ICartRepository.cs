@@ -9,11 +9,10 @@ namespace DataAccess.Repository.IRepository
 {
     public interface ICartRepository
     {
-        Task<List<Cart>> GetCartsByUserId(int userId);
-        Task<Cart?> FindByUserIdAndProductId(int userId, int productId);
-        Task<Cart?> FindById(int id);
+        Task<List<Cart>> FindCartsByUserId(long userId);
+        Task<Cart?> FindByUserIdAndProductId(long userId, long productId);
+        Task<Cart?> FindById(long id);
         Task Add(Cart cart);
         Task Update(Cart cart);
-        Task Delete(Cart cart);
     }
 }

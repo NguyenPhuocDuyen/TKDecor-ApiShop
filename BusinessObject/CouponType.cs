@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class CouponType
 {
-    public int CouponTypeId { get; set; }
+    public long CouponTypeId { get; set; }
 
     public string Name { get; set; } = null!;
 

@@ -3,19 +3,15 @@ using System.Collections.Generic;
 
 namespace BusinessObject;
 
-public partial class ProductReviewInteraction
+public partial class ProductReviewInteraction : BaseEntity
 {
-    public int ProductReviewInteractionId { get; set; }
+    public long ProductReviewInteractionId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
-    public int ProductReviewId { get; set; }
+    public long ProductReviewId { get; set; }
 
-    public int ProductInteractionStatusId { get; set; }
-
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+    public long ProductInteractionStatusId { get; set; }
 
     public virtual User User { get; set; } = null!;
 

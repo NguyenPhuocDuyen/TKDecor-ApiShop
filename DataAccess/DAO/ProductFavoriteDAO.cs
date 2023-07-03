@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class ProductFavoriteDAO
     {
-        internal static async Task<List<ProductFavorite>> GetFavoriteOfUser(int userId)
+        internal static async Task<List<ProductFavorite>> FindFavoriteOfUser(long userId)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<ProductFavorite?> FindProductFavorite(int userId, int productId)
+        internal static async Task<ProductFavorite?> FindProductFavorite(long userId, long productId)
         {
             try
             {
@@ -30,12 +30,12 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task Delete(ProductFavorite productFavorite)
+        internal static async Task Update(ProductFavorite productFavorite)
         {
             try
             {
                 using var context = new TkdecorContext();
-                context.Remove(productFavorite);
+                context.Update(productFavorite);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

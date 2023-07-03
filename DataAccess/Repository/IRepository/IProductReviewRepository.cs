@@ -11,8 +11,8 @@ namespace DataAccess.Repository.IRepository
     {
         Task Add(ProductReview productReview);
         Task Update(ProductReview productReview);
-        Task<bool> CanReview(int userId, int productId);
-        Task<ProductReview?> GetByUserIdAndProductId(int userId, int productId);
-        Task<ProductReview?> FindById(int id);
+        Task<bool> CanReview(long userId, long productId);
+        Task<ProductReview?> FindByUserIdAndProductId(long userId, long productId);
+        Task<ProductReview?> FindById(long id);
     }
 }

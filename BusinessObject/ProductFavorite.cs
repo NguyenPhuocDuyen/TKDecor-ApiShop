@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 namespace BusinessObject;
 
-public partial class ProductFavorite
+public partial class ProductFavorite : BaseEntity
 {
-    public int ProductFavoriteId { get; set; }
+    public long ProductFavoriteId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
-    public int ProductId { get; set; }
-
-    public DateTime? Created { get; set; } = DateTime.UtcNow;
+    public long ProductId { get; set; }
 
     public virtual Product Product { get; set; } = null!;
 

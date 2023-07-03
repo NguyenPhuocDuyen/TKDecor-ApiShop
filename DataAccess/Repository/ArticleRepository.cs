@@ -14,7 +14,7 @@ namespace DataAccess.Repository
         public async Task Add(Article article) 
             => await ArticleDAO.Add(article);
 
-        public async Task<Article?> FindById(int id) 
+        public async Task<Article?> FindById(long id) 
             => await ArticleDAO.FindById(id);
 
         public async Task<Article?> FindBySlug(string slug) 

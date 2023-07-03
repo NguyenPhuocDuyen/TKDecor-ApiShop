@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Hubs;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using DataAccess.StatusContent;
@@ -16,17 +17,17 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProductsController : ControllerBase
     {
-        private readonly IHubContext<SignalRServer> _signalRHub;
+        private readonly IHubContext<NotificationHub> _notificationHub;
         private readonly IMapper _mapper;
         private readonly IProductRepository _product;
         private readonly IProductImageRepository _productImage;
 
-        public ManagementProductsController(IHubContext<SignalRServer> signalRHub,
+        public ManagementProductsController(IHubContext<NotificationHub> notificationHub,
             IMapper mapper,
             IProductRepository product,
             IProductImageRepository productImage)
         {
-            _signalRHub = signalRHub;
+            _notificationHub = notificationHub;
             _mapper = mapper;
             _product = product;
             _productImage = productImage;
@@ -63,7 +64,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product.Add(newProduct);
-                //await _signalRHub.Clients.All.SendAsync("LoadNotification");
+                //await _notificationHub.Clients.All.SendAsync("LoadNotification");
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

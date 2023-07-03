@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class CartDAO
     {
-        internal static async Task<List<Cart>> GetCartsByUserId(int userId)
+        internal static async Task<List<Cart>> FindCartsByUserId(long userId)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Cart?> FindById(int id)
+        internal static async Task<Cart?> FindById(long id)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Cart?> FindByUserIdAndProductId(int userId, int productId)
+        internal static async Task<Cart?> FindByUserIdAndProductId(long userId, long productId)
         {
             try
             {
@@ -64,17 +64,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 context.Update(cart);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Delete(Cart cart)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Remove(cart);
                 await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

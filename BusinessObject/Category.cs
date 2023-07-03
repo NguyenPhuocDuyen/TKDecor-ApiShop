@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace BusinessObject;
 
-namespace BusinessObject;
-
-public partial class Category
+public partial class Category : BaseEntity
 {
-    public int CategoryId { get; set; }
+    public long CategoryId { get; set; }
 
     public string Name { get; set; } = null!;
 
-    public string ImageUrl { get; set; } = null!;
-
-    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-    public bool? IsDelete { get; set; } = false;
+    public string Thumbnail { get; set; } = null!;
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

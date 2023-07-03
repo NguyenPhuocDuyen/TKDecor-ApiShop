@@ -25,7 +25,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _category.GetAll();
-            list = list.Where(x => x.IsDelete is not true)
+            list = list.Where(x => x.IsDelete == false)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
             var result = _mapper.Map<List<CategoryGetDto>>(list);
