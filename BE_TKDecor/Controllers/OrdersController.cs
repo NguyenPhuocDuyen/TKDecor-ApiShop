@@ -39,7 +39,7 @@ namespace BE_TKDecor.Controllers
             _cart = cart;
         }
 
-        // POST: api/Orders/GetOrder
+        // GET: api/Orders/GetOrder
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -50,6 +50,22 @@ namespace BE_TKDecor.Controllers
             var orders = await _order.FindByUserId(user.UserId);
             orders = orders.Where(x => x.IsDelete == false).ToList();
             var result = _mapper.Map<List<OrderGetDto>>(orders);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
+        // GET: api/Orders/GetOrder
+        [HttpGet("FindById/{id}")]
+        public async Task<IActionResult> FindById(long id)
+        {
+            var user = await GetUser();
+            if (user == null)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var orders = await _order.FindById(id);
+            if (orders == null || orders.UserId != user.UserId)
+                return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
+
+            var result = _mapper.Map<OrderGetDto>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
