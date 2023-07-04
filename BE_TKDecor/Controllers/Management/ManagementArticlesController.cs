@@ -42,9 +42,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementArticles/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Article article)
+        public async Task<IActionResult> Create(ArticleCreateDto articleDto)
         {
-            var articleDb = await _article.FindByTitle(article.Title);
+            var articleDb = await _article.FindByTitle(articleDto.Title);
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Article already exist!" });
 
@@ -53,7 +53,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // create new article info
-            Article newArticle = _mapper.Map<Article>(article);
+            Article newArticle = _mapper.Map<Article>(articleDto);
             newArticle.UserId = user.UserId;
             newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
             newArticle.IsPublish = true;
