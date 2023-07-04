@@ -53,7 +53,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Orders/GetOrder
+        // GET: api/Orders/FindById/1
         [HttpGet("FindById/{id}")]
         public async Task<IActionResult> FindById(long id)
         {
