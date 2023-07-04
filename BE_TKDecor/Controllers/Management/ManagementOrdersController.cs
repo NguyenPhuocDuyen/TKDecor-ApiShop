@@ -36,6 +36,18 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/ManagementOrders/FindById/1
+        [HttpGet("FindById/{id}")]
+        public async Task<IActionResult> FindById(long id)
+        {
+            var orders = await _order.FindById(id);
+            if (orders == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
+
+            var result = _mapper.Map<OrderGetDto>(orders);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
         // POST: api/ManagementOrders/UpdateStatusOrder
         [HttpPut("UpdateStatusOrder/{id}")]
         public async Task<IActionResult> UpdateStatusOrder(int id, OrderUpdateStatusDto orderUpdateStatusDto)
