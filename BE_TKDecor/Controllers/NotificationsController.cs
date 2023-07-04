@@ -51,7 +51,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var notifications = await _notification.GetAll(user.UserId);
-            notifications = notifications.Where(x => x.IsRead is not true).ToList();
+            notifications = notifications.Where(x => x.IsRead == false).ToList();
             foreach (var item in notifications)
             {
                 item.IsRead = true;
