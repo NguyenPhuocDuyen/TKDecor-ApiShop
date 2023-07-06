@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    [Migration("20230706153116_Initial")]
+    [Migration("20230706163521_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -1290,7 +1290,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
                 {
-                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductInteractionStatus")
+                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductReviewInteractionStatuses")
                         .WithMany("ProductReviewInteractions")
                         .HasForeignKey("ProductInteractionStatusId")
                         .IsRequired()
@@ -1308,9 +1308,9 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_ProductReviewInteraction_User");
 
-                    b.Navigation("ProductInteractionStatus");
-
                     b.Navigation("ProductReview");
+
+                    b.Navigation("ProductReviewInteractionStatuses");
 
                     b.Navigation("User");
                 });

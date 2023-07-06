@@ -1287,7 +1287,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
                 {
-                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductInteractionStatus")
+                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductReviewInteractionStatuses")
                         .WithMany("ProductReviewInteractions")
                         .HasForeignKey("ProductInteractionStatusId")
                         .IsRequired()
@@ -1305,9 +1305,9 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_ProductReviewInteraction_User");
 
-                    b.Navigation("ProductInteractionStatus");
-
                     b.Navigation("ProductReview");
+
+                    b.Navigation("ProductReviewInteractionStatuses");
 
                     b.Navigation("User");
                 });

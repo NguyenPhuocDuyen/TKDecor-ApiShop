@@ -1,11 +1,6 @@
 ﻿using BusinessObject;
 using DataAccess.DAO;
 using DataAccess.Repository.IRepository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
@@ -23,7 +18,13 @@ namespace DataAccess.Repository
         public async Task<ProductReview?> FindByUserIdAndProductId(long userId, long productId)
             => await ProductReviewDAO.FindByUserIdAndProductId(userId, productId);
 
+        public async Task<List<ProductReview>> FindByProductId(long productId)
+            => await ProductReviewDAO.FindByProductId(productId);
+
         public async Task Update(ProductReview productReview)
             => await ProductReviewDAO.Update(productReview);
+
+        public async Task<List<ProductReview>> FindByUserId(long userId)
+            => await ProductReviewDAO.FindByUserId(userId);
     }
 }

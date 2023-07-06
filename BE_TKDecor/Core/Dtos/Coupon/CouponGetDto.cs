@@ -14,6 +14,8 @@ namespace BE_TKDecor.Core.Dtos.Coupon
 
         public decimal Value { get; set; }
 
+        public decimal MaxValue { get; set; }
+
         public int RemainingUsageCount { get; set; }
 
         public DateTime? StartDate { get; set; } = DateTime.UtcNow;

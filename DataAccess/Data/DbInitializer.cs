@@ -188,7 +188,7 @@ namespace DataAccess.Data
                             ProductReviewId = pr.ProductId,
                             ProductReview = pr,
                             ProductInteractionStatusId = likeStatus.ProductReviewInteractionStatusId,
-                            ProductInteractionStatus = likeStatus
+                            ProductReviewInteractionStatuses = likeStatus
                         };
                         _db.ProductReviewInteractions.Add(productInteraction);
                     }
@@ -300,7 +300,7 @@ namespace DataAccess.Data
                             Quantity = new Random().Next(1, 5),
                             PaymentPrice = p.Price
                         };
-                        order.TotalPrice += orderDetail.PaymentPrice;
+                        order.TotalPrice += orderDetail.PaymentPrice * orderDetail.Quantity;
                         order.OrderDetails.Add(orderDetail);
                     }
                     _db.Orders.Add(order);

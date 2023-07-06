@@ -70,5 +70,37 @@ namespace DataAccess.DAO
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
+
+        internal static async Task<List<ProductReview>> FindByProductId(long productId)
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var productReviews = await context.ProductReviews
+                    .Include(x => x.User)
+                    .Include(x => x.ProductReviewInteractions)
+                        .ThenInclude(x => x.ProductReviewInteractionStatuses)
+                    .Where(x => x.ProductId == productId)
+                    .ToListAsync();
+                return productReviews;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        internal static async Task<List<ProductReview>> FindByUserId(long userId)
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var productReviews = await context.ProductReviews
+                    .Include(x => x.User)
+                    .Include(x => x.ProductReviewInteractions)
+                        .ThenInclude(x => x.ProductReviewInteractionStatuses)
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
+                return productReviews;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
     }
 }

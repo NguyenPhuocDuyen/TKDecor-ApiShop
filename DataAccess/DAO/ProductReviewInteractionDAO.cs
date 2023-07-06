@@ -58,5 +58,20 @@ namespace DataAccess.DAO
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
+
+        internal static async Task<List<ProductReviewInteraction>> FindByUserId(long userId)
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var productReviewInterations = await context.ProductReviewInteractions
+                    .Include(x => x.ProductReviewInteractionStatuses)
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
+                return productReviewInterations;
+
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
     }
 }

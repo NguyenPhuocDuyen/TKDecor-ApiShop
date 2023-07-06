@@ -132,11 +132,14 @@ namespace BE_TKDecor.Controllers
                 };
                 newOrder.OrderDetails.Add(orderDetail);
             }
+
             // calculate total price
             newOrder.TotalPrice = newOrder.OrderDetails.Sum(x => x.PaymentPrice * x.Quantity);
             // check coupon discount
             if (coupon != null)
             {
+                newOrder.CouponId = coupon.CouponId;
+                newOrder.Coupon = coupon;
                 if (coupon.CouponType.Name == CouponTypeContent.ByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)

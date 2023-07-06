@@ -17,6 +17,9 @@ namespace DataAccess.Repository
         public async Task<ProductReviewInteraction?> FindById(long id)
             => await ProductReviewInteractionDAO.FindById(id);
 
+        public async Task<List<ProductReviewInteraction>> FindByUserId(long userId)
+            => await ProductReviewInteractionDAO.FindByUserId(userId);
+
         public async Task<ProductReviewInteraction?> FindByUserIdAndProductReviewId(long userId, long productReviewId)
             => await ProductReviewInteractionDAO.FindByUserIdAndProductReviewId(userId, productReviewId);
 

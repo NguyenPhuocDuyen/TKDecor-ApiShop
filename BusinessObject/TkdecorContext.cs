@@ -517,7 +517,7 @@ public partial class TkdecorContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReviewInteraction_Product");
 
-            entity.HasOne(d => d.ProductInteractionStatus).WithMany(p => p.ProductReviewInteractions)
+            entity.HasOne(d => d.ProductReviewInteractionStatuses).WithMany(p => p.ProductReviewInteractions)
                 .HasForeignKey(d => d.ProductInteractionStatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReviewInteraction_ProductReviewInteractionStatus");

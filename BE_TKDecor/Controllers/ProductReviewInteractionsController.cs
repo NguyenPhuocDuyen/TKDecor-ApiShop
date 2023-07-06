@@ -1,4 +1,6 @@
-﻿using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
+﻿using AutoMapper;
+using BE_TKDecor.Core.Dtos.ProductReview;
+using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
@@ -7,32 +9,49 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BE_TKDecor.Controllers.Management
+namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = RoleContent.Customer)]
     public class ProductReviewInteractionsController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IProductReviewRepository _productReview;
         private readonly IProductReviewInteractionRepository _interaction;
         private readonly IProductReviewInteractionStatusRepository _interactionStatus;
 
-        public ProductReviewInteractionsController(
+        public ProductReviewInteractionsController(IMapper mapper,
             IUserRepository user,
             IProductReviewRepository productReview,
             IProductReviewInteractionRepository interaction,
             IProductReviewInteractionStatusRepository interactionStatus)
         {
+            _mapper = mapper;
             _user = user;
             _productReview = productReview;
             _interaction = interaction;
             _interactionStatus = interactionStatus;
         }
 
+        // GET: api/ProductReviews/GetAll
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var user = await GetUser();
+            if (user == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
+            productReviewInteraction = productReviewInteraction.Where(x => x.IsDelete == false).ToList();
+
+            var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
         // POST: api/ProductReviews/Interaction
-        [HttpPost]
+        [HttpPost("Interaction")]
         public async Task<IActionResult> Interaction(ProductReviewInteractionDto interactionDto)
         {
             var user = await GetUser();
@@ -71,7 +90,7 @@ namespace BE_TKDecor.Controllers.Management
                 interactionReview.UpdatedAt = DateTime.UtcNow;
             }
             interactionReview.ProductInteractionStatusId = status.ProductReviewInteractionStatusId;
-            interactionReview.ProductInteractionStatus = status;
+            interactionReview.ProductReviewInteractionStatuses = status;
 
             try
             {

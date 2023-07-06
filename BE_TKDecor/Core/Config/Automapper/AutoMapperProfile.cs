@@ -8,6 +8,7 @@ using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.ProductReport;
+using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
@@ -73,6 +74,10 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
 
+            // product review interaction
+            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>()
+                .ForMember(dest => dest.Interaction, opt => opt.MapFrom(src => src.ProductReviewInteractionStatuses.Name));
+
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()
                 .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
@@ -82,6 +87,7 @@ namespace BE_TKDecor.Core.Config.Automapper
             // report product review
             CreateMap<ReportProductReview, ReportProductReviewGetDto>()
                 .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
+                .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
                 .ForMember(dest => dest.ReportStatusName, opt => opt.MapFrom(src => src.ReportStatus.Name))
                 .ForMember(dest => dest.ProductReviewReportedDescription, opt => opt.MapFrom(src => src.ProductReviewReported.Description));
 
