@@ -5,7 +5,7 @@ namespace BE_TKDecor.Core.Dtos.Product
 {
     public class ProductCreateDto
     {
-        public int CategoryId { get; set; }
+        public long CategoryId { get; set; }
 
         //public int? Product3DModelId { get; set; }
         [MaxLength(255)]

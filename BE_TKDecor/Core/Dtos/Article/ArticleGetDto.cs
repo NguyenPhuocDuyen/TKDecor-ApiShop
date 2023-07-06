@@ -2,9 +2,9 @@
 {
     public class ArticleGetDto
     {
-        public int ArticleId { get; set; }
+        public long ArticleId { get; set; }
 
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         public string UserName { get; set; } = null!;
 

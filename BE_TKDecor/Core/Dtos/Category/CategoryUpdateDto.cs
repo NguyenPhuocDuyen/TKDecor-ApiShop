@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.Category
 {
     public class CategoryUpdateDto
     {
-        public int CategoryId { get; set; }
+        public long CategoryId { get; set; }
 
         [MaxLength(255)]
         public string Name { get; set; } = null!;

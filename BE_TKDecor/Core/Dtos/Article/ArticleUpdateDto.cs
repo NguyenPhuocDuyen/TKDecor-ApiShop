@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.Article
 {
     public class ArticleUpdateDto
     {
-        public int ArticleId { get; set; }
+        public long ArticleId { get; set; }
 
         [MaxLength(255)]
         public string Title { get; set; } = null!;

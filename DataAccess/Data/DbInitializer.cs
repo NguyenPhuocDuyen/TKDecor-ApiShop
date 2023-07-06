@@ -36,7 +36,7 @@ namespace DataAccess.Data
             await AddProductImages();
             await AddCarts();
             await AddProductFavorites();
-            await AddProductInteractions();
+            await AddProductReviewInteractions();
             await AddProductReports();
             await AddOrders();
             await AddProductReview();
@@ -163,11 +163,11 @@ namespace DataAccess.Data
             }
         }
 
-        private async Task AddProductInteractions()
+        private async Task AddProductReviewInteractions()
         {
-            if (_db.ProductInteractions.Any()) return;
+            if (_db.ProductReviewInteractions.Any()) return;
 
-            var likeStatus = await _db.ProductInteractionStatuses
+            var likeStatus = await _db.ProductReviewInteractionStatuses
                 .FirstOrDefaultAsync(x => x.Name == ProductInteractionStatusContent.Like);
             if (likeStatus != null)
             {
@@ -188,9 +188,9 @@ namespace DataAccess.Data
                             ProductReviewId = pr.ProductId,
                             ProductReview = pr,
                             ProductInteractionStatusId = likeStatus.ProductReviewInteractionStatusId,
-                            ProductInteractionStatus = likeStatus
+                            ProductReviewInteractionStatuses = likeStatus
                         };
-                        _db.ProductInteractions.Add(productInteraction);
+                        _db.ProductReviewInteractions.Add(productInteraction);
                     }
                 }
                 _db.SaveChanges();
@@ -285,9 +285,10 @@ namespace DataAccess.Data
                         FullName = u.UserAddresses?.FirstOrDefault()?.FullName ?? "",
                         Phone = u.UserAddresses?.FirstOrDefault()?.Phone ?? "",
                         Address = u.UserAddresses?.FirstOrDefault()?.Address ?? "",
+                        Note = "Note ne",
                         TotalPrice = 0,
+                        OrderDetails = new List<OrderDetail>()
                     };
-                    order.OrderDetails = new List<OrderDetail>();
 
                     foreach (var p in products)
                     {
@@ -299,7 +300,7 @@ namespace DataAccess.Data
                             Quantity = new Random().Next(1, 5),
                             PaymentPrice = p.Price
                         };
-                        order.TotalPrice += orderDetail.PaymentPrice;
+                        order.TotalPrice += orderDetail.PaymentPrice * orderDetail.Quantity;
                         order.OrderDetails.Add(orderDetail);
                     }
                     _db.Orders.Add(order);
@@ -369,6 +370,7 @@ namespace DataAccess.Data
                     coupon.CouponType = couponTypeValue;
                     coupon.Code = "CodeValue" + i;
                     coupon.Value = i * 10000;
+                    coupon.MaxValue = 0;
                     _db.Coupons.Add(coupon);
                 }
             }
@@ -382,6 +384,7 @@ namespace DataAccess.Data
                     coupon.CouponType = couponTypePercent;
                     coupon.Code = "CodePercent" + i;
                     coupon.Value = i * 10;
+                    coupon.MaxValue = 1000000;
                     _db.Coupons.Add(coupon);
                 }
             }
@@ -549,9 +552,10 @@ namespace DataAccess.Data
             List<ProductReviewInteractionStatus> productInteractionStatuses = new()
             {
                 new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.Like},
-                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.DisLike}
+                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.DisLike},
+                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.Normal}
             };
-            _db.ProductInteractionStatuses.AddRange(productInteractionStatuses);
+            _db.ProductReviewInteractionStatuses.AddRange(productInteractionStatuses);
 
             List<ReportStatus> reportStatuses = new()
             {

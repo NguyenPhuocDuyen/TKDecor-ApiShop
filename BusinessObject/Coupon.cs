@@ -10,6 +10,8 @@ public partial class Coupon : BaseEntity
 
     public decimal Value { get; set; }
 
+    public decimal MaxValue { get; set; }
+
     public int RemainingUsageCount { get; set; }
 
     public DateTime StartDate { get; set; } = DateTime.UtcNow;
@@ -19,4 +21,6 @@ public partial class Coupon : BaseEntity
     public bool IsActive { get; set; } = false;
 
     public virtual CouponType CouponType { get; set; } = null!;
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

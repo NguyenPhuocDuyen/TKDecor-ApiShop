@@ -5,7 +5,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
 {
     public class CouponCreateDto
     {
-        public int CouponTypeId { get; set; }
+        public long CouponTypeId { get; set; }
 
         [MaxLength(255)]
         public string Code { get; set; } = null!;

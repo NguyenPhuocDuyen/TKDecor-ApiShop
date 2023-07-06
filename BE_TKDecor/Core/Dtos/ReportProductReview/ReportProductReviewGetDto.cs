@@ -2,11 +2,13 @@
 {
     public class ReportProductReviewGetDto
     {
-        public int ReportProductReviewId { get; set; }
+        public long ReportProductReviewId { get; set; }
 
         //public int UserReportId { get; set; }
 
         public string UserReportName { get; set; } = null!;
+
+        public string UserReportEmail { get; set; } = null!;
 
         //public int ProductReviewReportedId { get; set; }
 

@@ -17,5 +17,5 @@ public partial class ProductReviewInteraction : BaseEntity
 
     public virtual ProductReview ProductReview { get; set; } = null!;
 
-    public virtual ProductReviewInteractionStatus ProductInteractionStatus { get; set; } = null!;
+    public virtual ProductReviewInteractionStatus ProductReviewInteractionStatuses { get; set; } = null!;
 }

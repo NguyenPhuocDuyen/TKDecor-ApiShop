@@ -57,6 +57,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
 builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
@@ -69,6 +70,8 @@ builder.Services.AddScoped<IReportStatusRepository, ReportStatusRepository>();
 builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
 builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
+builder.Services.AddScoped<IProductReviewInteractionStatusRepository, ProductReviewInteractionStatusRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

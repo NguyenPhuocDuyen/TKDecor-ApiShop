@@ -3,6 +3,7 @@ using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Product;
 using AutoMapper;
+using BE_TKDecor.Core.Dtos.ProductReview;
 
 namespace BE_TKDecor.Controllers
 {
@@ -12,12 +13,15 @@ namespace BE_TKDecor.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IProductRepository _product;
+        private readonly IProductReviewRepository _productReview;
 
         public ProductsController(IMapper mapper,
-            IProductRepository product)
+            IProductRepository product,
+            IProductReviewRepository productReview)
         {
             _mapper = mapper;
             _product = product;
+            _productReview = productReview;
         }
 
         // GET: api/Products/GetAll
@@ -48,6 +52,21 @@ namespace BE_TKDecor.Controllers
 
             var result = _mapper.Map<List<ProductGetDto>>(sort);
 
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
+        // GET: api/Products/Review/2
+        [HttpGet("GetReview/{id}")]
+        public async Task<IActionResult> GetReview(int id)
+        {
+            var product = await _product.FindById(id);
+            if (product == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+
+            var revews = await _productReview.FindByProductId(product.ProductId);
+            revews = revews.Where(x => x.IsDelete == false).ToList();
+
+            var result = _mapper.Map<List<ProductReviewGetDto>>(revews);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 

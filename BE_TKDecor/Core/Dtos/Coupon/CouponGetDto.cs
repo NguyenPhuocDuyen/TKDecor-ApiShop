@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
 {
     public class CouponGetDto
     {
-        public int CouponId { get; set; }
+        public long CouponId { get; set; }
 
         //public int CouponTypeId { get; set; }
 
@@ -13,6 +13,8 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         public string Code { get; set; } = null!;
 
         public decimal Value { get; set; }
+
+        public decimal MaxValue { get; set; }
 
         public int RemainingUsageCount { get; set; }
 

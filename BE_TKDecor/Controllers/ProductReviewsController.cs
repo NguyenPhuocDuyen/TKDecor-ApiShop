@@ -4,6 +4,8 @@ using BE_TKDecor.Core.Dtos.ProductReview;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
+using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
+using AutoMapper;
 
 namespace BE_TKDecor.Controllers
 {
@@ -12,18 +14,36 @@ namespace BE_TKDecor.Controllers
     [Authorize]
     public class ProductReviewsController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IProductRepository _product;
         private readonly IProductReviewRepository _productReview;
 
-        public ProductReviewsController(IUserRepository user,
+        public ProductReviewsController(IMapper mapper,
+            IUserRepository user,
             IProductRepository product,
             IProductReviewRepository productReview)
         {
+            _mapper = mapper;
             _user = user;
             _product = product;
             _productReview = productReview;
         }
+
+        //// GET: api/ProductReviews/GetAll
+        //[HttpGet("GetAll")]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var user = await GetUser();
+        //    if (user == null)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+        //    var productReview = await _productReview.FindByUserId(user.UserId);
+        //    productReview = productReview.Where(x => x.IsDelete == false).ToList();
+
+        //    var result = _mapper.Map<List<ProductReviewGetDto>>(productReview);
+        //    return Ok(new ApiResponse { Success = true, Data = result });
+        //}
 
         // POST: api/ProductReviews/Review
         [HttpPost("Review")]

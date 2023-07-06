@@ -9,6 +9,8 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IProductReviewRepository
     {
+        Task<List<ProductReview>> FindByUserId(long userId);
+        Task<List<ProductReview>> FindByProductId(long productId);
         Task Add(ProductReview productReview);
         Task Update(ProductReview productReview);
         Task<bool> CanReview(long userId, long productId);
