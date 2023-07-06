@@ -120,6 +120,7 @@ namespace BusinessObject.Migrations
                     coupon_type_id = table.Column<long>(type: "bigint", nullable: false),
                     code = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
                     value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
+                    max_value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
                     remaining_usage_count = table.Column<int>(type: "int", nullable: false),
                     start_date = table.Column<DateTime>(type: "datetime", nullable: false),
                     end_date = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -335,9 +336,11 @@ namespace BusinessObject.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     order_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    coupon_id = table.Column<long>(type: "bigint", nullable: true),
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    note = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     total_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -346,6 +349,11 @@ namespace BusinessObject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Order__465962292D23A46C", x => x.order_id);
+                    table.ForeignKey(
+                        name: "FK_Order_Coupon",
+                        column: x => x.coupon_id,
+                        principalTable: "Coupon",
+                        principalColumn: "coupon_id");
                     table.ForeignKey(
                         name: "FK_Order_OrderStatus",
                         column: x => x.order_status_id,
@@ -645,6 +653,11 @@ namespace BusinessObject.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Order_coupon_id",
+                table: "Order",
+                column: "coupon_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Order_order_status_id",
                 table: "Order",
                 column: "order_status_id");
@@ -784,9 +797,6 @@ namespace BusinessObject.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "Coupon");
-
-            migrationBuilder.DropTable(
                 name: "Message");
 
             migrationBuilder.DropTable(
@@ -817,9 +827,6 @@ namespace BusinessObject.Migrations
                 name: "UserAddress");
 
             migrationBuilder.DropTable(
-                name: "CouponType");
-
-            migrationBuilder.DropTable(
                 name: "Order");
 
             migrationBuilder.DropTable(
@@ -832,6 +839,9 @@ namespace BusinessObject.Migrations
                 name: "ReportStatus");
 
             migrationBuilder.DropTable(
+                name: "Coupon");
+
+            migrationBuilder.DropTable(
                 name: "OrderStatus");
 
             migrationBuilder.DropTable(
@@ -839,6 +849,9 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "CouponType");
 
             migrationBuilder.DropTable(
                 name: "Category");

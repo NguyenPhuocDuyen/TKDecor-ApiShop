@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReport
 {
     public class ProductReportGetDto
     {
-        public int ProductReportId { get; set; }
+        public long ProductReportId { get; set; }
 
         //public int ProductReportedId { get; set; }
 

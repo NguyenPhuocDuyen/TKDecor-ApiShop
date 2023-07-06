@@ -2,7 +2,7 @@
 {
     public class ReportProductReviewGetDto
     {
-        public int ReportProductReviewId { get; set; }
+        public long ReportProductReviewId { get; set; }
 
         //public int UserReportId { get; set; }
 

@@ -44,7 +44,7 @@ namespace BE_TKDecor.Controllers
         //}
 
         // GET: api/Coupons/GetByCode/5
-        [HttpGet("GetById/{code}")]
+        [HttpGet("GetByCode/{code}")]
         public async Task<IActionResult> GetCoupon(string code)
         {
             var coupon = await _coupon.FindByCode(code);

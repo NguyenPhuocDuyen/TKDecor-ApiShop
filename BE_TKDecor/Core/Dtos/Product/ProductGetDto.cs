@@ -4,13 +4,13 @@ namespace BE_TKDecor.Core.Dtos.Product
 {
     public class ProductGetDto
     {
-        public int ProductId { get; set; }
+        public long ProductId { get; set; }
 
         //public int CategoryId { get; set; }
 
         public string CategoryName { get; set; } = null!;
 
-        public int? Product3DModelId { get; set; }
+        public long? Product3DModelId { get; set; }
 
         public string Name { get; set; } = null!;
 
@@ -39,7 +39,7 @@ namespace BE_TKDecor.Core.Dtos.Product
 
     public class ProductReviewGetDto
     {
-        public int ProductReviewId { get; set; }
+        public long ProductReviewId { get; set; }
 
         public string? UserAvatarUrl { get; set; }
 

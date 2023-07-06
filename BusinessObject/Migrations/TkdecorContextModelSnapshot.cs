@@ -248,6 +248,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
+                    b.Property<decimal>("MaxValue")
+                        .HasColumnType("decimal(8, 0)")
+                        .HasColumnName("max_value");
+
                     b.Property<int>("RemainingUsageCount")
                         .HasColumnType("int")
                         .HasColumnName("remaining_usage_count");
@@ -351,6 +355,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
+                    b.Property<long?>("CouponId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("coupon_id");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
@@ -363,6 +371,11 @@ namespace BusinessObject.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("note");
 
                     b.Property<long>("OrderStatusId")
                         .HasColumnType("bigint")
@@ -388,6 +401,8 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("OrderId")
                         .HasName("PK__Order__465962292D23A46C");
+
+                    b.HasIndex(new[] { "CouponId" }, "IX_Order_coupon_id");
 
                     b.HasIndex(new[] { "OrderStatusId" }, "IX_Order_order_status_id");
 
@@ -1134,6 +1149,11 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Order", b =>
                 {
+                    b.HasOne("BusinessObject.Coupon", "Coupon")
+                        .WithMany("Orders")
+                        .HasForeignKey("CouponId")
+                        .HasConstraintName("FK_Order_Coupon");
+
                     b.HasOne("BusinessObject.OrderStatus", "OrderStatus")
                         .WithMany("Orders")
                         .HasForeignKey("OrderStatusId")
@@ -1145,6 +1165,8 @@ namespace BusinessObject.Migrations
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_User");
+
+                    b.Navigation("Coupon");
 
                     b.Navigation("OrderStatus");
 
@@ -1353,6 +1375,11 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("BusinessObject.Coupon", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("BusinessObject.CouponType", b =>

@@ -44,9 +44,9 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<ProductImage> ProductImages { get; set; }
 
-    public virtual DbSet<ProductReviewInteraction> ProductInteractions { get; set; }
+    public virtual DbSet<ProductReviewInteraction> ProductReviewInteractions { get; set; }
 
-    public virtual DbSet<ProductReviewInteractionStatus> ProductInteractionStatuses { get; set; }
+    public virtual DbSet<ProductReviewInteractionStatus> ProductReviewInteractionStatuses { get; set; }
 
     public virtual DbSet<ProductReport> ProductReports { get; set; }
 
@@ -198,6 +198,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.Value)
                 .HasColumnType("decimal(8, 0)")
                 .HasColumnName("value");
+            entity.Property(e => e.MaxValue)
+                .HasColumnType("decimal(8, 0)")
+                .HasColumnName("max_value");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
@@ -294,8 +297,11 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.UserId, "IX_Order_user_id");
 
+            entity.HasIndex(e => e.CouponId, "IX_Order_coupon_id");
+
             entity.Property(e => e.OrderId).HasColumnType("bigint").HasColumnName("order_id");
             entity.Property(e => e.Address).HasColumnName("address");
+            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
             entity.Property(e => e.OrderStatusId).HasColumnType("bigint").HasColumnName("order_status_id");
@@ -314,6 +320,7 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
 
             entity.Property(e => e.UserId).HasColumnType("bigint").HasColumnName("user_id");
+            entity.Property(e => e.CouponId).HasColumnType("bigint").HasColumnName("coupon_id");
 
             entity.HasOne(d => d.OrderStatus).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.OrderStatusId)
@@ -324,6 +331,11 @@ public partial class TkdecorContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_User");
+
+            entity.HasOne(d => d.Coupon).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.CouponId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Order_Coupon");
         });
 
         modelBuilder.Entity<OrderDetail>(entity =>

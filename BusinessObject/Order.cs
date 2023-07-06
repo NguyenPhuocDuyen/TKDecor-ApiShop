@@ -11,11 +11,15 @@ public partial class Order : BaseEntity
 
     public long OrderStatusId { get; set; }
 
+    public long? CouponId { get; set; }
+
     public string FullName { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
 
     public string Address { get; set; } = null!;
+
+    public string Note { get; set; } = null!;
 
     public decimal TotalPrice { get; set; }
 
@@ -24,4 +28,6 @@ public partial class Order : BaseEntity
     public virtual OrderStatus OrderStatus { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
+
+    public virtual Coupon? Coupon { get; set; }
 }

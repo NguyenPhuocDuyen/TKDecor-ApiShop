@@ -5,9 +5,9 @@ namespace BE_TKDecor.Core.Dtos.Product
 {
     public class ProductUpdateDto
     {
-        public int ProductId { get; set; }
+        public long ProductId { get; set; }
 
-        public int CategoryId { get; set; }
+        public long CategoryId { get; set; }
 
         //public int? Product3DModelId { get; set; }
 

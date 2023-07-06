@@ -4,16 +4,19 @@ namespace BE_TKDecor.Core.Dtos.Order
 {
     public class OrderGetDto
     {
-        public int OrderId { get; set; }
+        public long OrderId { get; set; }
 
-        //public int OrderStatusId { get; set; }
         public string OrderStatusName { get; set; } = null!;
+
+        public string Email { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
 
         public string Phone { get; set; } = null!;
 
         public string Address { get; set; } = null!;
+
+        public string Note { get; set; } = null!;
 
         public decimal TotalPrice { get; set; }
 
@@ -26,9 +29,9 @@ namespace BE_TKDecor.Core.Dtos.Order
 
     public class OrderDetailGetDto
     {
-        public int OrderDetailId { get; set; }
+        public long OrderDetailId { get; set; }
 
-        public int ProductId { get; set; }
+        public long ProductId { get; set; }
 
         public string ProductName { get; set; } = null!;
 

@@ -8,7 +8,8 @@ namespace DataAccess.StatusContent
 {
     public class ProductInteractionStatusContent
     {
-        public static string Like = "Like";
-        public static string DisLike = "DisLike";
+        public const string Like = "Like";
+        public const string DisLike = "DisLike";
+        public const string Normal = "Normal";
     }
 }

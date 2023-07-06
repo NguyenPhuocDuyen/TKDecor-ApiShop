@@ -2,7 +2,7 @@
 {
     public class NotificationGetDto
     {
-        public int NotificationId { get; set; }
+        public long NotificationId { get; set; }
 
         public string Message { get; set; } = null!;
 
