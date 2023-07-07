@@ -18,7 +18,7 @@ namespace BE_TKDecor.Core.Dtos.User
         [MaxLength(255)]
         public string FullName { get; set; } = null!;
 
-        [MaxLength(255)]
-        public string? AvatarUrl { get; set; }
+        //[MaxLength(255)]
+        //public string? AvatarUrl { get; set; }
     }
 }

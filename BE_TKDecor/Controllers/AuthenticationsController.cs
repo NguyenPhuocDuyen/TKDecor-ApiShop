@@ -70,6 +70,7 @@ namespace BE_TKDecor.Controllers
 
             // initial new user
             User newUser = _mapper.Map<User>(userDto);
+            newUser.AvatarUrl = "";
             newUser.RoleId = role.RoleId;
             newUser.Password = Password.HashPassword(newUser.Password);
             newUser.EmailConfirmed = false;
