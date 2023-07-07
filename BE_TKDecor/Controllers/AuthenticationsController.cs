@@ -50,38 +50,44 @@ namespace BE_TKDecor.Controllers
             userDto.Email = userDto.Email.ToLower().Trim();
             //get user in database by email
             User? u = await _user.FindByEmail(userDto.Email);
+            bool isAdd = true;
             //check exists
             if (u != null)
             {
-                if (u.EmailConfirmed is not true)
+                if (u.EmailConfirmed == true)
                 {
                     return BadRequest(new ApiResponse
-                    { Message = "Mail is registered but not confirmed!" });
+                    { Message = "Email already exists!" });
                 }
-
-                return BadRequest(new ApiResponse
-                { Message = "Email already exists!" });
+                isAdd = false;
             }
 
-            // take customer role
-            Role? role = await _role.FindByName(RoleContent.Customer);
+            // initial new user
+            if (isAdd)
+            {
+                // take customer role
+                Role? role = await _role.FindByName(RoleContent.Customer);
+                u = new User
+                {
+                    AvatarUrl = "",
+                    RoleId = role.RoleId,
+                    EmailConfirmed = false
+                };
+            }
+            //u = _mapper.Map<User>(userDto);
+
             // get random code
             string code = RandomCode.GenerateRandomCode();
-
-            // initial new user
-            User newUser = _mapper.Map<User>(userDto);
-            newUser.AvatarUrl = "";
-            newUser.RoleId = role.RoleId;
-            newUser.Password = Password.HashPassword(newUser.Password);
-            newUser.EmailConfirmed = false;
-            newUser.EmailConfirmationCode = code;
-            newUser.EmailConfirmationSentAt = DateTime.UtcNow;
+            u.Password = Password.HashPassword(u.Password);
+            u.EmailConfirmationCode = code;
+            u.EmailConfirmationSentAt = DateTime.UtcNow;
+            u.UpdatedAt = DateTime.UtcNow;
 
             //send mail to confirm account
             //set data to send
             MailContent mailContent = new()
             {
-                To = newUser.Email,
+                To = u.Email,
                 Subject = "Activate account for TKDecor Shop",
                 Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
             };
@@ -90,8 +96,15 @@ namespace BE_TKDecor.Controllers
 
             try
             {
-                // add user
-                await _user.Add(newUser);
+                if (isAdd)
+                {
+                    // add user
+                    await _user.Add(u);
+                }
+                else
+                {
+                    await _user.Update(u);
+                }
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -112,12 +125,37 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse
                 { Message = "Wrong code!" });
 
-            //set email confirm
-            user.EmailConfirmed = true;
+            bool codeOutOfDate = false;
+            if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
+            {
+                codeOutOfDate = true;
+                string code = RandomCode.GenerateRandomCode();
+                user.EmailConfirmationCode = code;
+                user.EmailConfirmationSentAt = DateTime.UtcNow;
+                //send mail to confirm account
+                //set data to send
+                MailContent mailContent = new()
+                {
+                    To = user.Email,
+                    Subject = "Activate account for TKDecor Shop",
+                    Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
+                };
+                // send mail
+                await _sendMailService.SendMail(mailContent);
+            }
+            else
+            {
+                //set email confirm
+                user.EmailConfirmed = true;
+            }
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
                 await _user.Update(user);
+                if (codeOutOfDate)
+                {
+                    return BadRequest(new ApiResponse { Message = "The code has expired. Please check your email again!" });
+                }
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
