@@ -11,10 +11,10 @@ namespace DataAccess.Repository
 {
     public class ProductFavoriteRepository : IProductFavoriteRepository
     {
-        public async Task<List<ProductFavorite>> FindFavoriteOfUser(long userId)
+        public async Task<List<ProductFavorite>> FindFavoriteOfUser(Guid userId)
             => await ProductFavoriteDAO.FindFavoriteOfUser(userId);
 
-        public async Task<ProductFavorite?> FindProductFavorite(long userId, long productId)
+        public async Task<ProductFavorite?> FindProductFavorite(Guid userId, Guid productId)
             => await ProductFavoriteDAO.FindProductFavorite(userId, productId);
 
         public async Task Update(ProductFavorite productFavorite)

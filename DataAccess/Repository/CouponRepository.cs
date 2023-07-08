@@ -17,7 +17,7 @@ namespace DataAccess.Repository
         public async Task<Coupon?> FindByCode(string code)
             => await CouponDAO.FindByCode(code);
 
-        public async Task<Coupon?> FindById(long id)
+        public async Task<Coupon?> FindById(Guid id)
             => await CouponDAO.FindById(id);
 
         public async Task<List<Coupon>> GetAll()

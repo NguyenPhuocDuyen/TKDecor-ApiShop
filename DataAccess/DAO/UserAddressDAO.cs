@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class UserAddressDAO
     {
-        internal static async Task<List<UserAddress>> FindByUserId(long userId)
+        internal static async Task<List<UserAddress>> FindByUserId(Guid userId)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<UserAddress?> FindById(long id)
+        internal static async Task<UserAddress?> FindById(Guid id)
         {
             try
             {

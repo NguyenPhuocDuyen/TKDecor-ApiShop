@@ -22,7 +22,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         } 
 
-        internal static async Task<Order?> FindById(long id)
+        internal static async Task<Order?> FindById(Guid id)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<List<Order>> FindByUserId(long userId)
+        internal static async Task<List<Order>> FindByUserId(Guid userId)
         {
             try
             {

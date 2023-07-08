@@ -37,7 +37,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementUsers/SetRole
         [HttpPut("SetRole/{userId}")]
-        public async Task<IActionResult> GetUserInfo(int userId, UserSetRoleDto userDto)
+        public async Task<IActionResult> GetUserInfo(Guid userId, UserSetRoleDto userDto)
         {
             if (userId != userDto.UserId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });

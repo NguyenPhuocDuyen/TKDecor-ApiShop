@@ -2,9 +2,9 @@
 
 public partial class Article : BaseEntity
 {
-    public long ArticleId { get; set; }
+    public Guid ArticleId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string Title { get; set; } = null!;
 

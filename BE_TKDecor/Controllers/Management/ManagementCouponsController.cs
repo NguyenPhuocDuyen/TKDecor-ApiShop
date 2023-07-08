@@ -35,6 +35,16 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/ManagementCoupons/GetALl
+        [HttpGet("GetCouponType")]
+        public async Task<IActionResult> GetCouponType()
+        {
+            var coupons = (await _coupon.GetAll())
+                   .OrderByDescending(x => x.UpdatedAt).ToList();
+            var result = _mapper.Map<List<CouponGetDto>>(coupons);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
         // POST: api/ManagementCoupons/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CouponCreateDto couponDto)
@@ -54,7 +64,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementCoupons/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> PutCoupon(int id, CouponUpdateDto couponDto)
+        public async Task<IActionResult> PutCoupon(Guid id, CouponUpdateDto couponDto)
         {
             if (id != couponDto.CouponId)
                 return BadRequest(new ApiResponse { Message = "ID does not match!" });
@@ -79,7 +89,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/ManagementCoupons/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteCoupon(int id)
+        public async Task<IActionResult> DeleteCoupon(Guid id)
         {
             var couponDb = await _coupon.FindById(id);
             if (couponDb == null)

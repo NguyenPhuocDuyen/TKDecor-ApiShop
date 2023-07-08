@@ -5,7 +5,7 @@ namespace BE_TKDecor.Core.Dtos.ReportProductReview
 {
     public class ReportProductReviewUpdateDto
     {
-        public long ReportProductReviewId { get; set; }
+        public Guid ReportProductReviewId { get; set; }
 
         [RegularExpression($"^({ReportStatusContent.Accept}|{ReportStatusContent.Reject})$")]
         public string ReportStatus { get; set; } = null!;

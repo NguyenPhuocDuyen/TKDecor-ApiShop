@@ -2,7 +2,7 @@
 {
     public class ReportProductReviewCreateDto
     {
-        public long ProductReviewReportedId { get; set; }
+        public Guid ProductReviewReportedId { get; set; }
 
         public string Reason { get; set; } = null!;
     }

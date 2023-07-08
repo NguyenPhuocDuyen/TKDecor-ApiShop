@@ -9,13 +9,13 @@ namespace DataAccess.Repository
         public async Task Add(ReportProductReview reportProductReview)
             => await ReportProductReviewDAO.Add(reportProductReview);
 
-        public async Task<ReportProductReview?> FindByUserIdAndProductReviewId(long userId, long productReviewId)
+        public async Task<ReportProductReview?> FindByUserIdAndProductReviewId(Guid userId, Guid productReviewId)
             => await ReportProductReviewDAO.FindByUserIdAndProductReviewId(userId, productReviewId);
 
         public async Task<List<ReportProductReview>> GetAll()
             => await ReportProductReviewDAO.GetAll();
 
-        public async Task<ReportProductReview?> FindById(long id)
+        public async Task<ReportProductReview?> FindById(Guid id)
             => await ReportProductReviewDAO.FindById(id);
 
         public async Task Update(ReportProductReview reportProductReview)

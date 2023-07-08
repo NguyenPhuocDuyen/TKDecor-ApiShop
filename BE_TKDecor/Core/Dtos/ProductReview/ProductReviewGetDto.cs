@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 {
     public class ProductReviewGetDto
     {
-        public long ProductReviewId { get; set; }
+        public Guid ProductReviewId { get; set; }
 
         public string? UserAvatarUrl { get; set; }
 
@@ -25,11 +25,11 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
     public class ProductReviewInteractionGetDto
     {
-        public long ProductReviewInteractionId { get; set; }
+        public Guid ProductReviewInteractionId { get; set; }
 
-        public long ProductReviewId { get; set; }
+        public Guid ProductReviewId { get; set; }
 
-        //public long ProductInteractionStatusId { get; set; }
+        //public Guid ProductInteractionStatusId { get; set; }
 
         public string Interaction { get; set; } = null!;
     }

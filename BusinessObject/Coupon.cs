@@ -2,9 +2,9 @@
 
 public partial class Coupon : BaseEntity
 {
-    public long CouponId { get; set; }
+    public Guid CouponId { get; set; }
 
-    public long CouponTypeId { get; set; }
+    public Guid CouponTypeId { get; set; }
 
     public string Code { get; set; } = null!;
 

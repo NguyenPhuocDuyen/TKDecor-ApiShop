@@ -72,7 +72,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/Products/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(int id, ProductUpdateDto productDto)
+        public async Task<IActionResult> Update(Guid id, ProductUpdateDto productDto)
         {
             if (id != productDto.ProductId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
@@ -141,7 +141,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/Products/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _product.FindById(id);
             if (product == null)

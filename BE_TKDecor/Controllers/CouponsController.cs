@@ -31,17 +31,17 @@ namespace BE_TKDecor.Controllers
         //    return Ok(new ApiResponse { Success = true, Data = result });
         //}
 
-        //// GET: api/Coupons/GetById/5
-        //[HttpGet("GetById/{id}")]
-        //public async Task<IActionResult> GetCoupon(int id)
-        //{
-        //    var coupon = await _coupon.FindById(id);
-        //    if (coupon == null || coupon.IsActive == false || coupon.IsDelete == true)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+        // GET: api/Coupons/GetById/5
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCoupon(Guid id)
+        {
+            var coupon = await _coupon.FindById(id);
+            if (coupon == null || coupon.IsActive == false || coupon.IsDelete == true)
+                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-        //    var result = _mapper.Map<CouponGetDto>(coupon);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
+            var result = _mapper.Map<CouponGetDto>(coupon);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
         // GET: api/Coupons/GetByCode/5
         [HttpGet("GetByCode/{code}")]

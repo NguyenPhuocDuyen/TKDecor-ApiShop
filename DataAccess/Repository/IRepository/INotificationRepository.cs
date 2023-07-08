@@ -4,7 +4,7 @@ namespace DataAccess.Repository.IRepository
 {
     public interface INotificationRepository
     {
-        Task<List<Notification>> GetAll(long userId);
+        Task<List<Notification>> GetAll(Guid userId);
         Task Update(Notification notification);
     }
 }

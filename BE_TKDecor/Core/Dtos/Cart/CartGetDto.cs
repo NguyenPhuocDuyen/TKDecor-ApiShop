@@ -2,7 +2,7 @@
 {
     public class CartGetDto
     {
-        public long CartId { get; set; }
+        public Guid CartId { get; set; }
 
         //public int ProductId { get; set; }
 

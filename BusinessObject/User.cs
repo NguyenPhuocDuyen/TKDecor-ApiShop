@@ -5,9 +5,9 @@ namespace BusinessObject;
 
 public partial class User : BaseEntity
 {
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
-    public long RoleId { get; set; }
+    public Guid RoleId { get; set; }
 
     public string Email { get; set; } = null!;
 
@@ -37,9 +37,9 @@ public partial class User : BaseEntity
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
-    public virtual ICollection<Chat> MessageReceivers { get; set; } = new List<Chat>();
+    public virtual ICollection<Chat> ChatReceivers { get; set; } = new List<Chat>();
 
-    public virtual ICollection<Chat> MessageSenders { get; set; } = new List<Chat>();
+    public virtual ICollection<Chat> ChatSenders { get; set; } = new List<Chat>();
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 

@@ -5,7 +5,7 @@ namespace BusinessObject;
 
 public partial class Product3DModel : BaseEntity
 {
-    public long Product3DModelId { get; set; }
+    public Guid Product3DModelId { get; set; }
 
     public string VideoUrl { get; set; } = null!;
 

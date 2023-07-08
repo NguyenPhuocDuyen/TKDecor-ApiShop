@@ -2,7 +2,7 @@
 
 public partial class Category : BaseEntity
 {
-    public long CategoryId { get; set; }
+    public Guid CategoryId { get; set; }
 
     public string Name { get; set; } = null!;
 

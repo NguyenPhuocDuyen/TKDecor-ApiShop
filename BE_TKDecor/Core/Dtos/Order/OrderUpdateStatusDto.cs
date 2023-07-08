@@ -5,7 +5,7 @@ namespace BE_TKDecor.Core.Dtos.Order
 {
     public class OrderUpdateStatusDto
     {
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
         [RegularExpression($"^({OrderStatusContent.Delivering}|{OrderStatusContent.Received}|{OrderStatusContent.Refund}|{OrderStatusContent.Canceled})$")]
         public string OrderStatusName { get; set; } = null!;

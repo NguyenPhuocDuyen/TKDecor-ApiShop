@@ -5,9 +5,9 @@ namespace BE_TKDecor.Core.Dtos.Coupon
 {
     public class CouponUpdateDto
     {
-        public long CouponId { get; set; }
+        public Guid CouponId { get; set; }
 
-        public long CouponTypeId { get; set; }
+        public Guid CouponTypeId { get; set; }
 
         [Range(0, 9999999)]
         public decimal Value { get; set; }

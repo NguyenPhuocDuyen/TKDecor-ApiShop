@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.Order
 {
     public class OrderGetDto
     {
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
         public string OrderStatusName { get; set; } = null!;
 
@@ -29,9 +29,9 @@ namespace BE_TKDecor.Core.Dtos.Order
 
     public class OrderDetailGetDto
     {
-        public long OrderDetailId { get; set; }
+        public Guid OrderDetailId { get; set; }
 
-        public long ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         public string ProductName { get; set; } = null!;
 

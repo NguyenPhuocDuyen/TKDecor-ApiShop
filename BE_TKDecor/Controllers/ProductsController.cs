@@ -57,7 +57,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Products/Review/2
         [HttpGet("GetReview/{id}")]
-        public async Task<IActionResult> GetReview(int id)
+        public async Task<IActionResult> GetReview(Guid id)
         {
             var product = await _product.FindById(id);
             if (product == null)
@@ -72,7 +72,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Products/GetById/5
         [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var product = await _product.FindById(id);
 

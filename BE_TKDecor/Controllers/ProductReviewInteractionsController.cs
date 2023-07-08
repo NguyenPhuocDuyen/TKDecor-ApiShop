@@ -115,7 +115,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(int.Parse(userId));
+                    return await _user.FindById(Guid.Parse(userId));
             }
             return null;
         }

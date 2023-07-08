@@ -23,7 +23,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Product?> FindById(long id)
+        internal static async Task<Product?> FindById(Guid id)
         {
             try
             {

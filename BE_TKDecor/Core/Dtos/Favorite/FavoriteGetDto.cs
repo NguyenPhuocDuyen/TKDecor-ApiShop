@@ -2,6 +2,6 @@
 {
     public class FavoriteGetDto
     {
-        public long ProductId { get; set; }
+        public Guid ProductId { get; set; }
     }
 }

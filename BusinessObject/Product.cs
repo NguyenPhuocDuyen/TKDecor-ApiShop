@@ -5,11 +5,11 @@ namespace BusinessObject;
 
 public partial class Product : BaseEntity
 {
-    public long ProductId { get; set; }
+    public Guid ProductId { get; set; }
 
-    public long CategoryId { get; set; }
+    public Guid CategoryId { get; set; }
 
-    public long? Product3DModelId { get; set; }
+    public Guid? Product3DModelId { get; set; }
 
     public string Name { get; set; } = null!;
 

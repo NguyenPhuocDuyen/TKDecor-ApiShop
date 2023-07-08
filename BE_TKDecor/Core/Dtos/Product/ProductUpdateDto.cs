@@ -5,11 +5,11 @@ namespace BE_TKDecor.Core.Dtos.Product
 {
     public class ProductUpdateDto
     {
-        public long ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
-        public long CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
 
-        //public int? Product3DModelId { get; set; }
+        //public Guid? Product3DModelId { get; set; }
 
         [MaxLength(255)]
         public string Name { get; set; } = null!;
