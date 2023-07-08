@@ -69,10 +69,13 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var list = await context.Products
-                    .Where(x => x.CategoryId == categoryId)
-                    .ToListAsync();
-                if (list.Count > 0) return true;
+                var cate = await context.Categories
+                    .Include(x => x.Products)
+                    .FirstOrDefaultAsync(x => x.CategoryId == categoryId);
+                if (cate != null)
+                {
+                    if (cate.Products.Count > 0) return true;
+                }
 
                 return false;
             }

@@ -9,7 +9,7 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public Guid CategoryId { get; set; }
 
-        //public Guid? Product3DModelId { get; set; }
+        public Guid? Product3DModelId { get; set; }
 
         [MaxLength(255)]
         public string Name { get; set; } = null!;

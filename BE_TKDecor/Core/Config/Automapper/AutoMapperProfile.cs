@@ -7,6 +7,7 @@ using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.Product;
+using BE_TKDecor.Core.Dtos.Product3DModel;
 using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
@@ -93,6 +94,11 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // notification
             CreateMap<Notification, NotificationGetDto>();
+
+            // product 3d model
+            CreateMap<Product3DModelCreateDto, Product3DModel>();
+            CreateMap<Product3DModel, Product3DModelGetDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name));
         }
     }
 }

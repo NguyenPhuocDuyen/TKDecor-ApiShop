@@ -1,4 +1,5 @@
-﻿using BE_TKDecor.Core.Dtos.ProductReview;
+﻿using BE_TKDecor.Core.Dtos.Product3DModel;
+using BE_TKDecor.Core.Dtos.ProductReview;
 
 namespace BE_TKDecor.Core.Dtos.Product
 {
@@ -10,7 +11,9 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public string CategoryName { get; set; } = null!;
 
-        public Guid? Product3DModelId { get; set; }
+        //public Guid? Product3DModelId { get; set; }
+
+        //public string Product3DModelVideoUrl { get; set; } = null!;
 
         public string Name { get; set; } = null!;
 
@@ -33,6 +36,8 @@ namespace BE_TKDecor.Core.Dtos.Product
         public bool? IsDelete { get; set; } = false;
 
         public List<string> ProductImages { get; set; } = new List<string>();
+
+        public virtual Product3DModelGetDto? Product3DModel { get; set; }
 
         //public virtual ICollection<ProductReviewGetDto> ProductReviews { get; set; } = new List<ProductReviewGetDto>();
     }
