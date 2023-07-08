@@ -7,6 +7,7 @@ using BE_TKDecor.Core.Response;
 using AutoMapper;
 using Utility;
 using Utility.Mail;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace BE_TKDecor.Controllers
 {
@@ -109,9 +110,6 @@ namespace BE_TKDecor.Controllers
             if (!user.ResetPasswordRequired is not true)
                 return BadRequest(new ApiResponse { Message = "User is not required to change password!" });
 
-            if (user.ResetPasswordSentAt > DateTime.UtcNow.AddMinutes(-5))
-                return BadRequest(new ApiResponse { Message = "Password change time expired!" });
-
             if (user.ResetPasswordCode != userDto.Code)
                 return BadRequest(new ApiResponse { Message = "Wrong code!" });
 
@@ -121,12 +119,46 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse
                 { Message = "Wrong password!" });
 
-            user.Password = Password.HashPassword(userDto.NewPassword);
-            user.ResetPasswordRequired = false;
+            bool codeOutOfDate = false;
+            if (user.ResetPasswordSentAt > DateTime.UtcNow.AddMinutes(-5))
+            {
+                codeOutOfDate = true;
+            }
+
+            // random new code if code time expired
+            if (codeOutOfDate)
+            {
+                // get random code
+                string code = RandomCode.GenerateRandomCode();
+                user.ResetPasswordCode = code;
+            }
+            else
+            {
+                user.Password = Password.HashPassword(userDto.NewPassword);
+                user.ResetPasswordRequired = false;
+            }
             user.UpdatedAt = DateTime.UtcNow;
             try
             {
+                // update success before send new code for user
                 await _user.Update(user);
+
+                if (codeOutOfDate)
+                {
+                    //send mail to changepassword
+                    //set data to send
+                    MailContent mailContent = new()
+                    {
+                        To = user.Email,
+                        Subject = "Change password at TKDecor Shop",
+                        Body = $"<h4>You have requested to change the password for the TKDecor web site. " +
+                        $"If you do not have a request to change your password, ignore this email!</h4>" +
+                        $"<p>Here is your code: <strong>{user.ResetPasswordCode}</strong></p>"
+                    };
+                    // send mail
+                    await _sendMailService.SendMail(mailContent);
+                    return BadRequest(new ApiResponse { Message = "Password change time expired!. Pls check mail again to see new code!" });
+                }
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
