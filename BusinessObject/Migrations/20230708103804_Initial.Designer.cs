@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    [Migration("20230708072804_Initial")]
+    [Migration("20230708103804_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -531,6 +531,11 @@ namespace BusinessObject.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("model_name");
 
                     b.Property<string>("ModelUrl")
                         .IsRequired()
@@ -1371,8 +1376,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product3DModel", b =>
                 {
-                    b.Navigation("Product")
-                        .IsRequired();
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductReview", b =>

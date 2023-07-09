@@ -29,7 +29,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _product.GetAll();
-            list = list.Where(x => x.IsDelete == false)
+            list = list.Where(x => x.IsDelete == false && x.Quantity > 0)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
             // paging skip 12*0 and take 12 after skip
@@ -44,7 +44,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> FeaturedProducts()
         {
             var products = await _product.GetAll();
-            products = products.Where(x => x.IsDelete == false).ToList();
+            products = products.Where(x => x.IsDelete == false && x.Quantity > 0).ToList();
             var sort = products
                 .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
                 .Take(9)

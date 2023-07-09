@@ -56,6 +56,7 @@ namespace BusinessObject.Migrations
                 columns: table => new
                 {
                     product_3d_model_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    model_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     video_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     model_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     thumbnail_url = table.Column<string>(type: "nvarchar(max)", nullable: false),

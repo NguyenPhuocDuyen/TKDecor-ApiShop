@@ -429,6 +429,8 @@ public partial class TkdecorContext : DbContext
             entity.ToTable("Product3DModel");
 
             entity.Property(e => e.Product3DModelId).HasColumnType("uniqueidentifier").HasColumnName("product_3d_model_id");
+            entity.Property(e => e.ModelName)
+                .HasColumnName("model_name");
             entity.Property(e => e.ModelUrl)
                 .HasColumnName("model_url");
             entity.Property(e => e.ThumbnailUrl)

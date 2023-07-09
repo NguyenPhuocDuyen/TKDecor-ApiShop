@@ -529,6 +529,11 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("model_name");
+
                     b.Property<string>("ModelUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -1368,8 +1373,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product3DModel", b =>
                 {
-                    b.Navigation("Product")
-                        .IsRequired();
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductReview", b =>

@@ -302,9 +302,8 @@ namespace BE_TKDecor.Controllers
             //if reset password, will back status do not reset password
             user.ResetPasswordRequired = false;
             //set new password
-            user.Password = userDto.Password;
+            user.Password = Password.HashPassword(userDto.Password);
             user.UpdatedAt = DateTime.UtcNow;
-
             try
             {
                 //update to database and return info user
