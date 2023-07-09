@@ -245,6 +245,7 @@ namespace DataAccess.Data
                     //3d model...
                     Product3DModel product3DModel = new()
                     {
+                        ModelName = "Model 3d: " + product.Name,
                         VideoUrl = "",
                         ModelUrl = "",
                         ThumbnailUrl = "https://fronty.com/static/uploads/01.22-02.22/pexels-uzunov-rostislav-5011647.jpg"

@@ -5,9 +5,9 @@ namespace BusinessObject;
 
 public partial class Notification : BaseEntity
 {
-    public long NotificationId { get; set; }
+    public Guid NotificationId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string Message { get; set; } = null!;
 

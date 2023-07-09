@@ -2,11 +2,11 @@
 
 public partial class Chat : BaseEntity
 {
-    public long MessageId { get; set; }
+    public Guid ChatId { get; set; }
 
-    public long SenderId { get; set; }
+    public Guid SenderId { get; set; }
 
-    public long ReceiverId { get; set; }
+    public Guid ReceiverId { get; set; }
 
     public string Message { get; set; } = null!;
 

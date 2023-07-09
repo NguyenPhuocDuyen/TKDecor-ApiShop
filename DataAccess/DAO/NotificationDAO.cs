@@ -10,7 +10,7 @@ namespace DataAccess.DAO
 {
     internal class NotificationDAO
     {
-        internal static async Task<List<Notification>> GetAll(long userId)
+        internal static async Task<List<Notification>> GetAll(Guid userId)
         {
             try
             {

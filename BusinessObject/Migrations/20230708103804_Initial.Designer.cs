@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    [Migration("20230706163521_Initial")]
+    [Migration("20230708103804_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,12 +27,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Article", b =>
                 {
-                    b.Property<long>("ArticleId")
+                    b.Property<Guid>("ArticleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("article_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ArticleId"));
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -70,8 +68,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("ArticleId")
@@ -87,12 +85,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Cart", b =>
                 {
-                    b.Property<long>("CartId")
+                    b.Property<Guid>("CartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("cart_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CartId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -102,8 +98,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
                     b.Property<int>("Quantity")
@@ -114,8 +110,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("CartId")
@@ -130,12 +126,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Category", b =>
                 {
-                    b.Property<long>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("category_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CategoryId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -170,12 +164,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Chat", b =>
                 {
-                    b.Property<long>("MessageId")
+                    b.Property<Guid>("ChatId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("message_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("MessageId"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("chat_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -194,36 +186,34 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("message");
 
-                    b.Property<long>("ReceiverId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("receiver_id");
 
-                    b.Property<long>("SenderId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("sender_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("MessageId")
-                        .HasName("PK__Message__0BBF6EE6112EA443");
+                    b.HasKey("ChatId")
+                        .HasName("PK__Chat__0BBF6EE6112EA443");
 
-                    b.HasIndex(new[] { "ReceiverId" }, "IX_Message_receiver_id");
+                    b.HasIndex(new[] { "ReceiverId" }, "IX_Chat_receiver_id");
 
-                    b.HasIndex(new[] { "SenderId" }, "IX_Message_sender_id");
+                    b.HasIndex(new[] { "SenderId" }, "IX_Chat_sender_id");
 
-                    b.ToTable("Message", (string)null);
+                    b.ToTable("Chat", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.Coupon", b =>
                 {
-                    b.Property<long>("CouponId")
+                    b.Property<Guid>("CouponId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("coupon_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CouponId"));
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -231,8 +221,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(900)")
                         .HasColumnName("code");
 
-                    b.Property<long>("CouponTypeId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("CouponTypeId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("coupon_type_id");
 
                     b.Property<DateTime>("CreatedAt")
@@ -284,12 +274,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.CouponType", b =>
                 {
-                    b.Property<long>("CouponTypeId")
+                    b.Property<Guid>("CouponTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("coupon_type_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("CouponTypeId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -304,12 +292,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Notification", b =>
                 {
-                    b.Property<long>("NotificationId")
+                    b.Property<Guid>("NotificationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("notification_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("NotificationId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -332,8 +318,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("NotificationId")
@@ -346,20 +332,18 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Order", b =>
                 {
-                    b.Property<long>("OrderId")
+                    b.Property<Guid>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("order_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("OrderId"));
 
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
-                    b.Property<long?>("CouponId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("CouponId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("coupon_id");
 
                     b.Property<DateTime>("CreatedAt")
@@ -380,8 +364,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("note");
 
-                    b.Property<long>("OrderStatusId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("OrderStatusId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("order_status_id");
 
                     b.Property<string>("Phone")
@@ -398,8 +382,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("OrderId")
@@ -416,23 +400,21 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
-                    b.Property<long>("OrderDetailId")
+                    b.Property<Guid>("OrderDetailId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("order_detail_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("OrderDetailId"));
-
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("order_id");
 
                     b.Property<decimal>("PaymentPrice")
                         .HasColumnType("decimal(10, 0)")
                         .HasColumnName("payment_price");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
                     b.Property<int>("Quantity")
@@ -451,12 +433,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.OrderStatus", b =>
                 {
-                    b.Property<long>("OrderStatusId")
+                    b.Property<Guid>("OrderStatusId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("order_status_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("OrderStatusId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -471,15 +451,13 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product", b =>
                 {
-                    b.Property<long>("ProductId")
+                    b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductId"));
-
-                    b.Property<long>("CategoryId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("category_id");
 
                     b.Property<DateTime>("CreatedAt")
@@ -504,8 +482,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("decimal(10, 0)")
                         .HasColumnName("price");
 
-                    b.Property<long?>("Product3DModelId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid?>("Product3DModelId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_3d_model_id");
 
                     b.Property<int>("Quantity")
@@ -541,12 +519,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product3DModel", b =>
                 {
-                    b.Property<long>("Product3DModelId")
+                    b.Property<Guid>("Product3DModelId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_3d_model_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Product3DModelId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -555,6 +531,11 @@ namespace BusinessObject.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("model_name");
 
                     b.Property<string>("ModelUrl")
                         .IsRequired()
@@ -583,12 +564,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductFavorite", b =>
                 {
-                    b.Property<long>("ProductFavoriteId")
+                    b.Property<Guid>("ProductFavoriteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_d");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductFavoriteId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -598,15 +577,15 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ProductFavoriteId");
 
@@ -619,12 +598,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductImage", b =>
                 {
-                    b.Property<long>("ProductImageId")
+                    b.Property<Guid>("ProductImageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("productImage_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductImageId"));
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -632,8 +609,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(max)")
                         .HasColumnName("image_url");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
                     b.HasKey("ProductImageId")
@@ -646,12 +623,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReport", b =>
                 {
-                    b.Property<long>("ProductReportId")
+                    b.Property<Guid>("ProductReportId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_report_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductReportId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -661,8 +636,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductReportedId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductReportedId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_reported_id");
 
                     b.Property<string>("Reason")
@@ -670,16 +645,16 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("reason");
 
-                    b.Property<long>("ReportStatusId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ReportStatusId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("report_status_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserReportId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserReportId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_report_id");
 
                     b.HasKey("ProductReportId")
@@ -696,12 +671,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReview", b =>
                 {
-                    b.Property<long>("ProductReviewId")
+                    b.Property<Guid>("ProductReviewId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_review_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductReviewId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -716,8 +689,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_id");
 
                     b.Property<int>("Rate")
@@ -728,8 +701,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("ProductReviewId")
@@ -744,12 +717,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
                 {
-                    b.Property<long>("ProductReviewInteractionId")
+                    b.Property<Guid>("ProductReviewInteractionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_review_interaction_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductReviewInteractionId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -759,20 +730,20 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductInteractionStatusId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductInteractionStatusId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_interaction_status_id");
 
-                    b.Property<long>("ProductReviewId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductReviewId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_review_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("ProductReviewInteractionId")
@@ -789,12 +760,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReviewInteractionStatus", b =>
                 {
-                    b.Property<long>("ProductReviewInteractionStatusId")
+                    b.Property<Guid>("ProductReviewInteractionStatusId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_review_interaction_status_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ProductReviewInteractionStatusId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -839,8 +808,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("token");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("RefreshTokenId");
@@ -852,12 +821,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ReportProductReview", b =>
                 {
-                    b.Property<long>("ReportProductReviewId")
+                    b.Property<Guid>("ReportProductReviewId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("report_product_review_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ReportProductReviewId"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -867,8 +834,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
 
-                    b.Property<long>("ProductReviewReportedId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ProductReviewReportedId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("product_review_reported_id");
 
                     b.Property<string>("Reason")
@@ -876,16 +843,16 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("reason");
 
-                    b.Property<long>("ReportStatusId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("ReportStatusId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("report_status_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserReportId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserReportId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_report_id");
 
                     b.HasKey("ReportProductReviewId")
@@ -902,12 +869,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ReportStatus", b =>
                 {
-                    b.Property<long>("ReportStatusId")
+                    b.Property<Guid>("ReportStatusId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("report_status_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ReportStatusId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -922,12 +887,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Role", b =>
                 {
-                    b.Property<long>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("role_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("RoleId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -942,12 +905,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.User", b =>
                 {
-                    b.Property<long>("UserId")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserId"));
 
                     b.Property<string>("AvatarUrl")
                         .IsRequired()
@@ -1010,8 +971,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("reset_password_sent_at");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("role_id");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1028,12 +989,10 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.UserAddress", b =>
                 {
-                    b.Property<long>("UserAddressId")
+                    b.Property<Guid>("UserAddressId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_address_id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserAddressId"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -1067,8 +1026,8 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
 
                     b.HasKey("UserAddressId")
@@ -1112,16 +1071,16 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.Chat", b =>
                 {
                     b.HasOne("BusinessObject.User", "Receiver")
-                        .WithMany("MessageReceivers")
+                        .WithMany("ChatReceivers")
                         .HasForeignKey("ReceiverId")
                         .IsRequired()
-                        .HasConstraintName("FK_Message_User1");
+                        .HasConstraintName("FK_Chat_User1");
 
                     b.HasOne("BusinessObject.User", "Sender")
-                        .WithMany("MessageSenders")
+                        .WithMany("ChatSenders")
                         .HasForeignKey("SenderId")
                         .IsRequired()
-                        .HasConstraintName("FK_Message_User");
+                        .HasConstraintName("FK_Chat_User");
 
                     b.Navigation("Receiver");
 
@@ -1417,8 +1376,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.Product3DModel", b =>
                 {
-                    b.Navigation("Product")
-                        .IsRequired();
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BusinessObject.ProductReview", b =>
@@ -1451,9 +1409,9 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("Carts");
 
-                    b.Navigation("MessageReceivers");
+                    b.Navigation("ChatReceivers");
 
-                    b.Navigation("MessageSenders");
+                    b.Navigation("ChatSenders");
 
                     b.Navigation("Notifications");
 

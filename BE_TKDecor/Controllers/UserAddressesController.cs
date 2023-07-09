@@ -45,7 +45,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/UserAddresses/SetDefault/2
         [HttpPost("SetDefault/{id}")]
-        public async Task<IActionResult> SetDefault(int id)
+        public async Task<IActionResult> SetDefault(Guid id)
         {
             var user = await GetUser();
             if (user == null)
@@ -90,7 +90,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/UserAddresses/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateUserAddress(int id, UserAddress userAddressDto)
+        public async Task<IActionResult> UpdateUserAddress(Guid id, UserAddress userAddressDto)
         {
             if (id != userAddressDto.UserAddressId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -113,7 +113,7 @@ namespace BE_TKDecor.Controllers
 
         // DELETE: api/UserAddresses/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteUserAddress(int id)
+        public async Task<IActionResult> DeleteUserAddress(Guid id)
         {
             var userAddress = await _userAddress.FindById(id);
             if (userAddress == null)
@@ -137,7 +137,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(int.Parse(userId));
+                    return await _user.FindById(Guid.Parse(userId));
             }
             return null;
         }

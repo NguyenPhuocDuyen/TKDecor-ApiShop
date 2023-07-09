@@ -21,24 +21,27 @@ namespace BE_TKDecor.Controllers.Management
         private readonly IMapper _mapper;
         private readonly IProductRepository _product;
         private readonly IProductImageRepository _productImage;
+        private readonly IProduct3DModelRepository _product3DModel;
 
         public ManagementProductsController(IHubContext<NotificationHub> notificationHub,
             IMapper mapper,
             IProductRepository product,
-            IProductImageRepository productImage)
+            IProductImageRepository productImage,
+            IProduct3DModelRepository product3DModel)
         {
             _notificationHub = notificationHub;
             _mapper = mapper;
             _product = product;
             _productImage = productImage;
+            _product3DModel = product3DModel;
         }
 
         // POST: api/Products/Create
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
-            var p = await _product.FindByName(productDto.Name);
-            if (p != null)
+            var productDb = await _product.FindByName(productDto.Name);
+            if (productDb != null)
                 return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
@@ -46,9 +49,27 @@ namespace BE_TKDecor.Controllers.Management
             if (proSlug != null)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
+            Product3DModel? model = new();
+            if (productDto.Product3DModelId != null)
+            {
+                model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
+                if (model != null)
+                    return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
+            }
+
             Product newProduct = _mapper.Map<Product>(productDto);
             newProduct.Slug = newSlug;
             newProduct.ProductImages = new List<ProductImage>();
+            if (model != null)
+            {
+                newProduct.Product3DModelId = model.Product3DModelId;
+                newProduct.Product3DModel = model;
+            }
+            else
+            {
+                newProduct.Product3DModel = null;
+                newProduct.Product3DModelId = null;
+            }
 
             //set image for product
             foreach (var urlImage in productDto.ProductImages)
@@ -72,7 +93,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/Products/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(int id, ProductUpdateDto productDto)
+        public async Task<IActionResult> Update(Guid id, ProductUpdateDto productDto)
         {
             if (id != productDto.ProductId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
@@ -90,13 +111,30 @@ namespace BE_TKDecor.Controllers.Management
             if (proSlug != null && proSlug.ProductId != id)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
+            Product3DModel? model = new();
+            if (productDto.Product3DModelId != null)
+            {
+                model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
+                if (model != null)
+                    return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
+            }
+            if (model != null)
+            {
+                productDb.Product3DModelId = model.Product3DModelId;
+                productDb.Product3DModel = model;
+            }
+            else
+            {
+                productDb.Product3DModel = null;
+                productDb.Product3DModelId = null;
+            }
+
             productDb.CategoryId = productDto.CategoryId;
             productDb.Name = productDto.Name;
             productDb.Description = productDto.Description;
             productDb.Slug = newSlug;
             productDb.Quantity = productDto.Quantity;
             productDb.Price = productDto.Price;
-            //productDb.Url3dModel = product.Url3dModel;
             productDb.UpdatedAt = DateTime.UtcNow;
 
             List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
@@ -141,7 +179,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/Products/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _product.FindById(id);
             if (product == null)

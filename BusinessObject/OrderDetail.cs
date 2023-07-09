@@ -5,11 +5,11 @@ namespace BusinessObject;
 
 public partial class OrderDetail
 {
-    public long OrderDetailId { get; set; }
+    public Guid OrderDetailId { get; set; }
 
-    public long OrderId { get; set; }
+    public Guid OrderId { get; set; }
 
-    public long ProductId { get; set; }
+    public Guid ProductId { get; set; }
 
     public int Quantity { get; set; }
 

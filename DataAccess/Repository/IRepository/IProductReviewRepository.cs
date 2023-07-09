@@ -9,12 +9,12 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IProductReviewRepository
     {
-        Task<List<ProductReview>> FindByUserId(long userId);
-        Task<List<ProductReview>> FindByProductId(long productId);
+        Task<List<ProductReview>> FindByUserId(Guid userId);
+        Task<List<ProductReview>> FindByProductId(Guid productId);
         Task Add(ProductReview productReview);
         Task Update(ProductReview productReview);
-        Task<bool> CanReview(long userId, long productId);
-        Task<ProductReview?> FindByUserIdAndProductId(long userId, long productId);
-        Task<ProductReview?> FindById(long id);
+        Task<bool> CanReview(Guid userId, Guid productId);
+        Task<ProductReview?> FindByUserIdAndProductId(Guid userId, Guid productId);
+        Task<ProductReview?> FindById(Guid id);
     }
 }

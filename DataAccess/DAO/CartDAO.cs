@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class CartDAO
     {
-        internal static async Task<List<Cart>> FindCartsByUserId(long userId)
+        internal static async Task<List<Cart>> FindCartsByUserId(Guid userId)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Cart?> FindById(long id)
+        internal static async Task<Cart?> FindById(Guid id)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Cart?> FindByUserIdAndProductId(long userId, long productId)
+        internal static async Task<Cart?> FindByUserIdAndProductId(Guid userId, Guid productId)
         {
             try
             {

@@ -15,8 +15,7 @@ namespace BusinessObject.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    category_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    category_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -32,8 +31,7 @@ namespace BusinessObject.Migrations
                 name: "CouponType",
                 columns: table => new
                 {
-                    coupon_type_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    coupon_type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -45,8 +43,7 @@ namespace BusinessObject.Migrations
                 name: "OrderStatus",
                 columns: table => new
                 {
-                    order_status_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    order_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -58,8 +55,8 @@ namespace BusinessObject.Migrations
                 name: "Product3DModel",
                 columns: table => new
                 {
-                    product_3d_model_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    product_3d_model_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    model_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     video_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     model_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     thumbnail_url = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -76,8 +73,7 @@ namespace BusinessObject.Migrations
                 name: "ProductReviewInteractionStatus",
                 columns: table => new
                 {
-                    product_review_interaction_status_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    product_review_interaction_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -89,8 +85,7 @@ namespace BusinessObject.Migrations
                 name: "ReportStatus",
                 columns: table => new
                 {
-                    report_status_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -102,8 +97,7 @@ namespace BusinessObject.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    role_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -115,9 +109,8 @@ namespace BusinessObject.Migrations
                 name: "Coupon",
                 columns: table => new
                 {
-                    coupon_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    coupon_type_id = table.Column<long>(type: "bigint", nullable: false),
+                    coupon_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    coupon_type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     code = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
                     value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
                     max_value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
@@ -143,10 +136,9 @@ namespace BusinessObject.Migrations
                 name: "Product",
                 columns: table => new
                 {
-                    product_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    category_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_3d_model_id = table.Column<long>(type: "bigint", nullable: true),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    category_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_3d_model_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -175,9 +167,8 @@ namespace BusinessObject.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    user_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    role_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     email = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     password = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -207,9 +198,8 @@ namespace BusinessObject.Migrations
                 name: "ProductImage",
                 columns: table => new
                 {
-                    productImage_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    productImage_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     image_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
                 },
                 constraints: table =>
@@ -226,9 +216,8 @@ namespace BusinessObject.Migrations
                 name: "Article",
                 columns: table => new
                 {
-                    article_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    article_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     thumbnail = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -252,10 +241,9 @@ namespace BusinessObject.Migrations
                 name: "Cart",
                 columns: table => new
                 {
-                    cart_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -277,13 +265,12 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Message",
+                name: "Chat",
                 columns: table => new
                 {
-                    message_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    sender_id = table.Column<long>(type: "bigint", nullable: false),
-                    receiver_id = table.Column<long>(type: "bigint", nullable: false),
+                    chat_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    sender_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    receiver_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_read = table.Column<bool>(type: "bit", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -292,14 +279,14 @@ namespace BusinessObject.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Message__0BBF6EE6112EA443", x => x.message_id);
+                    table.PrimaryKey("PK__Chat__0BBF6EE6112EA443", x => x.chat_id);
                     table.ForeignKey(
-                        name: "FK_Message_User",
+                        name: "FK_Chat_User",
                         column: x => x.sender_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK_Message_User1",
+                        name: "FK_Chat_User1",
                         column: x => x.receiver_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -309,9 +296,8 @@ namespace BusinessObject.Migrations
                 name: "Notification",
                 columns: table => new
                 {
-                    notification_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    notification_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_read = table.Column<bool>(type: "bit", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -332,11 +318,10 @@ namespace BusinessObject.Migrations
                 name: "Order",
                 columns: table => new
                 {
-                    order_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
-                    order_status_id = table.Column<long>(type: "bigint", nullable: false),
-                    coupon_id = table.Column<long>(type: "bigint", nullable: true),
+                    order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    order_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    coupon_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -370,10 +355,9 @@ namespace BusinessObject.Migrations
                 name: "ProductFavorite",
                 columns: table => new
                 {
-                    product_d = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ProductId = table.Column<long>(type: "bigint", nullable: false),
+                    product_d = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: false)
@@ -399,11 +383,10 @@ namespace BusinessObject.Migrations
                 name: "ProductReport",
                 columns: table => new
                 {
-                    product_report_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_report_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_reported_id = table.Column<long>(type: "bigint", nullable: false),
-                    report_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_reported_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -433,10 +416,9 @@ namespace BusinessObject.Migrations
                 name: "ProductReview",
                 columns: table => new
                 {
-                    product_review_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     rate = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -463,7 +445,7 @@ namespace BusinessObject.Migrations
                 columns: table => new
                 {
                     refresh_token_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     token = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     jwt_id = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_used = table.Column<bool>(type: "bit", nullable: false),
@@ -485,9 +467,8 @@ namespace BusinessObject.Migrations
                 name: "UserAddress",
                 columns: table => new
                 {
-                    user_address_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_address_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -510,10 +491,9 @@ namespace BusinessObject.Migrations
                 name: "OrderDetail",
                 columns: table => new
                 {
-                    order_detail_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    order_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_id = table.Column<long>(type: "bigint", nullable: false),
+                    order_detail_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     quantity = table.Column<int>(type: "int", nullable: false),
                     payment_price = table.Column<decimal>(type: "decimal(10,0)", nullable: false)
                 },
@@ -536,11 +516,10 @@ namespace BusinessObject.Migrations
                 name: "ProductReviewInteraction",
                 columns: table => new
                 {
-                    product_review_interaction_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_review_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_interaction_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    product_review_interaction_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_interaction_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: false)
@@ -569,11 +548,10 @@ namespace BusinessObject.Migrations
                 name: "ReportProductReview",
                 columns: table => new
                 {
-                    report_product_review_id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    user_report_id = table.Column<long>(type: "bigint", nullable: false),
-                    product_review_reported_id = table.Column<long>(type: "bigint", nullable: false),
-                    report_status_id = table.Column<long>(type: "bigint", nullable: false),
+                    report_product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_review_reported_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -627,6 +605,16 @@ namespace BusinessObject.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Chat_receiver_id",
+                table: "Chat",
+                column: "receiver_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chat_sender_id",
+                table: "Chat",
+                column: "sender_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Coupon_code",
                 table: "Coupon",
                 column: "code",
@@ -636,16 +624,6 @@ namespace BusinessObject.Migrations
                 name: "IX_Coupon_coupon_type_id",
                 table: "Coupon",
                 column: "coupon_type_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Message_receiver_id",
-                table: "Message",
-                column: "receiver_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Message_sender_id",
-                table: "Message",
-                column: "sender_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notification_user_id",
@@ -797,7 +775,7 @@ namespace BusinessObject.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "Chat");
 
             migrationBuilder.DropTable(
                 name: "Notification");

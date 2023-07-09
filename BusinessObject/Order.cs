@@ -5,13 +5,13 @@ namespace BusinessObject;
 
 public partial class Order : BaseEntity
 {
-    public long OrderId { get; set; }
+    public Guid OrderId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
-    public long OrderStatusId { get; set; }
+    public Guid OrderStatusId { get; set; }
 
-    public long? CouponId { get; set; }
+    public Guid? CouponId { get; set; }
 
     public string FullName { get; set; } = null!;
 

@@ -5,9 +5,9 @@ namespace BusinessObject;
 
 public partial class ProductImage
 {
-    public long ProductImageId { get; set; }
+    public Guid ProductImageId { get; set; }
 
-    public long ProductId { get; set; }
+    public Guid ProductId { get; set; }
 
     public string ImageUrl { get; set; } = null!;
 

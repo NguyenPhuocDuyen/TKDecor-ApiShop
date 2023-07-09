@@ -118,7 +118,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Carts/UpdateQuantity/201
         [HttpPut("UpdateQuantity/{id}")]
-        public async Task<IActionResult> UpdateQuantity(int id, CartUpdateDto cartDto)
+        public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto cartDto)
         {
             var user = await GetUser();
             if (user == null)
@@ -153,7 +153,7 @@ namespace BE_TKDecor.Controllers
 
         // DELETE api/Carts/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var user = await GetUser();
             if (user == null)
@@ -182,7 +182,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(int.Parse(userId));
+                    return await _user.FindById(Guid.Parse(userId));
             }
             return null;
         }

@@ -5,7 +5,7 @@ namespace DataAccess.DAO
 {
     internal class ProductFavoriteDAO
     {
-        internal static async Task<List<ProductFavorite>> FindFavoriteOfUser(long userId)
+        internal static async Task<List<ProductFavorite>> FindFavoriteOfUser(Guid userId)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<ProductFavorite?> FindProductFavorite(long userId, long productId)
+        internal static async Task<ProductFavorite?> FindProductFavorite(Guid userId, Guid productId)
         {
             try
             {

@@ -72,6 +72,7 @@ builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRe
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
 builder.Services.AddScoped<IProductReviewInteractionStatusRepository, ProductReviewInteractionStatusRepository>();
+builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

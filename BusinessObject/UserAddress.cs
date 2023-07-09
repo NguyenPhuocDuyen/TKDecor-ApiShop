@@ -5,9 +5,9 @@ namespace BusinessObject;
 
 public partial class UserAddress : BaseEntity
 {
-    public long UserAddressId { get; set; }
+    public Guid UserAddressId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public string FullName { get; set; } = null!;
 

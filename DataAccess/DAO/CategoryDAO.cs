@@ -18,7 +18,7 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Category?> FindById(long categoryId)
+        internal static async Task<Category?> FindById(Guid categoryId)
         {
             try
             {
@@ -64,15 +64,18 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<bool> CheckProductExistsByCateId(long categoryId)
+        internal static async Task<bool> CheckProductExistsByCateId(Guid categoryId)
         {
             try
             {
                 using var context = new TkdecorContext();
-                var list = await context.Products
-                    .Where(x => x.CategoryId == categoryId)
-                    .ToListAsync();
-                if (list.Count > 0) return true;
+                var cate = await context.Categories
+                    .Include(x => x.Products)
+                    .FirstOrDefaultAsync(x => x.CategoryId == categoryId);
+                if (cate != null)
+                {
+                    if (cate.Products.Count > 0) return true;
+                }
 
                 return false;
             }

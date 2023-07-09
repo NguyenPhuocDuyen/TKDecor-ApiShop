@@ -41,7 +41,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementProductReports/UpdateStatusReport
         [HttpPut("UpdateStatusReport/{id}")]
-        public async Task<IActionResult> UpdateStatusReport(int id, ProductReportUpdateDto reportDto)
+        public async Task<IActionResult> UpdateStatusReport(Guid id, ProductReportUpdateDto reportDto)
         {
             if (id != reportDto.ProductReportId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });

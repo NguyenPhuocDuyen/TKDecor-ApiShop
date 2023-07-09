@@ -14,13 +14,13 @@ namespace DataAccess.Repository
         public async Task Add(UserAddress userAddress)
             => await UserAddressDAO.Add(userAddress);
 
-        public async Task<UserAddress?> FindById(long id)
+        public async Task<UserAddress?> FindById(Guid id)
             => await UserAddressDAO.FindById(id);
 
-        public async Task<List<UserAddress>> FindByUserId(long userId)
+        public async Task<List<UserAddress>> FindByUserId(Guid userId)
             => await UserAddressDAO.FindByUserId(userId);
 
-        public async Task SetDefault(long userId, long? userAddressId = null)
+        public async Task SetDefault(Guid userId, Guid? userAddressId = null)
         {
             try
             {

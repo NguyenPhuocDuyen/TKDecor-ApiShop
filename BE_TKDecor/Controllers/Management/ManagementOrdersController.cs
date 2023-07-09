@@ -38,7 +38,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementOrders/FindById/1
         [HttpGet("FindById/{id}")]
-        public async Task<IActionResult> FindById(long id)
+        public async Task<IActionResult> FindById(Guid id)
         {
             var orders = await _order.FindById(id);
             if (orders == null)
@@ -50,7 +50,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementOrders/UpdateStatusOrder
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(int id, OrderUpdateStatusDto orderUpdateStatusDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
         {
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });

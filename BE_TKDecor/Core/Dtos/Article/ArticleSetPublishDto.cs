@@ -2,7 +2,7 @@
 {
     public class ArticleSetPublishDto
     {
-        public long ArticleId { get; set; }
+        public Guid ArticleId { get; set; }
 
         public bool Published { get; set; }
     }

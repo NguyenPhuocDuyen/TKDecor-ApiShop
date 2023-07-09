@@ -6,7 +6,7 @@ namespace DataAccess.Repository
 {
     public class NotificationRepository : INotificationRepository
     {
-        public async Task<List<Notification>> GetAll(long userId)
+        public async Task<List<Notification>> GetAll(Guid userId)
             => await NotificationDAO.GetAll(userId);
 
         public async Task Update(Notification notification)

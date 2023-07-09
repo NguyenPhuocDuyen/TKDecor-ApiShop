@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 {
     public class ProductReviewCreateDto
     {
-        public long ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         [Range(1, 5)]
         public int Rate { get; set; }

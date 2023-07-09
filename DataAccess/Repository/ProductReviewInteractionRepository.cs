@@ -14,13 +14,13 @@ namespace DataAccess.Repository
         public async Task Add(ProductReviewInteraction productReviewInteraction)
             => await ProductReviewInteractionDAO.Add(productReviewInteraction);
 
-        public async Task<ProductReviewInteraction?> FindById(long id)
+        public async Task<ProductReviewInteraction?> FindById(Guid id)
             => await ProductReviewInteractionDAO.FindById(id);
 
-        public async Task<List<ProductReviewInteraction>> FindByUserId(long userId)
+        public async Task<List<ProductReviewInteraction>> FindByUserId(Guid userId)
             => await ProductReviewInteractionDAO.FindByUserId(userId);
 
-        public async Task<ProductReviewInteraction?> FindByUserIdAndProductReviewId(long userId, long productReviewId)
+        public async Task<ProductReviewInteraction?> FindByUserIdAndProductReviewId(Guid userId, Guid productReviewId)
             => await ProductReviewInteractionDAO.FindByUserIdAndProductReviewId(userId, productReviewId);
 
         public async Task Update(ProductReviewInteraction productReviewInteraction)

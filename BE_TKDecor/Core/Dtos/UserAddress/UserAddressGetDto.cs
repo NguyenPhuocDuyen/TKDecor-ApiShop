@@ -2,7 +2,7 @@
 {
     public class UserAddressGetDto
     {
-        public long UserAddressId { get; set; }
+        public Guid UserAddressId { get; set; }
 
         public string FullName { get; set; } = null!;
 

@@ -5,7 +5,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReviewInteraction
 {
     public class ProductReviewInteractionDto
     {
-        public long ProductReviewId { get; set; }
+        public Guid ProductReviewId { get; set; }
 
         [RegularExpression($"^({ProductInteractionStatusContent.Like}|{ProductInteractionStatusContent.DisLike}|{ProductInteractionStatusContent.Normal})$")]
         public string Interaction { get; set; } = null!;

@@ -10,8 +10,8 @@ namespace DataAccess.Repository.IRepository
     public interface ICategoryRepository
     {
         Task<List<Category>> GetAll();
-        Task<bool> CheckProductExistsByCateId(long categoryId);
-        Task<Category?> FindById(long categoryId);
+        Task<bool> CheckProductExistsByCateId(Guid categoryId);
+        Task<Category?> FindById(Guid categoryId);
         Task<Category?> FindByName(string categoryName);
         Task Add(Category category);
         Task Update(Category category);

@@ -55,7 +55,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Orders/FindById/1
         [HttpGet("FindById/{id}")]
-        public async Task<IActionResult> FindById(long id)
+        public async Task<IActionResult> FindById(Guid id)
         {
             var user = await GetUser();
             if (user == null)
@@ -178,7 +178,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Orders/UpdateStatusOrder
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(int id, OrderUpdateStatusDto orderUpdateStatusDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
         {
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -238,7 +238,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(int.Parse(userId));
+                    return await _user.FindById(Guid.Parse(userId));
             }
             return null;
         }

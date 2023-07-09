@@ -54,7 +54,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementCategories/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(int id, CategoryUpdateDto categoryDto)
+        public async Task<IActionResult> Update(Guid id, CategoryUpdateDto categoryDto)
         {
             if (id != categoryDto.CategoryId)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
@@ -80,7 +80,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementCategories/Delete/1
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var categoryDb = await _category.FindById(id);
             if (categoryDb == null)

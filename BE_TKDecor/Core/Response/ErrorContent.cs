@@ -27,6 +27,7 @@ namespace BE_TKDecor.Core.Response
         public static string ProductReportNotFound = "Product Report not found!";
         public static string ProductReviewNotFound = "Product review not found!";
         public static string InteractionNotFound = "Interaction not found!";
+        public static string Model3DNotFound = "Model3D not found!";
         public static string ReportProductReviewNotFound = "Report product review not found!";
         public static string OrderStatusNotFound = "Order status not found!";
         

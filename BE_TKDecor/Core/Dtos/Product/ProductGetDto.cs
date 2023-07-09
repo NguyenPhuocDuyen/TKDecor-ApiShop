@@ -1,16 +1,19 @@
-﻿using BE_TKDecor.Core.Dtos.ProductReview;
+﻿using BE_TKDecor.Core.Dtos.Product3DModel;
+using BE_TKDecor.Core.Dtos.ProductReview;
 
 namespace BE_TKDecor.Core.Dtos.Product
 {
     public class ProductGetDto
     {
-        public long ProductId { get; set; }
+        public Guid ProductId { get; set; }
 
         //public int CategoryId { get; set; }
 
         public string CategoryName { get; set; } = null!;
 
-        public long? Product3DModelId { get; set; }
+        //public Guid? Product3DModelId { get; set; }
+
+        //public string Product3DModelVideoUrl { get; set; } = null!;
 
         public string Name { get; set; } = null!;
 
@@ -34,12 +37,14 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public List<string> ProductImages { get; set; } = new List<string>();
 
+        public virtual Product3DModelGetDto? Product3DModel { get; set; }
+
         //public virtual ICollection<ProductReviewGetDto> ProductReviews { get; set; } = new List<ProductReviewGetDto>();
     }
 
     //public class ProductReviewGetDto
     //{
-    //    public long ProductReviewId { get; set; }
+    //    public Guid ProductReviewId { get; set; }
 
     //    public string? UserAvatarUrl { get; set; }
 

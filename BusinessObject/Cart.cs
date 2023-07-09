@@ -2,11 +2,11 @@
 
 public partial class Cart : BaseEntity
 {
-    public long CartId { get; set; }
+    public Guid CartId { get; set; }
 
-    public long UserId { get; set; }
+    public Guid UserId { get; set; }
 
-    public long ProductId { get; set; }
+    public Guid ProductId { get; set; }
 
     public int Quantity { get; set; }
 

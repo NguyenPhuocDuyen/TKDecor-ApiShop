@@ -68,7 +68,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementArticles/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(int id, ArticleUpdateDto articleDto)
+        public async Task<IActionResult> Update(Guid id, ArticleUpdateDto articleDto)
         {
             if (id != articleDto.ArticleId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -92,7 +92,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/ManagementArticles/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteArticle(int id)
+        public async Task<IActionResult> DeleteArticle(Guid id)
         {
             var article = await _article.FindById(id);
             if (article == null)
@@ -134,7 +134,7 @@ namespace BE_TKDecor.Controllers.Management
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(int.Parse(userId));
+                    return await _user.FindById(Guid.Parse(userId));
             }
             return null;
         }

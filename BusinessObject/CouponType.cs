@@ -2,7 +2,7 @@
 
 public partial class CouponType
 {
-    public long CouponTypeId { get; set; }
+    public Guid CouponTypeId { get; set; }
 
     public string Name { get; set; } = null!;
 

@@ -19,7 +19,7 @@ namespace DataAccess.DAO
             }
         }
 
-        internal static async Task<User?> FindById(long id)
+        internal static async Task<User?> FindById(Guid id)
         {
             try
             {

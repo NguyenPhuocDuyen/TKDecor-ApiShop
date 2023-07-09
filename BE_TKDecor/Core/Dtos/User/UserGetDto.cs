@@ -4,7 +4,7 @@ namespace BE_TKDecor.Core.Dtos.User
 {
     public class UserGetDto
     {
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
 
         //public int RoleId { get; set; }
 
