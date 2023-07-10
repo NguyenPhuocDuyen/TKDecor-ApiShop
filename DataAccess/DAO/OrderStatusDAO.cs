@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class OrderStatusDAO
+    internal class OrderStatusDAO : DAO<OrderStatus>
     {
         internal static async Task<List<OrderStatus>> GetAll()
         {
@@ -12,6 +12,17 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 return await context.OrderStatuses.ToListAsync();
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        internal static async Task<OrderStatus?> FindById(Guid id)
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                return await context.OrderStatuses
+                    .FirstOrDefaultAsync(x => x.OrderStatusId == id);
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class ProductReviewDAO
+    internal class ProductReviewDAO : DAO<ProductReview>
     {
         internal static async Task<ProductReview?> FindByUserIdAndProductId(Guid userId, Guid productId)
         {
@@ -26,28 +26,6 @@ namespace DataAccess.DAO
                 var productReview = await context.ProductReviews
                     .FirstOrDefaultAsync(x => x.ProductReviewId == id);
                 return productReview;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Add(ProductReview productReview)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(productReview);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Update(ProductReview productReview)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(productReview);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

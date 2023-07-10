@@ -9,7 +9,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;

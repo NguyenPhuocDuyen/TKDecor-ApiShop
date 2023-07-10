@@ -26,5 +26,10 @@ namespace DataAccess.Repository
 
         public async Task<List<ProductReview>> FindByUserId(Guid userId)
             => await ProductReviewDAO.FindByUserId(userId);
+
+        public Task<List<ProductReview>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

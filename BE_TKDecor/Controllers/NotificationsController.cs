@@ -35,7 +35,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var notifications = await _notification.GetAll(user.UserId);
+            var notifications = await _notification.FindByUserId(user.UserId);
             notifications = notifications.Where(x => x.IsDelete ==  false).ToList(); 
             var result = _mapper.Map<List<NotificationGetDto>>(notifications);
 
@@ -50,7 +50,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var notifications = await _notification.GetAll(user.UserId);
+            var notifications = await _notification.FindByUserId(user.UserId);
             notifications = notifications.Where(x => x.IsRead == false).ToList();
             foreach (var item in notifications)
             {

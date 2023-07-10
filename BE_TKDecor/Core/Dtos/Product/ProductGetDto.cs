@@ -7,7 +7,7 @@ namespace BE_TKDecor.Core.Dtos.Product
     {
         public Guid ProductId { get; set; }
 
-        //public int CategoryId { get; set; }
+        //public Guid CategoryId { get; set; }
 
         public string CategoryName { get; set; } = null!;
 

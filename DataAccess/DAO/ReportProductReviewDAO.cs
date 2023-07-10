@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class ReportProductReviewDAO
+    internal class ReportProductReviewDAO : DAO<ReportProductReview>
     {
         internal static async Task<List<ReportProductReview>> GetAll()
         {
@@ -47,28 +47,6 @@ namespace DataAccess.DAO
                     .FirstOrDefaultAsync(x => x.UserReportId == userId
                     && x.ProductReviewReportedId == productReviewId);
                 return report;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Add(ReportProductReview reportProductReview)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(reportProductReview);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Update(ReportProductReview reportProductReview)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(reportProductReview);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

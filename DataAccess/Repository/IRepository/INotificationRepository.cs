@@ -2,9 +2,8 @@
 using System;
 namespace DataAccess.Repository.IRepository
 {
-    public interface INotificationRepository
+    public interface INotificationRepository : IRepository<Notification>
     {
-        Task<List<Notification>> GetAll(Guid userId);
-        Task Update(Notification notification);
+        Task<List<Notification>> FindByUserId(Guid userId);
     }
 }

@@ -23,6 +23,11 @@ namespace DataAccess.Repository
         public async Task<ProductReviewInteraction?> FindByUserIdAndProductReviewId(Guid userId, Guid productReviewId)
             => await ProductReviewInteractionDAO.FindByUserIdAndProductReviewId(userId, productReviewId);
 
+        public Task<List<ProductReviewInteraction>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task Update(ProductReviewInteraction productReviewInteraction)
             => await ProductReviewInteractionDAO.Update(productReviewInteraction);
     }

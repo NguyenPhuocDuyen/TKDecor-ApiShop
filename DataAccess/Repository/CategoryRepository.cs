@@ -9,9 +9,6 @@ namespace DataAccess.Repository
         public async Task Add(Category category)
             => await CategoryDAO.Add(category);
 
-        public async Task<bool> CheckProductExistsByCateId(Guid categoryId)
-            => await CategoryDAO.CheckProductExistsByCateId(categoryId);
-
         public async Task<List<Category>> GetAll() => await CategoryDAO.GetAll();
 
         public async Task<Category?> FindById(Guid categoryId)

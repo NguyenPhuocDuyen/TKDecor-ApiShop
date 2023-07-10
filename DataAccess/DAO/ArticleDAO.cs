@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class ArticleDAO
+    internal class ArticleDAO : DAO<Article>
     {
         internal static async Task<List<Article>> GetAll()
         {
@@ -49,28 +49,6 @@ namespace DataAccess.DAO
                 return await context.Articles
                     .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.Slug == slug);
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Add(Article article)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(article);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Update(Article article)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(article);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

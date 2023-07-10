@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IProduct3DModelRepository
+    public interface IProduct3DModelRepository : IRepository<Product3DModel>
     {
-        Task<List<Product3DModel>> GetAll();
-        Task<Product3DModel?> FindById(Guid id);
-        Task Add(Product3DModel model);
-        Task Update(Product3DModel model);
     }
 }

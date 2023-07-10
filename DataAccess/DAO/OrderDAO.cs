@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class OrderDAO
+    internal class OrderDAO : DAO<Order>
     {
         internal static async Task<List<Order>> GetAll()
         {
@@ -53,28 +53,6 @@ namespace DataAccess.DAO
                     .Where(o => o.UserId == userId)
                     .ToListAsync();
                 return orders;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Add(Order order)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(order);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Update(Order order)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(order);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

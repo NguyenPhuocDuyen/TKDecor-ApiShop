@@ -7,13 +7,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IArticleRepository
+    public interface IArticleRepository : IRepository<Article>
     {
-        Task<List<Article>> GetAll();
-        Task<Article?> FindById(Guid id);
         Task<Article?> FindByTitle(string Title);
         Task<Article?> FindBySlug(string slug);
-        Task Add(Article article);
-        Task Update(Article article);
     }
 }

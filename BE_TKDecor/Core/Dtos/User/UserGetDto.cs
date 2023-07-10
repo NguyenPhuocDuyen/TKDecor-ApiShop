@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.User
     {
         public Guid UserId { get; set; }
 
-        //public int RoleId { get; set; }
+        //public Guid RoleId { get; set; }
 
         public string RoleName { get; set; } = null!;
 
@@ -14,14 +14,14 @@ namespace BE_TKDecor.Core.Dtos.User
 
         public string FullName { get; set; } = null!;
 
-        public string? AvatarUrl { get; set; }
+        public string AvatarUrl { get; set; } = null!;
 
-        public bool? IsSubscriber { get; set; } = false;
+        public bool IsSubscriber { get; set; }
 
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
-        public bool? IsDelete { get; set; } = false;
+        //public bool IsDeleted { get; set; }
     }
 }

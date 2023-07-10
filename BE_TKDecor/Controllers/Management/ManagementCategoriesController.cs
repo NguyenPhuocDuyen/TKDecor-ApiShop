@@ -86,8 +86,7 @@ namespace BE_TKDecor.Controllers.Management
             if (categoryDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
-            var checkProductHasInCategory = await _category.CheckProductExistsByCateId(id);
-            if (checkProductHasInCategory)
+            if (categoryDb.Products.Count > 0)
                 return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
 
             categoryDb.IsDelete = true;

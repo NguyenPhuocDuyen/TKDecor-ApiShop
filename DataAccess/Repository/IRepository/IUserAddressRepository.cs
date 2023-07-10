@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IUserAddressRepository
+    public interface IUserAddressRepository : IRepository<UserAddress>
     {
         Task<List<UserAddress>> FindByUserId(Guid userId);
-        Task<UserAddress?> FindById(Guid id);
         Task SetDefault(Guid userId, Guid? userAddressId);
-        Task Add(UserAddress userAddress);
-        Task Update(UserAddress userAddress);
     }
 }

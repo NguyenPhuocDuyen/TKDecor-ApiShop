@@ -230,7 +230,9 @@ namespace BE_TKDecor.Controllers
             //convert token to string
             var token = await GenerateToken(u);
 
-            return Ok(new ApiResponse { Success = true, Data = token });
+            var userGet = _mapper.Map<UserGetDto>(u);
+
+            return Ok(new ApiResponse { Success = true, Data = new { userGet, token } });
         }
 
         // POST: api/Authentications/ForgotPassword
