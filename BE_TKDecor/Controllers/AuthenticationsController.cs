@@ -232,7 +232,17 @@ namespace BE_TKDecor.Controllers
 
             var userGet = _mapper.Map<UserGetDto>(u);
 
-            return Ok(new ApiResponse { Success = true, Data = new { userGet, token } });
+            var data = new 
+            {
+                userGet.RoleName,
+                userGet.Email,
+                userGet.FullName,
+                userGet.AvatarUrl,
+                token.AccessToken,
+                token.RefreshToken,
+            };
+
+            return Ok(new ApiResponse { Success = true, Data = data });
         }
 
         // POST: api/Authentications/ForgotPassword
