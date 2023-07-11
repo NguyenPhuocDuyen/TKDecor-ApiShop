@@ -14,6 +14,7 @@ using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BusinessObject;
+using Utility.SD;
 
 namespace BE_TKDecor.Core.Config.Automapper
 {
@@ -70,10 +71,12 @@ namespace BE_TKDecor.Core.Config.Automapper
             // product review
             CreateMap<ProductReview,  ProductReviewGetDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
-                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
+                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
+                .ForMember(dest => dest.Like, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.Like).Count()))
+                .ForMember(dest => dest.DisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
 
             // product review interaction
-            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
+            //CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()

@@ -65,19 +65,19 @@ namespace BE_TKDecor.Controllers
                 // take customer role
                 user = new User
                 {
+                    Email = userDto.Email,
                     AvatarUrl = "",
                     Role = Role.Customer,
                     EmailConfirmed = false
                 };
             }
-            //u = _mapper.Map<User>(userDto);
 
             if (!Enum.TryParse<Gender>(userDto.Gender, out Gender gender))
                 return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
 
             // get random code
             string code = RandomCode.GenerateRandomCode();
-            user.Password = Password.HashPassword(user.Password);
+            user.Password = Password.HashPassword(userDto.Password);
 
             user.FullName = userDto.FullName;
             user.BirthDay = userDto.BirthDay;

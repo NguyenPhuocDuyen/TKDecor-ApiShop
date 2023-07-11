@@ -9,7 +9,7 @@ namespace Utility.SD
     public enum Interaction
     {
         Like,
-        Dislike,
+        DisLike,
         Normal
     }
 }

@@ -21,15 +21,19 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
         public bool? IsDelete { get; set; } = false;
 
-        public virtual ICollection<ProductReviewInteractionGetDto> ProductReviewInteractions { get; set; } = new List<ProductReviewInteractionGetDto>();
+        public int Like { get; set; }
+
+        public int DisLike { get; set; }
+
+        //public virtual ICollection<ProductReviewInteractionGetDto> ProductReviewInteractions { get; set; } = new List<ProductReviewInteractionGetDto>();
     }
 
-    public class ProductReviewInteractionGetDto
-    {
-        public Guid ProductReviewInteractionId { get; set; }
+    //public class ProductReviewInteractionGetDto
+    //{
+    //    //public Guid ProductReviewInteractionId { get; set; }
 
-        public Guid ProductReviewId { get; set; }
+    //    //public Guid ProductReviewId { get; set; }
 
-        public Interaction Interaction { get; set; }
-    }
+    //    public string Interaction { get; set; } = null!;
+    //}
 }
