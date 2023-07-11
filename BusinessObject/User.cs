@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Utility.SD;
 
 namespace BusinessObject;
 
@@ -7,13 +6,17 @@ public partial class User : BaseEntity
 {
     public Guid UserId { get; set; }
 
-    public Guid RoleId { get; set; }
+    public Role Role { get; set; }
 
     public string Email { get; set; } = null!;
 
     public string Password { get; set; } = null!;
 
     public string FullName { get; set; } = null!;
+
+    public DateTime BirthDay { get; set; }
+
+    public Gender Gender { get; set; }
 
     public string AvatarUrl { get; set; } = null!;
 
@@ -30,8 +33,6 @@ public partial class User : BaseEntity
     public string? ResetPasswordCode { get; set; }
 
     public DateTime? ResetPasswordSentAt { get; set; }
-
-    public virtual Role Role { get; set; } = null!;
 
     public virtual ICollection<Article> Articles { get; set; } = new List<Article>();
 

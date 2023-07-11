@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Utility.SD;
 
 namespace BusinessObject;
 
@@ -11,11 +12,9 @@ public partial class ProductReviewInteraction : BaseEntity
 
     public Guid ProductReviewId { get; set; }
 
-    public Guid ProductInteractionStatusId { get; set; }
+    public Interaction Interaction { get; set; }
 
     public virtual User User { get; set; } = null!;
 
     public virtual ProductReview ProductReview { get; set; } = null!;
-
-    public virtual ProductReviewInteractionStatus ProductReviewInteractionStatuses { get; set; } = null!;
 }

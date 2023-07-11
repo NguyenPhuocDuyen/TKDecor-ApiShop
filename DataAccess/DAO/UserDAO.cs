@@ -11,7 +11,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var users = await context.Users
-                    .Include(u => u.Role)
                     .ToListAsync();
                 return users;
             }
@@ -27,7 +26,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users
-                    .Include(u => u.Role)
                     .SingleOrDefaultAsync(user => user.UserId == id);
                 return user;
             }
@@ -43,7 +41,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var user = await context.Users
-                    .Include(u => u.Role)
                     .SingleOrDefaultAsync(user => user.Email == email);
                 return user;
             }

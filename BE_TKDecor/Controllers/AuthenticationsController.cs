@@ -2,7 +2,6 @@
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,6 +13,7 @@ using Utility;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.Extensions.Options;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -25,20 +25,17 @@ namespace BE_TKDecor.Controllers
         private readonly ISendMailService _sendMailService;
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
-        private readonly IRoleRepository _role;
         private readonly IRefreshTokenRepository _refreshToken;
 
         public AuthenticationsController(ISendMailService sendMailService,
             IOptions<JwtSettings> options,
             IMapper mapper,
             IUserRepository user,
-            IRoleRepository role,
             IRefreshTokenRepository refreshToken)
         {
             _sendMailService = sendMailService;
             _mapper = mapper;
             _user = user;
-            _role = role;
             _refreshToken = refreshToken;
             _jwtSettings = options.Value;
         }
@@ -66,11 +63,10 @@ namespace BE_TKDecor.Controllers
             if (isAdd)
             {
                 // take customer role
-                Role? role = await _role.FindByName(RoleContent.Customer);
                 u = new User
                 {
                     AvatarUrl = "",
-                    RoleId = role.RoleId,
+                    Role = Role.Customer,
                     EmailConfirmed = false
                 };
             }
@@ -229,15 +225,14 @@ namespace BE_TKDecor.Controllers
 
             //convert token to string
             var token = await GenerateToken(u);
+            string roleString = Enum.GetName(typeof(Role), u.Role);
 
-            var userGet = _mapper.Map<UserGetDto>(u);
-
-            var data = new 
+            var data = new
             {
-                userGet.RoleName,
-                userGet.Email,
-                userGet.FullName,
-                userGet.AvatarUrl,
+                role = roleString,
+                u.Email,
+                u.FullName,
+                u.AvatarUrl,
                 token.AccessToken,
                 token.RefreshToken,
             };
@@ -415,13 +410,15 @@ namespace BE_TKDecor.Controllers
             //encoding key in json
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
             //set description for token
+            string roleString = Enum.GetName(typeof(Role), user.Role);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim("UserId", user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.FullName),
-                    new Claim(ClaimTypes.Role, user.Role.Name),
+                    new Claim(ClaimTypes.Role, roleString),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

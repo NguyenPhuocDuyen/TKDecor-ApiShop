@@ -11,7 +11,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var orders = await context.Orders
-                    .Include(x => x.OrderStatus)
                     .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
@@ -28,7 +27,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var order = await context.Orders
-                    .Include(x => x.OrderStatus)
                     .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
@@ -45,7 +43,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var orders = await context.Orders
-                    .Include(x => x.OrderStatus)
                     .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)

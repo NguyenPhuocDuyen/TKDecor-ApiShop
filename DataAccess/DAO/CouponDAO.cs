@@ -11,7 +11,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var coupons = await context.Coupons
-                    .Include(x => x.CouponType)
                     .ToListAsync();
                 return coupons;
             }
@@ -24,7 +23,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var coupon = await context.Coupons
-                    .Include(x => x.CouponType)
                     .FirstOrDefaultAsync(x => x.CouponId == id);
                 return coupon;
             }
@@ -37,7 +35,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var coupon = await context.Coupons
-                    .Include(x => x.CouponType)
                     .FirstOrDefaultAsync(x => x.Code == code);
                 return coupon;
             }

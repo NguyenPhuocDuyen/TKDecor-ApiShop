@@ -3,10 +3,10 @@ using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {

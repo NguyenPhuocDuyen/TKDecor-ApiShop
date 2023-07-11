@@ -7,7 +7,6 @@ using BE_TKDecor.Core.Response;
 using AutoMapper;
 using Utility;
 using Utility.Mail;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using System.Net;
 using System.Text;
 using System.Net.Http.Headers;

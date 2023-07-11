@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Utility.SD;
 
 namespace BusinessObject;
 
@@ -11,13 +10,11 @@ public partial class ReportProductReview : BaseEntity
 
     public Guid ProductReviewReportedId { get; set; }
 
-    public Guid ReportStatusId { get; set; }
+    public ReportStatus ReportStatus { get; set; }
 
     public string Reason { get; set; } = null!;
 
     public virtual ProductReview ProductReviewReported { get; set; } = null!;
-
-    public virtual ReportStatus ReportStatus { get; set; } = null!;
 
     public virtual User UserReport { get; set; } = null!;
 }

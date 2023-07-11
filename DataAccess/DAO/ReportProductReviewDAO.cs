@@ -11,7 +11,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var reports = await context.ReportProductReviews
-                    .Include(x => x.ReportStatus)
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReviewReported)
                     .ToListAsync();
@@ -26,7 +25,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var report = await context.ReportProductReviews
-                    .Include(x => x.ReportStatus)
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReviewReported)
                     .FirstOrDefaultAsync(x => x.ReportProductReviewId == id);
@@ -41,7 +39,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var report = await context.ReportProductReviews
-                    .Include(x => x.ReportStatus)
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReviewReported)
                     .FirstOrDefaultAsync(x => x.UserReportId == userId

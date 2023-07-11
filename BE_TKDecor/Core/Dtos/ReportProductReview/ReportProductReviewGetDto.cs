@@ -4,19 +4,17 @@
     {
         public Guid ReportProductReviewId { get; set; }
 
-        //public int UserReportId { get; set; }
+        //public Guid UserReportId { get; set; }
 
         public string UserReportName { get; set; } = null!;
 
         public string UserReportEmail { get; set; } = null!;
 
-        //public int ProductReviewReportedId { get; set; }
+        //public Guid ProductReviewReportedId { get; set; }
 
         public string ProductReviewReportedDescription { get; set; } = null!;
 
-        //public int ReportStatusId { get; set; }
-
-        public string ReportStatusName { get; set; } = null!;
+        public string ReportStatus { get; set; } = null!;
 
         public string Reason { get; set; } = null!;
 

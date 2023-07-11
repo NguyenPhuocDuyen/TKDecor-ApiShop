@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
+using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -20,19 +20,16 @@ namespace BE_TKDecor.Controllers
         private readonly IUserRepository _user;
         private readonly IProductReviewRepository _productReview;
         private readonly IProductReviewInteractionRepository _interaction;
-        private readonly IProductReviewInteractionStatusRepository _interactionStatus;
 
         public ProductReviewInteractionsController(IMapper mapper,
             IUserRepository user,
             IProductReviewRepository productReview,
-            IProductReviewInteractionRepository interaction,
-            IProductReviewInteractionStatusRepository interactionStatus)
+            IProductReviewInteractionRepository interaction)
         {
             _mapper = mapper;
             _user = user;
             _productReview = productReview;
             _interaction = interaction;
-            _interactionStatus = interactionStatus;
         }
 
         // GET: api/ProductReviews/GetAll
@@ -65,12 +62,11 @@ namespace BE_TKDecor.Controllers
             var interactionReview = await _interaction
                 .FindByUserIdAndProductReviewId(user.UserId, interactionDto.ProductReviewId);
 
-            var statuses = await _interactionStatus.GetAll();
-            var status = statuses.FirstOrDefault(x => x.Name == interactionDto.Interaction);
+            Interaction status;
+            if (!Enum.TryParse<Interaction>(interactionDto.Interaction, out status))
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
 
             bool isAdd = false;
-            if (status == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.InteractionNotFound });
 
             if (interactionReview == null)
             {
@@ -89,8 +85,7 @@ namespace BE_TKDecor.Controllers
             {
                 interactionReview.UpdatedAt = DateTime.UtcNow;
             }
-            interactionReview.ProductInteractionStatusId = status.ProductReviewInteractionStatusId;
-            interactionReview.ProductReviewInteractionStatuses = status;
+            interactionReview.Interaction = status;
 
             try
             {

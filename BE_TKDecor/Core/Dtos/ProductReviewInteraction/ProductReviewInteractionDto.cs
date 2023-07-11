@@ -1,5 +1,4 @@
-﻿using DataAccess.StatusContent;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BE_TKDecor.Core.Dtos.ProductReviewInteraction
 {
@@ -7,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReviewInteraction
     {
         public Guid ProductReviewId { get; set; }
 
-        [RegularExpression($"^({ProductInteractionStatusContent.Like}|{ProductInteractionStatusContent.DisLike}|{ProductInteractionStatusContent.Normal})$")]
+        [RegularExpression($"^(Like|DisLike|Normal)$")]
         public string Interaction { get; set; } = null!;
     }
 }

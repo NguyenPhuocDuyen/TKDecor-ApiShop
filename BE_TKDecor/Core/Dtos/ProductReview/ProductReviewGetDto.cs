@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using Utility.SD;
 
 namespace BE_TKDecor.Core.Dtos.ProductReview
 {
@@ -29,8 +30,6 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
         public Guid ProductReviewId { get; set; }
 
-        //public Guid ProductInteractionStatusId { get; set; }
-
-        public string Interaction { get; set; } = null!;
+        public Interaction Interaction { get; set; }
     }
 }

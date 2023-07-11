@@ -4,8 +4,8 @@ using AutoMapper;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
-using DataAccess.StatusContent;
 using BE_TKDecor.Core.Dtos.Order;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -19,7 +19,6 @@ namespace BE_TKDecor.Controllers
         private readonly IUserAddressRepository _userAddress;
         private readonly ICouponRepository _coupon;
         private readonly IOrderRepository _order;
-        private readonly IOrderStatusRepository _orderStatus;
         private readonly ICartRepository _cart;
 
         public OrdersController(IMapper mapper,
@@ -27,7 +26,6 @@ namespace BE_TKDecor.Controllers
             IUserAddressRepository userAddress,
             ICouponRepository coupon,
             IOrderRepository order,
-            IOrderStatusRepository orderStatus,
             ICartRepository cart)
         {
             _mapper = mapper;
@@ -35,7 +33,6 @@ namespace BE_TKDecor.Controllers
             _userAddress = userAddress;
             _coupon = coupon;
             _order = order;
-            _orderStatus = orderStatus;
             _cart = cart;
         }
 
@@ -90,11 +87,6 @@ namespace BE_TKDecor.Controllers
             if (address == null || address.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
-            // get  status order ordered
-            var orderedStatus = await _orderStatus.FindByName(OrderStatusContent.Ordered);
-            if (orderedStatus == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.Error });
-
             // get cart of user
             var cartsDb = await _cart.FindCartsByUserId(user.UserId);
 
@@ -103,8 +95,7 @@ namespace BE_TKDecor.Controllers
             {
                 UserId = user.UserId,
                 User = user,
-                OrderStatusId = orderedStatus.OrderStatusId,
-                OrderStatus = orderedStatus,
+                OrderStatus = OrderStatus.Ordered,
                 FullName = address.FullName,
                 Phone = address.Phone,
                 Address = address.Address,
@@ -140,7 +131,7 @@ namespace BE_TKDecor.Controllers
             {
                 newOrder.CouponId = coupon.CouponId;
                 newOrder.Coupon = coupon;
-                if (coupon.CouponType.Name == CouponTypeContent.ByPercent)
+                if (coupon.CouponType == CouponType.ByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)
                     newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value;
@@ -188,30 +179,30 @@ namespace BE_TKDecor.Controllers
             if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (order.OrderStatus.Name == orderUpdateStatusDto.OrderStatusName)
-                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-
-            // list order status
-            var orderStatus = await _orderStatus.GetAll();
-
-            // check order status exists
-            var newOrderStatus = orderStatus.FirstOrDefault(x => x.Name == orderUpdateStatusDto.OrderStatusName);
-            if (newOrderStatus == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
+            OrderStatus status;
+            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out status))
+            {
+                if (order.OrderStatus == status)
+                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+            }
+            else
+            {
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
+            }
 
             // update order status
             // customer can cancel, refund, receive the order
-            if (order.OrderStatus.Name == OrderStatusContent.Ordered)
+            if (order.OrderStatus == OrderStatus.Ordered)
             {
                 // Cancellation of orders only when the order is in the Ordered status
-                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Canceled)
+                if (status != OrderStatus.Canceled)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
-            else if (order.OrderStatus.Name == OrderStatusContent.Delivering)
+            else if (order.OrderStatus == OrderStatus.Delivering)
             {
                 // Orders can only be accepted or refunded when the order is in the Delivering status
-                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Received
-                    && orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Refund)
+                if (status != OrderStatus.Received
+                    && status != OrderStatus.Refund)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
             else
@@ -219,8 +210,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
-            order.OrderStatus = newOrderStatus;
-            order.OrderStatusId = newOrderStatus.OrderStatusId;
+            order.OrderStatus = status;
             order.UpdatedAt = DateTime.UtcNow;
             try
             {

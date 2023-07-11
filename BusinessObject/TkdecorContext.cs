@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Utility.SD;
 
 namespace BusinessObject;
 
@@ -24,8 +25,6 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<Coupon> Coupons { get; set; }
 
-    public virtual DbSet<CouponType> CouponTypes { get; set; }
-
     public virtual DbSet<Chat> Chats { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
@@ -33,8 +32,6 @@ public partial class TkdecorContext : DbContext
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
-
-    public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
@@ -46,8 +43,6 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<ProductReviewInteraction> ProductReviewInteractions { get; set; }
 
-    public virtual DbSet<ProductReviewInteractionStatus> ProductReviewInteractionStatuses { get; set; }
-
     public virtual DbSet<ProductReport> ProductReports { get; set; }
 
     public virtual DbSet<ProductReview> ProductReviews { get; set; }
@@ -55,10 +50,6 @@ public partial class TkdecorContext : DbContext
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
     public virtual DbSet<ReportProductReview> ReportProductReviews { get; set; }
-
-    public virtual DbSet<ReportStatus> ReportStatuses { get; set; }
-
-    public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -180,13 +171,13 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.Code, "IX_Coupon_code").IsUnique();
 
-            entity.HasIndex(e => e.CouponTypeId, "IX_Coupon_coupon_type_id");
-
             entity.Property(e => e.CouponId).HasColumnType("uniqueidentifier").HasColumnName("coupon_id");
             entity.Property(e => e.Code)
                 .IsUnicode(false)
                 .HasColumnName("code");
-            entity.Property(e => e.CouponTypeId).HasColumnType("uniqueidentifier").HasColumnName("coupon_type_id");
+            entity.Property(e => e.CouponType).HasColumnName("coupon_type")
+                .HasConversion(type => type.ToString(),
+                       typeString => (CouponType)Enum.Parse(typeof(CouponType), typeString)); ;
             entity.Property(e => e.EndDate)
                 .HasColumnType("datetime")
                 .HasColumnName("end_date");
@@ -208,22 +199,6 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-
-            entity.HasOne(d => d.CouponType).WithMany(p => p.Coupons)
-                .HasForeignKey(d => d.CouponTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Coupon_CouponType");
-        });
-
-        modelBuilder.Entity<CouponType>(entity =>
-        {
-            entity.HasKey(e => e.CouponTypeId).HasName("PK__CouponTy__AD2AFC0A104B34A3");
-
-            entity.ToTable("CouponType");
-
-            entity.Property(e => e.CouponTypeId).HasColumnType("uniqueidentifier").HasColumnName("coupon_type_id");
-            entity.Property(e => e.Name)
-                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Chat>(entity =>
@@ -293,8 +268,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("Order");
 
-            entity.HasIndex(e => e.OrderStatusId, "IX_Order_order_status_id");
-
             entity.HasIndex(e => e.UserId, "IX_Order_user_id");
 
             entity.HasIndex(e => e.CouponId, "IX_Order_coupon_id");
@@ -304,8 +277,11 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
-            entity.Property(e => e.OrderStatusId).HasColumnType("uniqueidentifier").HasColumnName("order_status_id");
-            entity.Property(e => e.Phone)                
+            entity.Property(e => e.OrderStatus)
+                .HasColumnName("order_status")
+                .HasConversion(status => status.ToString(),
+                      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus),statusString));
+            entity.Property(e => e.Phone)
                 .IsUnicode(false)
                 .HasColumnName("phone");
             entity.Property(e => e.TotalPrice)
@@ -321,11 +297,6 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.CouponId).HasColumnType("uniqueidentifier").HasColumnName("coupon_id");
-
-            entity.HasOne(d => d.OrderStatus).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.OrderStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Order_OrderStatus");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
@@ -365,17 +336,6 @@ public partial class TkdecorContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetail_Product");
-        });
-
-        modelBuilder.Entity<OrderStatus>(entity =>
-        {
-            entity.HasKey(e => e.OrderStatusId).HasName("PK__OrderSta__A499CF231D746F37");
-
-            entity.ToTable("OrderStatus");
-
-            entity.Property(e => e.OrderStatusId).HasColumnType("uniqueidentifier").HasColumnName("order_status_id");
-            entity.Property(e => e.Name)
-                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -498,13 +458,14 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.ProductReviewId, "IX_ProductReviewInteraction_product_review_id");
 
-            entity.HasIndex(e => e.ProductInteractionStatusId, "IX_ProductReviewInteraction_product_interaction_status_id");
-
             entity.HasIndex(e => e.UserId, "IX_ProductReviewInteraction_user_id");
 
             entity.Property(e => e.ProductReviewInteractionId).HasColumnType("uniqueidentifier").HasColumnName("product_review_interaction_id");
             entity.Property(e => e.ProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("product_review_id");
-            entity.Property(e => e.ProductInteractionStatusId).HasColumnType("uniqueidentifier").HasColumnName("product_interaction_status_id");
+            entity.Property(e => e.Interaction)
+                .HasColumnName("interaction")
+                .HasConversion(interaction => interaction.ToString(),
+                       interactionString => (Interaction)Enum.Parse(typeof(Interaction), interactionString)); ;
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -519,26 +480,10 @@ public partial class TkdecorContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReviewInteraction_Product");
 
-            entity.HasOne(d => d.ProductReviewInteractionStatuses).WithMany(p => p.ProductReviewInteractions)
-                .HasForeignKey(d => d.ProductInteractionStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductReviewInteraction_ProductReviewInteractionStatus");
-
             entity.HasOne(d => d.User).WithMany(p => p.ProductInteractions)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReviewInteraction_User");
-        });
-
-        modelBuilder.Entity<ProductReviewInteractionStatus>(entity =>
-        {
-            entity.HasKey(e => e.ProductReviewInteractionStatusId).HasName("PK__ProductI__0CC0092882FD7968");
-
-            entity.ToTable("ProductReviewInteractionStatus");
-
-            entity.Property(e => e.ProductReviewInteractionStatusId).HasColumnType("uniqueidentifier").HasColumnName("product_review_interaction_status_id");
-            entity.Property(e => e.Name)
-                .HasColumnName("name");
         });
 
         modelBuilder.Entity<ProductReport>(entity =>
@@ -549,8 +494,6 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.ProductReportedId, "IX_ProductReport_product_reported_id");
 
-            entity.HasIndex(e => e.ReportStatusId, "IX_ProductReport_report_status_id");
-
             entity.HasIndex(e => e.UserReportId, "IX_ProductReport_user_report_id");
 
             entity.Property(e => e.ProductReportId).HasColumnType("uniqueidentifier").HasColumnName("product_report_id");
@@ -559,7 +502,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.ProductReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_reported_id");
             entity.Property(e => e.Reason).HasColumnName("reason");
-            entity.Property(e => e.ReportStatusId).HasColumnType("uniqueidentifier").HasColumnName("report_status_id");
+            entity.Property(e => e.ReportStatus)
+                .HasColumnName("report_status")
+                .HasConversion(status => status.ToString(),
+                       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString));
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -570,11 +516,6 @@ public partial class TkdecorContext : DbContext
                 .HasForeignKey(d => d.ProductReportedId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ProductReport_Product");
-
-            entity.HasOne(d => d.ReportStatus).WithMany(p => p.ProductReports)
-                .HasForeignKey(d => d.ReportStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductReport_ReportStatus");
 
             entity.HasOne(d => d.UserReport).WithMany(p => p.ProductReports)
                 .HasForeignKey(d => d.UserReportId)
@@ -651,8 +592,6 @@ public partial class TkdecorContext : DbContext
 
             entity.HasIndex(e => e.ProductReviewReportedId, "IX_ReportProductReview_product_review_reported_id");
 
-            entity.HasIndex(e => e.ReportStatusId, "IX_ReportProductReview_report_status_id");
-
             entity.HasIndex(e => e.UserReportId, "IX_ReportProductReview_user_report_id");
 
             entity.Property(e => e.ReportProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("report_product_review_id");
@@ -661,7 +600,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.ProductReviewReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_review_reported_id");
             entity.Property(e => e.Reason).HasColumnName("reason");
-            entity.Property(e => e.ReportStatusId).HasColumnType("uniqueidentifier").HasColumnName("report_status_id");
+            entity.Property(e => e.ReportStatus)
+                .HasColumnName("report_status")
+                .HasConversion(status => status.ToString(),
+                       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString)); ;
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -673,37 +615,10 @@ public partial class TkdecorContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ReportProductReview_ProductReview");
 
-            entity.HasOne(d => d.ReportStatus).WithMany(p => p.ReportProductReviews)
-                .HasForeignKey(d => d.ReportStatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ReportProductReview_ReportStatus");
-
             entity.HasOne(d => d.UserReport).WithMany(p => p.ReportProductReviews)
                 .HasForeignKey(d => d.UserReportId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ReportProductReview_User");
-        });
-
-        modelBuilder.Entity<ReportStatus>(entity =>
-        {
-            entity.HasKey(e => e.ReportStatusId).HasName("PK__ReportSt__09E0D88687C41A16");
-
-            entity.ToTable("ReportStatus");
-
-            entity.Property(e => e.ReportStatusId).HasColumnType("uniqueidentifier").HasColumnName("report_status_id");
-            entity.Property(e => e.Name)
-                .HasColumnName("name");
-        });
-
-        modelBuilder.Entity<Role>(entity =>
-        {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__760965CC5F8795DF");
-
-            entity.ToTable("Role");
-
-            entity.Property(e => e.RoleId).HasColumnType("uniqueidentifier").HasColumnName("role_id");
-            entity.Property(e => e.Name)
-                .HasColumnName("name");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -712,8 +627,6 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.RoleId, "IX_User_role_id");
-
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.AvatarUrl)
                 .IsUnicode(false)
@@ -721,6 +634,13 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.BirthDay)
+                .HasColumnType("datetime")
+                .HasColumnName("birth_day");
+            entity.Property(e => e.Gender)
+                .HasColumnName("gender")
+                .HasConversion(gender => gender.ToString(),
+                       genderString => (Gender)Enum.Parse(typeof(Gender), genderString));
             entity.Property(e => e.Email)
                 .IsUnicode(false)
                 .HasColumnName("email");
@@ -745,15 +665,16 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.ResetPasswordSentAt)
                 .HasColumnType("datetime")
                 .HasColumnName("reset_password_sent_at");
-            entity.Property(e => e.RoleId).HasColumnType("uniqueidentifier").HasColumnName("role_id");
+
+            entity.Property(e => e.Role)
+                .HasColumnName("role")
+                //.HasColumnType("datetime")
+                .HasConversion(role => role.ToString(),
+                       roleString => (Role)Enum.Parse(typeof(Role), roleString));
+
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_User_Role");
         });
 
         modelBuilder.Entity<UserAddress>(entity =>
@@ -772,7 +693,7 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
             entity.Property(e => e.IsDefault).HasColumnName("is_default");
-            entity.Property(e => e.Phone)                
+            entity.Property(e => e.Phone)
                 .IsUnicode(false)
                 .HasColumnName("phone");
             entity.Property(e => e.UpdatedAt)

@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IOrderStatusRepository
+    public interface IOrderDetailRepository
     {
-        Task<List<OrderStatus>> GetAll();
-        Task<OrderStatus?> FindByName(string name);
+        Task<OrderDetail?> FindByUserIdAndProductId(Guid userId, Guid productId);
     }
 }

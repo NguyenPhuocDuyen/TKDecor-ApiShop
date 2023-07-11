@@ -11,7 +11,6 @@ namespace DataAccess.Repository.IRepository
     {
         Task<List<ProductReview>> FindByUserId(Guid userId);
         Task<List<ProductReview>> FindByProductId(Guid productId);
-        Task<bool> CanReview(Guid userId, Guid productId);
         Task<ProductReview?> FindByUserIdAndProductId(Guid userId, Guid productId);
     }
 }

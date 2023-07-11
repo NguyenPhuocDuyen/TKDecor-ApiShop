@@ -23,7 +23,8 @@ namespace DataAccess.DAO
             {
                 using var _context = new TkdecorContext();
                 var productFavorite = await _context.ProductFavorites
-                    .Where(x => x.UserId == userId).ToListAsync();
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
                 return productFavorite;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

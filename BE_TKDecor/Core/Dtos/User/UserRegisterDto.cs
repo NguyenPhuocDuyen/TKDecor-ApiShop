@@ -18,7 +18,9 @@ namespace BE_TKDecor.Core.Dtos.User
         [MaxLength(255)]
         public string FullName { get; set; } = null!;
 
-        //[MaxLength(255)]
-        //public string? AvatarUrl { get; set; }
+        public DateTime BirthDay { get; set; }
+
+        [RegularExpression($"^(Male|Female|Other)$")]
+        public string Gender { get; set; } = null!;
     }
 }

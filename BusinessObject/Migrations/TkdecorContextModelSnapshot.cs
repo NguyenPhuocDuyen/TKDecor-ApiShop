@@ -218,9 +218,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(900)")
                         .HasColumnName("code");
 
-                    b.Property<Guid>("CouponTypeId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("coupon_type_id");
+                    b.Property<string>("CouponType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("coupon_type");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -264,27 +265,7 @@ namespace BusinessObject.Migrations
                     b.HasIndex(new[] { "Code" }, "IX_Coupon_code")
                         .IsUnique();
 
-                    b.HasIndex(new[] { "CouponTypeId" }, "IX_Coupon_coupon_type_id");
-
                     b.ToTable("Coupon", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.CouponType", b =>
-                {
-                    b.Property<Guid>("CouponTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("coupon_type_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("CouponTypeId")
-                        .HasName("PK__CouponTy__AD2AFC0A104B34A3");
-
-                    b.ToTable("CouponType", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.Notification", b =>
@@ -361,9 +342,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("note");
 
-                    b.Property<Guid>("OrderStatusId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("order_status_id");
+                    b.Property<string>("OrderStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("order_status");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -387,8 +369,6 @@ namespace BusinessObject.Migrations
                         .HasName("PK__Order__465962292D23A46C");
 
                     b.HasIndex(new[] { "CouponId" }, "IX_Order_coupon_id");
-
-                    b.HasIndex(new[] { "OrderStatusId" }, "IX_Order_order_status_id");
 
                     b.HasIndex(new[] { "UserId" }, "IX_Order_user_id");
 
@@ -426,24 +406,6 @@ namespace BusinessObject.Migrations
                     b.HasIndex(new[] { "ProductId" }, "IX_OrderDetail_product_id");
 
                     b.ToTable("OrderDetail", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.OrderStatus", b =>
-                {
-                    b.Property<Guid>("OrderStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("order_status_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("OrderStatusId")
-                        .HasName("PK__OrderSta__A499CF231D746F37");
-
-                    b.ToTable("OrderStatus", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.Product", b =>
@@ -644,9 +606,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("reason");
 
-                    b.Property<Guid>("ReportStatusId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("report_status_id");
+                    b.Property<string>("ReportStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("report_status");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
@@ -660,8 +623,6 @@ namespace BusinessObject.Migrations
                         .HasName("PK__ProductR__DC0B4A22C1B82B5E");
 
                     b.HasIndex(new[] { "ProductReportedId" }, "IX_ProductReport_product_reported_id");
-
-                    b.HasIndex(new[] { "ReportStatusId" }, "IX_ProductReport_report_status_id");
 
                     b.HasIndex(new[] { "UserReportId" }, "IX_ProductReport_user_report_id");
 
@@ -725,13 +686,14 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Interaction")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("interaction");
+
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
-
-                    b.Property<Guid>("ProductInteractionStatusId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("product_interaction_status_id");
 
                     b.Property<Guid>("ProductReviewId")
                         .HasColumnType("uniqueidentifier")
@@ -748,31 +710,11 @@ namespace BusinessObject.Migrations
                     b.HasKey("ProductReviewInteractionId")
                         .HasName("PK__ProductI__A2F12EDBBAC0359E");
 
-                    b.HasIndex(new[] { "ProductInteractionStatusId" }, "IX_ProductReviewInteraction_product_interaction_status_id");
-
                     b.HasIndex(new[] { "ProductReviewId" }, "IX_ProductReviewInteraction_product_review_id");
 
                     b.HasIndex(new[] { "UserId" }, "IX_ProductReviewInteraction_user_id");
 
                     b.ToTable("ProductReviewInteraction", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.ProductReviewInteractionStatus", b =>
-                {
-                    b.Property<Guid>("ProductReviewInteractionStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("product_review_interaction_status_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("ProductReviewInteractionStatusId")
-                        .HasName("PK__ProductI__0CC0092882FD7968");
-
-                    b.ToTable("ProductReviewInteractionStatus", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.RefreshToken", b =>
@@ -842,9 +784,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("reason");
 
-                    b.Property<Guid>("ReportStatusId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("report_status_id");
+                    b.Property<string>("ReportStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("report_status");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
@@ -859,47 +802,9 @@ namespace BusinessObject.Migrations
 
                     b.HasIndex(new[] { "ProductReviewReportedId" }, "IX_ReportProductReview_product_review_reported_id");
 
-                    b.HasIndex(new[] { "ReportStatusId" }, "IX_ReportProductReview_report_status_id");
-
                     b.HasIndex(new[] { "UserReportId" }, "IX_ReportProductReview_user_report_id");
 
                     b.ToTable("ReportProductReview", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.ReportStatus", b =>
-                {
-                    b.Property<Guid>("ReportStatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("report_status_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("ReportStatusId")
-                        .HasName("PK__ReportSt__09E0D88687C41A16");
-
-                    b.ToTable("ReportStatus", (string)null);
-                });
-
-            modelBuilder.Entity("BusinessObject.Role", b =>
-                {
-                    b.Property<Guid>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("role_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("RoleId")
-                        .HasName("PK__Role__760965CC5F8795DF");
-
-                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.User", b =>
@@ -914,6 +819,10 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)")
                         .HasColumnName("avatar_url");
+
+                    b.Property<DateTime>("BirthDay")
+                        .HasColumnType("datetime")
+                        .HasColumnName("birth_day");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -943,6 +852,11 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("full_name");
 
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("gender");
+
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
@@ -970,9 +884,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("reset_password_sent_at");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("role_id");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("role");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
@@ -980,8 +895,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("UserId")
                         .HasName("PK__User__B9BE370F0AD19949");
-
-                    b.HasIndex(new[] { "RoleId" }, "IX_User_role_id");
 
                     b.ToTable("User", (string)null);
                 });
@@ -1086,17 +999,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("BusinessObject.Coupon", b =>
-                {
-                    b.HasOne("BusinessObject.CouponType", "CouponType")
-                        .WithMany("Coupons")
-                        .HasForeignKey("CouponTypeId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Coupon_CouponType");
-
-                    b.Navigation("CouponType");
-                });
-
             modelBuilder.Entity("BusinessObject.Notification", b =>
                 {
                     b.HasOne("BusinessObject.User", "User")
@@ -1115,12 +1017,6 @@ namespace BusinessObject.Migrations
                         .HasForeignKey("CouponId")
                         .HasConstraintName("FK_Order_Coupon");
 
-                    b.HasOne("BusinessObject.OrderStatus", "OrderStatus")
-                        .WithMany("Orders")
-                        .HasForeignKey("OrderStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Order_OrderStatus");
-
                     b.HasOne("BusinessObject.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -1128,8 +1024,6 @@ namespace BusinessObject.Migrations
                         .HasConstraintName("FK_Order_User");
 
                     b.Navigation("Coupon");
-
-                    b.Navigation("OrderStatus");
 
                     b.Navigation("User");
                 });
@@ -1208,12 +1102,6 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_ProductReport_Product");
 
-                    b.HasOne("BusinessObject.ReportStatus", "ReportStatus")
-                        .WithMany("ProductReports")
-                        .HasForeignKey("ReportStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductReport_ReportStatus");
-
                     b.HasOne("BusinessObject.User", "UserReport")
                         .WithMany("ProductReports")
                         .HasForeignKey("UserReportId")
@@ -1221,8 +1109,6 @@ namespace BusinessObject.Migrations
                         .HasConstraintName("FK_ProductReport_User");
 
                     b.Navigation("ProductReported");
-
-                    b.Navigation("ReportStatus");
 
                     b.Navigation("UserReport");
                 });
@@ -1248,12 +1134,6 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReviewInteraction", b =>
                 {
-                    b.HasOne("BusinessObject.ProductReviewInteractionStatus", "ProductReviewInteractionStatuses")
-                        .WithMany("ProductReviewInteractions")
-                        .HasForeignKey("ProductInteractionStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ProductReviewInteraction_ProductReviewInteractionStatus");
-
                     b.HasOne("BusinessObject.ProductReview", "ProductReview")
                         .WithMany("ProductReviewInteractions")
                         .HasForeignKey("ProductReviewId")
@@ -1267,8 +1147,6 @@ namespace BusinessObject.Migrations
                         .HasConstraintName("FK_ProductReviewInteraction_User");
 
                     b.Navigation("ProductReview");
-
-                    b.Navigation("ProductReviewInteractionStatuses");
 
                     b.Navigation("User");
                 });
@@ -1292,12 +1170,6 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_ReportProductReview_ProductReview");
 
-                    b.HasOne("BusinessObject.ReportStatus", "ReportStatus")
-                        .WithMany("ReportProductReviews")
-                        .HasForeignKey("ReportStatusId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ReportProductReview_ReportStatus");
-
                     b.HasOne("BusinessObject.User", "UserReport")
                         .WithMany("ReportProductReviews")
                         .HasForeignKey("UserReportId")
@@ -1306,20 +1178,7 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("ProductReviewReported");
 
-                    b.Navigation("ReportStatus");
-
                     b.Navigation("UserReport");
-                });
-
-            modelBuilder.Entity("BusinessObject.User", b =>
-                {
-                    b.HasOne("BusinessObject.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .IsRequired()
-                        .HasConstraintName("FK_User_Role");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("BusinessObject.UserAddress", b =>
@@ -1343,19 +1202,9 @@ namespace BusinessObject.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("BusinessObject.CouponType", b =>
-                {
-                    b.Navigation("Coupons");
-                });
-
             modelBuilder.Entity("BusinessObject.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("BusinessObject.OrderStatus", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("BusinessObject.Product", b =>
@@ -1383,23 +1232,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("ProductReviewInteractions");
 
                     b.Navigation("ReportProductReviews");
-                });
-
-            modelBuilder.Entity("BusinessObject.ProductReviewInteractionStatus", b =>
-                {
-                    b.Navigation("ProductReviewInteractions");
-                });
-
-            modelBuilder.Entity("BusinessObject.ReportStatus", b =>
-                {
-                    b.Navigation("ProductReports");
-
-                    b.Navigation("ReportProductReviews");
-                });
-
-            modelBuilder.Entity("BusinessObject.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("BusinessObject.User", b =>

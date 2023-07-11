@@ -43,7 +43,6 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var productReviewInterations = await context.ProductReviewInteractions
-                    .Include(x => x.ProductReviewInteractionStatuses)
                     .Where(x => x.UserId == userId)
                     .ToListAsync();
                 return productReviewInterations;

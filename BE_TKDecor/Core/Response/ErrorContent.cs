@@ -22,6 +22,7 @@ namespace BE_TKDecor.Core.Response
         public static string AddressNotFound = "Address not found!";
         public static string CategoryNotFound = "Category not found!";
         public static string CouponNotFound = "Coupon not found!";
+        public static string CouponTypeNotFound = "Coupon type not found!";
         public static string CartNotFound = "Cart not found!";
         public static string OrderNotFound = "Order not found!";
         public static string ProductReportNotFound = "Product Report not found!";
@@ -30,6 +31,7 @@ namespace BE_TKDecor.Core.Response
         public static string Model3DNotFound = "Model3D not found!";
         public static string ReportProductReviewNotFound = "Report product review not found!";
         public static string OrderStatusNotFound = "Order status not found!";
+        public static string ReportStatusNotFound = "Report status not found!";
         
         public static string OrderStatusUnable = "Unable to update order status!";
 

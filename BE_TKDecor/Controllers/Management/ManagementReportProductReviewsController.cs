@@ -2,9 +2,9 @@
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
@@ -15,17 +15,14 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IReportProductReviewRepository _reportProductReview;
-        private readonly IReportStatusRepository _reportStatus;
         private readonly IProductReviewRepository _productReview;
 
         public ManagementReportProductReviewsController(IMapper mapper,
             IReportProductReviewRepository reportProductReview,
-            IReportStatusRepository reportStatus,
             IProductReviewRepository productReview)
         {
             _mapper = mapper;
             _reportProductReview = reportProductReview;
-            _reportStatus = reportStatus;
             _productReview = productReview;
         }
 
@@ -51,16 +48,16 @@ namespace BE_TKDecor.Controllers.Management
             if (report == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ReportProductReviewNotFound });
 
-            if (report.ReportStatus.Name != ReportStatusContent.Pending)
+            if (report.ReportStatus != ReportStatus.Pending)
                 return BadRequest(new ApiResponse { Message = "Report product review has been processed!" });
 
-            var reportStatus = (await _reportStatus.GetAll())
-                .FirstOrDefault(x => x.Name == reportDto.ReportStatus);
-            if (reportStatus == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.Error });
+            ReportStatus status;
+            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out status))
+            {
+                return BadRequest(new ApiResponse { Message = ErrorContent.ReportStatusNotFound });
+            }
 
-            report.ReportStatusId = reportStatus.ReportStatusId;
-            report.ReportStatus = reportStatus;
+            report.ReportStatus = status;
             report.UpdatedAt = DateTime.UtcNow;
             try
             {

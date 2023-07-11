@@ -1,5 +1,4 @@
-﻿using DataAccess.StatusContent;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BE_TKDecor.Core.Dtos.User
 {
@@ -7,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.User
     {
         public Guid UserId { get; set; }
 
-        [RegularExpression($"^({RoleContent.Seller}|{RoleContent.Customer}|{RoleContent.Admin})$")]
-        public string RoleName { get; set; } = null!;
+        [RegularExpression($"^(Seller|Customer|Admin)$")]
+        public string Role { get; set; } = null!;
     }
 }

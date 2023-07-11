@@ -2,9 +2,9 @@
 using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
@@ -15,16 +15,13 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IProductReportRepository _productReport;
-        private readonly IReportStatusRepository _reportStatus;
 
         public ManagementProductReportsController(IMapper mapper,
-            IProductReportRepository productReport,
-            IReportStatusRepository reportStatus
+            IProductReportRepository productReport
             )
         {
             _mapper = mapper;
             _productReport = productReport;
-            _reportStatus = reportStatus;
         }
 
 
@@ -50,16 +47,13 @@ namespace BE_TKDecor.Controllers.Management
             if (report == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReportNotFound });
 
-            if (report.ReportStatus.Name != ReportStatusContent.Pending)
-                return BadRequest(new ApiResponse { Message = "Product Report has been processed!" });
+            ReportStatus status;
+            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out status))
+            {
+                return BadRequest(new ApiResponse { Message = ErrorContent.ReportStatusNotFound });
+            }
 
-            var reportStatus = (await _reportStatus.GetAll())
-                .FirstOrDefault(x => x.Name == reportDto.ReportStatus);
-            if (reportStatus == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.Error });
-
-            report.ReportStatusId = reportStatus.ReportStatusId;
-            report.ReportStatus = reportStatus;
+            report.ReportStatus = status;
             report.UpdatedAt = DateTime.UtcNow;
             try
             {

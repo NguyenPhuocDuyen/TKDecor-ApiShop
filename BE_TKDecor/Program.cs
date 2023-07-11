@@ -54,7 +54,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
@@ -65,14 +64,12 @@ builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IOrderStatusRepository, OrderStatusRepository>();
-builder.Services.AddScoped<IReportStatusRepository, ReportStatusRepository>();
 builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
 builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
-builder.Services.AddScoped<IProductReviewInteractionStatusRepository, ProductReviewInteractionStatusRepository>();
 builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
+builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

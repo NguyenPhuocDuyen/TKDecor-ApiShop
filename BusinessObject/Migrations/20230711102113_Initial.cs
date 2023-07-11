@@ -28,27 +28,25 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CouponType",
+                name: "Coupon",
                 columns: table => new
                 {
-                    coupon_type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    coupon_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    coupon_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    code = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
+                    value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
+                    max_value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
+                    remaining_usage_count = table.Column<int>(type: "int", nullable: false),
+                    start_date = table.Column<DateTime>(type: "datetime", nullable: false),
+                    end_date = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_active = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__CouponTy__AD2AFC0A104B34A3", x => x.coupon_type_id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderStatus",
-                columns: table => new
-                {
-                    order_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__OrderSta__A499CF231D746F37", x => x.order_status_id);
+                    table.PrimaryKey("PK__Coupon__58CF6389A836CD8D", x => x.coupon_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,66 +68,31 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductReviewInteractionStatus",
+                name: "User",
                 columns: table => new
                 {
-                    product_review_interaction_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ProductI__0CC0092882FD7968", x => x.product_review_interaction_status_id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReportStatus",
-                columns: table => new
-                {
-                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ReportSt__09E0D88687C41A16", x => x.report_status_id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Role",
-                columns: table => new
-                {
-                    role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Role__760965CC5F8795DF", x => x.role_id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Coupon",
-                columns: table => new
-                {
-                    coupon_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    coupon_type_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    code = table.Column<string>(type: "varchar(900)", unicode: false, nullable: false),
-                    value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
-                    max_value = table.Column<decimal>(type: "decimal(8,0)", nullable: false),
-                    remaining_usage_count = table.Column<int>(type: "int", nullable: false),
-                    start_date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    end_date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_active = table.Column<bool>(type: "bit", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    email = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    password = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    birth_day = table.Column<DateTime>(type: "datetime", nullable: false),
+                    gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    avatar_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
+                    is_subscriber = table.Column<bool>(type: "bit", nullable: false),
+                    email_confirmed = table.Column<bool>(type: "bit", nullable: false),
+                    email_confirmation_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    email_confirmation_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    reset_password_required = table.Column<bool>(type: "bit", nullable: false),
+                    reset_password_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    reset_password_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Coupon__58CF6389A836CD8D", x => x.coupon_id);
-                    table.ForeignKey(
-                        name: "FK_Coupon_CouponType",
-                        column: x => x.coupon_type_id,
-                        principalTable: "CouponType",
-                        principalColumn: "coupon_type_id");
+                    table.PrimaryKey("PK__User__B9BE370F0AD19949", x => x.user_id);
                 });
 
             migrationBuilder.CreateTable(
@@ -164,55 +127,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    email = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    password = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    avatar_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
-                    is_subscriber = table.Column<bool>(type: "bit", nullable: false),
-                    email_confirmed = table.Column<bool>(type: "bit", nullable: false),
-                    email_confirmation_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    email_confirmation_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    reset_password_required = table.Column<bool>(type: "bit", nullable: false),
-                    reset_password_code = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    reset_password_sent_at = table.Column<DateTime>(type: "datetime", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__User__B9BE370F0AD19949", x => x.user_id);
-                    table.ForeignKey(
-                        name: "FK_User_Role",
-                        column: x => x.role_id,
-                        principalTable: "Role",
-                        principalColumn: "role_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductImage",
-                columns: table => new
-                {
-                    productImage_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    image_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ProductI__7A342910809D9053", x => x.productImage_id);
-                    table.ForeignKey(
-                        name: "FK_ProductImage_Product",
-                        column: x => x.product_id,
-                        principalTable: "Product",
-                        principalColumn: "product_id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Article",
                 columns: table => new
                 {
@@ -232,33 +146,6 @@ namespace BusinessObject.Migrations
                     table.PrimaryKey("PK__Article__CC36F660180F7E7F", x => x.article_id);
                     table.ForeignKey(
                         name: "FK_Article_User",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "user_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cart",
-                columns: table => new
-                {
-                    cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    quantity = table.Column<int>(type: "int", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Cart__2EF52A27823B5610", x => x.cart_id);
-                    table.ForeignKey(
-                        name: "FK_Cart_Product",
-                        column: x => x.product_id,
-                        principalTable: "Product",
-                        principalColumn: "product_id");
-                    table.ForeignKey(
-                        name: "FK_Cart_User",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -320,7 +207,7 @@ namespace BusinessObject.Migrations
                 {
                     order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    order_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    order_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     coupon_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
@@ -340,101 +227,7 @@ namespace BusinessObject.Migrations
                         principalTable: "Coupon",
                         principalColumn: "coupon_id");
                     table.ForeignKey(
-                        name: "FK_Order_OrderStatus",
-                        column: x => x.order_status_id,
-                        principalTable: "OrderStatus",
-                        principalColumn: "order_status_id");
-                    table.ForeignKey(
                         name: "FK_Order_User",
-                        column: x => x.user_id,
-                        principalTable: "User",
-                        principalColumn: "user_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductFavorite",
-                columns: table => new
-                {
-                    product_d = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductFavorite", x => x.product_d);
-                    table.ForeignKey(
-                        name: "FK_ProductFavorite_Product_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Product",
-                        principalColumn: "product_id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProductFavorite_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "user_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductReport",
-                columns: table => new
-                {
-                    product_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_reported_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ProductR__DC0B4A22C1B82B5E", x => x.product_report_id);
-                    table.ForeignKey(
-                        name: "FK_ProductReport_Product",
-                        column: x => x.product_reported_id,
-                        principalTable: "Product",
-                        principalColumn: "product_id");
-                    table.ForeignKey(
-                        name: "FK_ProductReport_ReportStatus",
-                        column: x => x.report_status_id,
-                        principalTable: "ReportStatus",
-                        principalColumn: "report_status_id");
-                    table.ForeignKey(
-                        name: "FK_ProductReport_User",
-                        column: x => x.user_report_id,
-                        principalTable: "User",
-                        principalColumn: "user_id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductReview",
-                columns: table => new
-                {
-                    product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    rate = table.Column<int>(type: "int", nullable: false),
-                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    is_delete = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__ProductR__8440EB03DB89B961", x => x.product_review_id);
-                    table.ForeignKey(
-                        name: "FK_ProductReview_Product",
-                        column: x => x.product_id,
-                        principalTable: "Product",
-                        principalColumn: "product_id");
-                    table.ForeignKey(
-                        name: "FK_ProductReview_User",
                         column: x => x.user_id,
                         principalTable: "User",
                         principalColumn: "user_id");
@@ -488,6 +281,135 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cart",
+                columns: table => new
+                {
+                    cart_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Cart__2EF52A27823B5610", x => x.cart_id);
+                    table.ForeignKey(
+                        name: "FK_Cart_Product",
+                        column: x => x.product_id,
+                        principalTable: "Product",
+                        principalColumn: "product_id");
+                    table.ForeignKey(
+                        name: "FK_Cart_User",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductFavorite",
+                columns: table => new
+                {
+                    product_favorite_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductFavorite", x => x.product_favorite_id);
+                    table.ForeignKey(
+                        name: "FK_ProductFavorite_Product_product_id",
+                        column: x => x.product_id,
+                        principalTable: "Product",
+                        principalColumn: "product_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductFavorite_User_user_id",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductImage",
+                columns: table => new
+                {
+                    productImage_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    image_url = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__ProductI__7A342910809D9053", x => x.productImage_id);
+                    table.ForeignKey(
+                        name: "FK_ProductImage_Product",
+                        column: x => x.product_id,
+                        principalTable: "Product",
+                        principalColumn: "product_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReport",
+                columns: table => new
+                {
+                    product_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_reported_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    report_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__ProductR__DC0B4A22C1B82B5E", x => x.product_report_id);
+                    table.ForeignKey(
+                        name: "FK_ProductReport_Product",
+                        column: x => x.product_reported_id,
+                        principalTable: "Product",
+                        principalColumn: "product_id");
+                    table.ForeignKey(
+                        name: "FK_ProductReport_User",
+                        column: x => x.user_report_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductReview",
+                columns: table => new
+                {
+                    product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    rate = table.Column<int>(type: "int", nullable: false),
+                    description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__ProductR__8440EB03DB89B961", x => x.product_review_id);
+                    table.ForeignKey(
+                        name: "FK_ProductReview_Product",
+                        column: x => x.product_id,
+                        principalTable: "Product",
+                        principalColumn: "product_id");
+                    table.ForeignKey(
+                        name: "FK_ProductReview_User",
+                        column: x => x.user_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderDetail",
                 columns: table => new
                 {
@@ -519,7 +441,7 @@ namespace BusinessObject.Migrations
                     product_review_interaction_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    product_interaction_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    interaction = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: false)
@@ -532,11 +454,6 @@ namespace BusinessObject.Migrations
                         column: x => x.product_review_id,
                         principalTable: "ProductReview",
                         principalColumn: "product_review_id");
-                    table.ForeignKey(
-                        name: "FK_ProductReviewInteraction_ProductReviewInteractionStatus",
-                        column: x => x.product_interaction_status_id,
-                        principalTable: "ProductReviewInteractionStatus",
-                        principalColumn: "product_review_interaction_status_id");
                     table.ForeignKey(
                         name: "FK_ProductReviewInteraction_User",
                         column: x => x.user_id,
@@ -551,7 +468,7 @@ namespace BusinessObject.Migrations
                     report_product_review_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_report_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     product_review_reported_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    report_status_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    report_status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -565,11 +482,6 @@ namespace BusinessObject.Migrations
                         column: x => x.product_review_reported_id,
                         principalTable: "ProductReview",
                         principalColumn: "product_review_id");
-                    table.ForeignKey(
-                        name: "FK_ReportProductReview_ReportStatus",
-                        column: x => x.report_status_id,
-                        principalTable: "ReportStatus",
-                        principalColumn: "report_status_id");
                     table.ForeignKey(
                         name: "FK_ReportProductReview_User",
                         column: x => x.user_report_id,
@@ -621,11 +533,6 @@ namespace BusinessObject.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Coupon_coupon_type_id",
-                table: "Coupon",
-                column: "coupon_type_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notification_user_id",
                 table: "Notification",
                 column: "user_id");
@@ -634,11 +541,6 @@ namespace BusinessObject.Migrations
                 name: "IX_Order_coupon_id",
                 table: "Order",
                 column: "coupon_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Order_order_status_id",
-                table: "Order",
-                column: "order_status_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_user_id",
@@ -682,12 +584,12 @@ namespace BusinessObject.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProductFavorite_ProductId",
                 table: "ProductFavorite",
-                column: "ProductId");
+                column: "product_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductFavorite_UserId",
                 table: "ProductFavorite",
-                column: "UserId");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductImage_product_id",
@@ -698,11 +600,6 @@ namespace BusinessObject.Migrations
                 name: "IX_ProductReport_product_reported_id",
                 table: "ProductReport",
                 column: "product_reported_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductReport_report_status_id",
-                table: "ProductReport",
-                column: "report_status_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReport_user_report_id",
@@ -718,11 +615,6 @@ namespace BusinessObject.Migrations
                 name: "IX_ProductReview_user_id",
                 table: "ProductReview",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProductReviewInteraction_product_interaction_status_id",
-                table: "ProductReviewInteraction",
-                column: "product_interaction_status_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReviewInteraction_product_review_id",
@@ -745,19 +637,9 @@ namespace BusinessObject.Migrations
                 column: "product_review_reported_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportProductReview_report_status_id",
-                table: "ReportProductReview",
-                column: "report_status_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ReportProductReview_user_report_id",
                 table: "ReportProductReview",
                 column: "user_report_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_role_id",
-                table: "User",
-                column: "role_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAddress_user_id",
@@ -808,19 +690,10 @@ namespace BusinessObject.Migrations
                 name: "Order");
 
             migrationBuilder.DropTable(
-                name: "ProductReviewInteractionStatus");
-
-            migrationBuilder.DropTable(
                 name: "ProductReview");
 
             migrationBuilder.DropTable(
-                name: "ReportStatus");
-
-            migrationBuilder.DropTable(
                 name: "Coupon");
-
-            migrationBuilder.DropTable(
-                name: "OrderStatus");
 
             migrationBuilder.DropTable(
                 name: "Product");
@@ -829,16 +702,10 @@ namespace BusinessObject.Migrations
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "CouponType");
-
-            migrationBuilder.DropTable(
                 name: "Category");
 
             migrationBuilder.DropTable(
                 name: "Product3DModel");
-
-            migrationBuilder.DropTable(
-                name: "Role");
         }
     }
 }
