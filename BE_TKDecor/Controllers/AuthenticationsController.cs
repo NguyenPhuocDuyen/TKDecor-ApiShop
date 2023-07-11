@@ -46,12 +46,12 @@ namespace BE_TKDecor.Controllers
         {
             userDto.Email = userDto.Email.ToLower().Trim();
             //get user in database by email
-            User? u = await _user.FindByEmail(userDto.Email);
+            User? user = await _user.FindByEmail(userDto.Email);
             bool isAdd = true;
             //check exists
-            if (u != null)
+            if (user != null)
             {
-                if (u.EmailConfirmed == true)
+                if (user.EmailConfirmed == true)
                 {
                     return BadRequest(new ApiResponse
                     { Message = "Email already exists!" });
@@ -63,7 +63,7 @@ namespace BE_TKDecor.Controllers
             if (isAdd)
             {
                 // take customer role
-                u = new User
+                user = new User
                 {
                     AvatarUrl = "",
                     Role = Role.Customer,
@@ -72,18 +72,26 @@ namespace BE_TKDecor.Controllers
             }
             //u = _mapper.Map<User>(userDto);
 
+            if (!Enum.TryParse<Gender>(userDto.Gender, out Gender gender))
+                return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
+
             // get random code
             string code = RandomCode.GenerateRandomCode();
-            u.Password = Password.HashPassword(u.Password);
-            u.EmailConfirmationCode = code;
-            u.EmailConfirmationSentAt = DateTime.UtcNow;
-            u.UpdatedAt = DateTime.UtcNow;
+            user.Password = Password.HashPassword(user.Password);
+
+            user.FullName = userDto.FullName;
+            user.BirthDay = userDto.BirthDay;
+            user.Gender = gender;
+
+            user.EmailConfirmationCode = code;
+            user.EmailConfirmationSentAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
 
             //send mail to confirm account
             //set data to send
             MailContent mailContent = new()
             {
-                To = u.Email,
+                To = user.Email,
                 Subject = "Activate account for TKDecor Shop",
                 Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
             };
@@ -95,11 +103,11 @@ namespace BE_TKDecor.Controllers
                 if (isAdd)
                 {
                     // add user
-                    await _user.Add(u);
+                    await _user.Add(user);
                 }
                 else
                 {
-                    await _user.Update(u);
+                    await _user.Update(user);
                 }
                 return NoContent();
             }

@@ -34,6 +34,7 @@ namespace BE_TKDecor.Core.Response
         public static string ReportStatusNotFound = "Report status not found!";
         
         public static string OrderStatusUnable = "Unable to update order status!";
+        public static string GenderNotFound = "Gender not found!";
 
         public static string AccountIncorrect = "Email or password is incorrect!";
     }
