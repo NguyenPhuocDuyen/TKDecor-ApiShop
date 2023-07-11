@@ -109,7 +109,7 @@ namespace BE_TKDecor.Controllers
                 }
 
                 if (!quanlityIsValid)
-                    return Ok(new ApiResponse { Success = true, Message = "Exceeding the number, still plus max" });
+                    return BadRequest(new ApiResponse { Message = "Exceeding the number, still plus max" });
 
                 return NoContent();
             }
