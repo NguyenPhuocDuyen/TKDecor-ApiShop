@@ -247,7 +247,7 @@ namespace DataAccess.Data
                     {
                         ModelName = "Model 3d: " + product.Name,
                         VideoUrl = "",
-                        ModelUrl = "",
+                        ModelUrl = "https://cdn-luma.com/e13d5b281b9c97e6fbc3defda9a2812bcca09f323705dff6b77646f0d5655dc9.glb",
                         ThumbnailUrl = "https://fronty.com/static/uploads/01.22-02.22/pexels-uzunov-rostislav-5011647.jpg"
                     };
                     product.Product3DModel = product3DModel;

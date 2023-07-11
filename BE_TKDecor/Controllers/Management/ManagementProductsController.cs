@@ -36,6 +36,16 @@ namespace BE_TKDecor.Controllers.Management
             _product3DModel = product3DModel;
         }
 
+        // GET: api/Products/GetAll
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var products = await _product.GetAll();
+            products = products.OrderByDescending(x => x.UpdatedAt).ToList();
+            var result = _mapper.Map<List<ProductGetDto>>(products);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
         // POST: api/Products/Create
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)

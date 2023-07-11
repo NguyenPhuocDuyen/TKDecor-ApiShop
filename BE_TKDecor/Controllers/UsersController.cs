@@ -8,6 +8,9 @@ using AutoMapper;
 using Utility;
 using Utility.Mail;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using System.Net;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace BE_TKDecor.Controllers
 {
@@ -162,6 +165,37 @@ namespace BE_TKDecor.Controllers
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
+        [HttpGet]
+        public async Task<HttpResponseMessage> ExportToCsv()
+        {
+            var user = await GetUser();
+
+            // Tạo đối tượng StringBuilder để xây dựng chuỗi CSV
+            var csv = new StringBuilder();
+
+            // Ghi tiêu đề của các cột vào chuỗi CSV
+            csv.AppendLine("FullName,Email,Column3");
+
+            // Ghi dữ liệu từng dòng vào chuỗi CSV
+            //foreach (var item in data)
+            //{
+            csv.AppendLine($"{user.FullName},{user.Email}");
+            //}
+
+            // Tạo đối tượng HttpResponseMessage
+            var response = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(csv.ToString())
+            };
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "data.csv"
+            };
+
+            return response;
         }
 
         private async Task<User?> GetUser()

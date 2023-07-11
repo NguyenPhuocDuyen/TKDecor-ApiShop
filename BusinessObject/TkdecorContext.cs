@@ -455,8 +455,8 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.UserId, "IX_ProductFavorite_UserId");
 
             entity.Property(e => e.ProductFavoriteId).HasColumnType("uniqueidentifier").HasColumnName("product_favorite_id");
-            entity.Property(e => e.ProductFavoriteId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
-            entity.Property(e => e.ProductFavoriteId).HasColumnType("uniqueidentifier").HasColumnName("product_d");
+            entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
+            entity.Property(e => e.ProductId).HasColumnType("uniqueidentifier").HasColumnName("product_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");

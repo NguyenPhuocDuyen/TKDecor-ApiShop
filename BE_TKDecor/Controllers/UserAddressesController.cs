@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Customer)]
+    [Authorize]
     public class UserAddressesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -43,21 +43,21 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/UserAddresses/SetDefault/2
-        [HttpPost("SetDefault/{id}")]
-        public async Task<IActionResult> SetDefault(Guid id)
+        // GET: api/UserAddresses/SetDefault
+        [HttpPost("SetDefault")]
+        public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
         {
             var user = await GetUser();
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var address = await _userAddress.FindById(id);
+            var address = await _userAddress.FindById(dto.UserAddressId);
             if (address == null || address.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             try
             {
-                await _userAddress.SetDefault(user.UserId, id);
+                await _userAddress.SetDefault(user.UserId, dto.UserAddressId);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -90,7 +90,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/UserAddresses/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateUserAddress(Guid id, UserAddress userAddressDto)
+        public async Task<IActionResult> UpdateUserAddress(Guid id, UserAddressUpdateDto userAddressDto)
         {
             if (id != userAddressDto.UserAddressId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -118,6 +118,9 @@ namespace BE_TKDecor.Controllers
             var userAddress = await _userAddress.FindById(id);
             if (userAddress == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
+
+            if (userAddress.IsDefault)
+                return BadRequest(new ApiResponse { Message = "Can't not delete default address!" });
 
             userAddress.IsDelete = true;
             userAddress.UpdatedAt = DateTime.UtcNow;
