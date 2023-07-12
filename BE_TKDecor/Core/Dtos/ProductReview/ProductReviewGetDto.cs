@@ -28,12 +28,12 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
         //public virtual ICollection<ProductReviewInteractionGetDto> ProductReviewInteractions { get; set; } = new List<ProductReviewInteractionGetDto>();
     }
 
-    //public class ProductReviewInteractionGetDto
-    //{
-    //    //public Guid ProductReviewInteractionId { get; set; }
+    public class ProductReviewInteractionGetDto
+    {
+        //public Guid ProductReviewInteractionId { get; set; }
 
-    //    //public Guid ProductReviewId { get; set; }
+        public Guid ProductReviewId { get; set; }
 
-    //    public string Interaction { get; set; } = null!;
-    //}
+        public string Interaction { get; set; } = null!;
+    }
 }

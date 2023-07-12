@@ -32,20 +32,20 @@ namespace BE_TKDecor.Controllers
             _interaction = interaction;
         }
 
-        //// GET: api/ProductReviews/GetAll
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var user = await GetUser();
-        //    if (user == null)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+        // GET: api/ProductReviews/GetInteraction
+        [HttpGet("GetInteraction")]
+        public async Task<IActionResult> GetAll()
+        {
+            var user = await GetUser();
+            if (user == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-        //    var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
-        //    productReviewInteraction = productReviewInteraction.Where(x => x.IsDelete == false).ToList();
+            var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
+            productReviewInteraction = productReviewInteraction.Where(x => x.IsDelete == false).ToList();
 
-        //    var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
+            var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
 
         // POST: api/ProductReviews/Interaction
         [HttpPost("Interaction")]
