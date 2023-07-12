@@ -10,6 +10,7 @@ using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.Product3DModel;
 using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Dtos.ProductReview;
+using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
@@ -76,7 +77,7 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.DisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
 
             // product review interaction
-            //CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
+            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()

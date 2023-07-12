@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Order;
-using BE_TKDecor.Core.Dtos.ProductReview;
 using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
@@ -33,7 +31,7 @@ namespace BE_TKDecor.Controllers
         }
 
         // GET: api/ProductReviews/GetInteraction
-        [HttpGet("GetInteraction")]
+        [HttpGet("GetInteractionOfUser")]
         public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
