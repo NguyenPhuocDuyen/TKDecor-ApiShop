@@ -6,22 +6,24 @@ namespace BE_TKDecor.Core.Dtos.User
     {
         public Guid UserId { get; set; }
 
-        //public int RoleId { get; set; }
-
-        public string RoleName { get; set; } = null!;
+        public string Role { get; set; } = null!;
 
         public string Email { get; set; } = null!;
 
         public string FullName { get; set; } = null!;
 
-        public string? AvatarUrl { get; set; }
+        public DateTime BirthDay { get; set; }
 
-        public bool? IsSubscriber { get; set; } = false;
+        public string Gender { get; set; } = null!;
+        
+        public string AvatarUrl { get; set; } = null!;
 
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsSubscriber { get; set; }
 
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        //public DateTime CreatedAt { get; set; }
 
-        public bool? IsDelete { get; set; } = false;
+        //public DateTime UpdatedAt { get; set; }
+
+        //public bool IsDeleted { get; set; }
     }
 }

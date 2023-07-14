@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Utility.SD;
 
 namespace BusinessObject;
 
@@ -9,7 +10,7 @@ public partial class Order : BaseEntity
 
     public Guid UserId { get; set; }
 
-    public Guid OrderStatusId { get; set; }
+    public OrderStatus OrderStatus { get; set; }
 
     public Guid? CouponId { get; set; }
 
@@ -24,8 +25,6 @@ public partial class Order : BaseEntity
     public decimal TotalPrice { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-
-    public virtual OrderStatus OrderStatus { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 

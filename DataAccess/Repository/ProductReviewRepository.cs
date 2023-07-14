@@ -9,9 +9,6 @@ namespace DataAccess.Repository
         public async Task Add(ProductReview productReview)
             => await ProductReviewDAO.Add(productReview);
 
-        public async Task<bool> CanReview(Guid userId, Guid productId)
-            => await ProductReviewDAO.CanReview(userId, productId);
-
         public async Task<ProductReview?> FindById(Guid id)
             => await ProductReviewDAO.FindById(id);
 
@@ -26,5 +23,10 @@ namespace DataAccess.Repository
 
         public async Task<List<ProductReview>> FindByUserId(Guid userId)
             => await ProductReviewDAO.FindByUserId(userId);
+
+        public Task<List<ProductReview>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

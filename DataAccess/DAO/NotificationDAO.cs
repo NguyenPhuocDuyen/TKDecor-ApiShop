@@ -8,9 +8,21 @@ using System.Threading.Tasks;
 
 namespace DataAccess.DAO
 {
-    internal class NotificationDAO
+    internal class NotificationDAO : DAO<Notification>
     {
-        internal static async Task<List<Notification>> GetAll(Guid userId)
+        internal static async Task<List<Notification>> GetAll()
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                var notification = await context.Notifications
+                    .ToListAsync();
+                return notification;
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
+        internal static async Task<List<Notification>> FindByUserId(Guid userId)
         {
             try
             {
@@ -23,13 +35,14 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task Update(Notification notification)
+        internal static async Task<Notification?> FindById(Guid id)
         {
             try
             {
                 using var context = new TkdecorContext();
-                context.Update(notification);
-                await context.SaveChangesAsync();
+                var coupon = await context.Notifications
+                    .FirstOrDefaultAsync(x => x.NotificationId == id);
+                return coupon;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

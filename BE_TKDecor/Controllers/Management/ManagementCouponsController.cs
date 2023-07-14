@@ -3,9 +3,9 @@ using BE_TKDecor.Core.Dtos.Coupon;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
@@ -26,18 +26,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementCoupons/GetALl
         [HttpGet("GetAll")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
-        {
-            var coupons = (await _coupon.GetAll())
-                   .OrderByDescending(x => x.UpdatedAt).ToList();
-            var result = _mapper.Map<List<CouponGetDto>>(coupons);
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
-
-        // GET: api/ManagementCoupons/GetALl
-        [HttpGet("GetCouponType")]
-        public async Task<IActionResult> GetCouponType()
         {
             var coupons = (await _coupon.GetAll())
                    .OrderByDescending(x => x.UpdatedAt).ToList();
@@ -73,7 +62,10 @@ namespace BE_TKDecor.Controllers.Management
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-            couponDb.CouponTypeId = couponDto.CouponTypeId;
+            if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
+                return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
+
+            couponDb.CouponType = couponType;
             couponDb.Value = couponDto.Value;
             couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
             couponDb.StartDate = couponDto.StartDate;

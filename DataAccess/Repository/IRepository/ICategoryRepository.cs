@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository : IRepository<Category>
     {
-        Task<List<Category>> GetAll();
-        Task<bool> CheckProductExistsByCateId(Guid categoryId);
-        Task<Category?> FindById(Guid categoryId);
         Task<Category?> FindByName(string categoryName);
-        Task Add(Category category);
-        Task Update(Category category);
     }
 }

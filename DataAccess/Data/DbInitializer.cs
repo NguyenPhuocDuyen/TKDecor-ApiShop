@@ -1,17 +1,15 @@
 ﻿using Bogus;
 using BusinessObject;
-using DataAccess.StatusContent;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Numerics;
 using Utility;
+using Utility.SD;
 
 namespace DataAccess.Data
 {
     public class DbInitializer : IDbInitializer
     {
+        private Random random = new();
+
         private readonly TkdecorContext _db = new();
 
         public async Task Initialize()
@@ -25,7 +23,6 @@ namespace DataAccess.Data
             }
             catch (Exception) { }
 
-            AddDefaultStatus();
             await AddUser();
             await AddArticles();
             AddCategories();
@@ -71,30 +68,29 @@ namespace DataAccess.Data
         {
             if (_db.ReportProductReviews.Any()) return;
 
-            var reportStatusPeding = await _db.ReportStatuses
-                .FirstOrDefaultAsync(x => x.Name == ReportStatusContent.Pending);
-
             //get one user
             var user = await _db.Users
-                .Include(x => x.Role)
-                .FirstOrDefaultAsync(x => x.Role.Name != RoleContent.Admin);
+                .FirstOrDefaultAsync(x => x.Role != Role.Admin);
 
             var reviews = await _db.ProductReviews
                 .Include(x => x.Product)
                 .ToListAsync();
 
-            if (user != null && reportStatusPeding != null)
+            Array reportStatusValues = Enum.GetValues(typeof(ReportStatus));
+
+            if (user != null)
             {
                 foreach (var review in reviews)
                 {
+                    ReportStatus randomStatus = (ReportStatus)reportStatusValues.GetValue(random.Next(reportStatusValues.Length));
+
                     ReportProductReview reportProductReview = new()
                     {
                         UserReportId = user.UserId,
                         UserReport = user,
                         ProductReviewReportedId = review.ProductReviewId,
                         ProductReviewReported = review,
-                        ReportStatusId = reportStatusPeding.ReportStatusId,
-                        ReportStatus = reportStatusPeding,
+                        ReportStatus = randomStatus,
                         Reason = "I want to report",
                     };
                     _db.ReportProductReviews.Add(reportProductReview);
@@ -122,7 +118,7 @@ namespace DataAccess.Data
                 productReview.User = od.Order.User;
                 productReview.ProductId = od.Product.ProductId;
                 productReview.Product = od.Product;
-                productReview.Rate = new Random().Next(2, 6);
+                productReview.Rate = random.Next(2, 6);
                 _db.ProductReviews.Add(productReview);
             }
             _db.SaveChanges();
@@ -132,32 +128,31 @@ namespace DataAccess.Data
         {
             if (_db.ProductReports.Any()) return;
 
-            var reportStatusPeding = await _db.ReportStatuses
-                .FirstOrDefaultAsync(x => x.Name == ReportStatusContent.Pending);
-            if (reportStatusPeding != null)
-            {
-                var productReportSetDefaults = new Faker<ProductReport>();
-                productReportSetDefaults.RuleFor(x => x.ReportStatusId, reportStatusPeding.ReportStatusId);
-                productReportSetDefaults.RuleFor(x => x.ReportStatus, reportStatusPeding);
-                productReportSetDefaults.RuleFor(x => x.Reason, f => f.Lorem.Paragraph());
 
-                var users = await _db.Users
-                    .Include(x => x.Role)
-                    .Where(x => x.Role.Name == RoleContent.Customer)
-                    .ToListAsync();
-                var products = await _db.Products.ToListAsync();
-                foreach (var u in users)
+            var productReportSetDefaults = new Faker<ProductReport>();
+            productReportSetDefaults.RuleFor(x => x.Reason, f => f.Lorem.Paragraph());
+
+            var users = await _db.Users
+                .Where(x => x.Role == Role.Customer)
+                .ToListAsync();
+            var products = await _db.Products.ToListAsync();
+
+            Array reportStatusValues = Enum.GetValues(typeof(ReportStatus));
+
+            foreach (var u in users)
+            {
+                foreach (var p in products)
                 {
-                    foreach (var p in products)
-                    {
-                        ProductReport productReport = productReportSetDefaults.Generate();
-                        productReport.UserReportId = u.UserId;
-                        productReport.UserReport = u;
-                        productReport.ProductReportedId = p.ProductId;
-                        productReport.ProductReported = p;
-                        productReport.Reason = $"{u.FullName} want to report {p.Name} because {productReport.Reason}";
-                        _db.ProductReports.Add(productReport);
-                    }
+                    ReportStatus randomStatus = (ReportStatus)reportStatusValues.GetValue(random.Next(reportStatusValues.Length));
+
+                    ProductReport productReport = productReportSetDefaults.Generate();
+                    productReport.UserReportId = u.UserId;
+                    productReport.UserReport = u;
+                    productReport.ProductReportedId = p.ProductId;
+                    productReport.ProductReported = p;
+                    productReport.ReportStatus = randomStatus;
+                    productReport.Reason = $"{u.FullName} want to report {p.Name} because {productReport.Reason}";
+                    _db.ProductReports.Add(productReport);
                 }
                 _db.SaveChanges();
             }
@@ -166,35 +161,28 @@ namespace DataAccess.Data
         private async Task AddProductReviewInteractions()
         {
             if (_db.ProductReviewInteractions.Any()) return;
+            var users = await _db.Users
+            .Where(x => x.Role == Role.Customer)
+            .ToListAsync();
 
-            var likeStatus = await _db.ProductReviewInteractionStatuses
-                .FirstOrDefaultAsync(x => x.Name == ProductInteractionStatusContent.Like);
-            if (likeStatus != null)
+            var prouductReviews = await _db.ProductReviews.ToListAsync();
+            foreach (var u in users)
             {
-                var users = await _db.Users
-                .Include(x => x.Role)
-                .Where(x => x.Role.Name == RoleContent.Customer)
-                .ToListAsync();
-
-                var prouductReviews = await _db.ProductReviews.ToListAsync();
-                foreach (var u in users)
+                foreach (var pr in prouductReviews)
                 {
-                    foreach (var pr in prouductReviews)
+                    ProductReviewInteraction productInteraction = new()
                     {
-                        ProductReviewInteraction productInteraction = new()
-                        {
-                            UserId = u.UserId,
-                            User = u,
-                            ProductReviewId = pr.ProductId,
-                            ProductReview = pr,
-                            ProductInteractionStatusId = likeStatus.ProductReviewInteractionStatusId,
-                            ProductReviewInteractionStatuses = likeStatus
-                        };
-                        _db.ProductReviewInteractions.Add(productInteraction);
-                    }
+                        UserId = u.UserId,
+                        User = u,
+                        ProductReviewId = pr.ProductId,
+                        ProductReview = pr,
+                        Interaction = Interaction.Like,
+                    };
+                    _db.ProductReviewInteractions.Add(productInteraction);
                 }
-                _db.SaveChanges();
             }
+            _db.SaveChanges();
+
         }
 
         private async Task AddProductFavorites()
@@ -202,8 +190,7 @@ namespace DataAccess.Data
             if (_db.ProductFavorites.Any()) return;
 
             var users = await _db.Users
-                .Include(x => x.Role)
-                .Where(x => x.Role.Name == RoleContent.Customer)
+                .Where(x => x.Role == Role.Customer)
                 .ToListAsync();
             var products = await _db.Products.ToListAsync();
             foreach (var u in users)
@@ -247,7 +234,7 @@ namespace DataAccess.Data
                     {
                         ModelName = "Model 3d: " + product.Name,
                         VideoUrl = "",
-                        ModelUrl = "",
+                        ModelUrl = "https://cdn-luma.com/e13d5b281b9c97e6fbc3defda9a2812bcca09f323705dff6b77646f0d5655dc9.glb",
                         ThumbnailUrl = "https://fronty.com/static/uploads/01.22-02.22/pexels-uzunov-rostislav-5011647.jpg"
                     };
                     product.Product3DModel = product3DModel;
@@ -265,48 +252,50 @@ namespace DataAccess.Data
         {
             if (_db.Orders.Any()) return;
 
-            var orderStatuses = await _db.OrderStatuses.ToListAsync();
-
             var users = await _db.Users
-                .Include(x => x.Role)
                 .Include(x => x.UserAddresses.Where(ud => ud.IsDefault == true))
-                .Where(x => x.Role.Name == RoleContent.Customer)
+                .Where(x => x.Role == Role.Customer)
                 .ToListAsync();
             var products = await _db.Products.Take(4).ToListAsync();
-            foreach (var orderStatus in orderStatuses)
-            {
-                foreach (var u in users)
-                {
-                    Order order = new()
-                    {
-                        UserId = u.UserId,
-                        User = u,
-                        OrderStatusId = orderStatus.OrderStatusId,
-                        OrderStatus = orderStatus,
-                        FullName = u.UserAddresses?.FirstOrDefault()?.FullName ?? "",
-                        Phone = u.UserAddresses?.FirstOrDefault()?.Phone ?? "",
-                        Address = u.UserAddresses?.FirstOrDefault()?.Address ?? "",
-                        Note = "Note ne",
-                        TotalPrice = 0,
-                        OrderDetails = new List<OrderDetail>()
-                    };
 
-                    foreach (var p in products)
+            // Lấy danh sách các giá trị enum của OrderStatus
+            Array orderStatusValues = Enum.GetValues(typeof(OrderStatus));
+
+            foreach (var u in users)
+            {
+                // Random một giá trị từ order status
+                OrderStatus randomStatus = (OrderStatus)orderStatusValues.GetValue(random.Next(orderStatusValues.Length));
+                Order order = new()
+                {
+                    UserId = u.UserId,
+                    User = u,
+                    OrderStatus = randomStatus,
+                    FullName = u.UserAddresses?.FirstOrDefault()?.FullName ?? "",
+                    Phone = u.UserAddresses?.FirstOrDefault()?.Phone ?? "",
+                    Address = u.UserAddresses?.FirstOrDefault()?.Address ?? "",
+                    Note = "Note ne",
+                    TotalPrice = 0,
+                    OrderDetails = new List<OrderDetail>()
+                };
+
+                foreach (var p in products)
+                {
+                    int randomQuantity = random.Next(1, 5);
+
+                    OrderDetail orderDetail = new()
                     {
-                        OrderDetail orderDetail = new()
-                        {
-                            Order = order,
-                            ProductId = p.ProductId,
-                            Product = p,
-                            Quantity = new Random().Next(1, 5),
-                            PaymentPrice = p.Price
-                        };
-                        order.TotalPrice += orderDetail.PaymentPrice * orderDetail.Quantity;
-                        order.OrderDetails.Add(orderDetail);
-                    }
-                    _db.Orders.Add(order);
+                        Order = order,
+                        ProductId = p.ProductId,
+                        Product = p,
+                        Quantity = randomQuantity,
+                        PaymentPrice = p.Price
+                    };
+                    order.TotalPrice += orderDetail.PaymentPrice * orderDetail.Quantity;
+                    order.OrderDetails.Add(orderDetail);
                 }
+                _db.Orders.Add(order);
             }
+
             _db.SaveChanges();
         }
 
@@ -318,8 +307,7 @@ namespace DataAccess.Data
             notificationSetDefaults.RuleFor(x => x.Message, f => f.Lorem.Sentence());
 
             var users = await _db.Users
-                .Include(x => x.Role)
-                .Where(x => x.Role.Name == RoleContent.Customer)
+                .Where(x => x.Role == Role.Customer)
                 .ToListAsync();
             foreach (var u in users)
             {
@@ -362,32 +350,24 @@ namespace DataAccess.Data
             couponSetDefault.RuleFor(x => x.IsActive, true);
             couponSetDefault.RuleFor(x => x.RemainingUsageCount, 10);
 
-            var couponTypeValue = await _db.CouponTypes.FirstOrDefaultAsync(x => x.Name == CouponTypeContent.ByValue);
-            if (couponTypeValue != null)
+            for (int i = 1; i < 6; i++)
             {
-                for (int i = 1; i < 6; i++)
-                {
-                    Coupon coupon = couponSetDefault.Generate();
-                    coupon.CouponType = couponTypeValue;
-                    coupon.Code = "CodeValue" + i;
-                    coupon.Value = i * 10000;
-                    coupon.MaxValue = 0;
-                    _db.Coupons.Add(coupon);
-                }
+                Coupon coupon = couponSetDefault.Generate();
+                coupon.CouponType = CouponType.ByPercent;
+                coupon.Code = "CodePercent" + i;
+                coupon.Value = i * 10;
+                coupon.MaxValue = 1000000;
+                _db.Coupons.Add(coupon);
             }
 
-            var couponTypePercent = await _db.CouponTypes.FirstOrDefaultAsync(x => x.Name == CouponTypeContent.ByPercent);
-            if (couponTypePercent != null)
+            for (int i = 1; i < 6; i++)
             {
-                for (int i = 1; i < 6; i++)
-                {
-                    Coupon coupon = couponSetDefault.Generate();
-                    coupon.CouponType = couponTypePercent;
-                    coupon.Code = "CodePercent" + i;
-                    coupon.Value = i * 10;
-                    coupon.MaxValue = 1000000;
-                    _db.Coupons.Add(coupon);
-                }
+                Coupon coupon = couponSetDefault.Generate();
+                coupon.CouponType = CouponType.ByValue;
+                coupon.Code = "CodeValue" + i;
+                coupon.Value = i * 10000;
+                coupon.MaxValue = 0;
+                _db.Coupons.Add(coupon);
             }
             _db.SaveChanges();
         }
@@ -396,10 +376,8 @@ namespace DataAccess.Data
         {
             if (_db.Carts.Any()) return;
 
-            Random random = new Random();
             var users = await _db.Users
-                .Include(x => x.Role)
-                .Where(x => x.Role.Name == RoleContent.Customer)
+                .Where(x => x.Role == Role.Customer)
                 .ToListAsync();
 
             var products = await _db.Products.ToListAsync();
@@ -439,27 +417,23 @@ namespace DataAccess.Data
         {
             if (_db.Articles.Any()) return;
 
-            Role? roleAdmin = await _db.Roles.FirstOrDefaultAsync(r => r.Name == RoleContent.Admin);
-            if (roleAdmin != null)
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Role == Role.Admin);
+            if (user != null)
             {
-                var user = await _db.Users.FirstOrDefaultAsync(x => x.RoleId == roleAdmin.RoleId);
-                if (user != null)
+                var articleSetDefaults = new Faker<Article>();
+                articleSetDefaults.RuleFor(x => x.User, user);
+                articleSetDefaults.RuleFor(x => x.Title, f => f.Lorem.Sentence());
+                articleSetDefaults.RuleFor(x => x.Content, f => f.Lorem.Paragraphs());
+                articleSetDefaults.RuleFor(x => x.Thumbnail, "https://kinsta.com/wp-content/uploads/2020/08/tiger-jpg.jpg");
+                articleSetDefaults.RuleFor(x => x.IsPublish, true);
+                for (var i = 0; i < 20; i++)
                 {
-                    var articleSetDefaults = new Faker<Article>();
-                    articleSetDefaults.RuleFor(x => x.User, user);
-                    articleSetDefaults.RuleFor(x => x.Title, f => f.Lorem.Sentence());
-                    articleSetDefaults.RuleFor(x => x.Content, f => f.Lorem.Paragraphs());
-                    articleSetDefaults.RuleFor(x => x.Thumbnail, "https://kinsta.com/wp-content/uploads/2020/08/tiger-jpg.jpg");
-                    articleSetDefaults.RuleFor(x => x.IsPublish, true);
-                    for (var i = 0; i < 20; i++)
-                    {
-                        Article article = articleSetDefaults.Generate();
-                        article.Title = "Article 1: " + article.Title;
-                        article.Slug = Slug.GenerateSlug(article.Title);
-                        _db.Articles.Add(article);
-                    }
-                    _db.SaveChanges();
+                    Article article = articleSetDefaults.Generate();
+                    article.Title = "Article 1: " + article.Title;
+                    article.Slug = Slug.GenerateSlug(article.Title);
+                    _db.Articles.Add(article);
                 }
+                _db.SaveChanges();
             }
         }
 
@@ -468,20 +442,18 @@ namespace DataAccess.Data
             if (_db.Users.Any()) return;
 
             // add admin
-            Role? roleAdmin = await _db.Roles.FirstOrDefaultAsync(r => r.Name == RoleContent.Admin);
-            if (roleAdmin != null)
+            User admin = new()
             {
-                User admin = new()
-                {
-                    Email = "admin@gmail.com",
-                    Password = Password.HashPassword("admin@gmail.com"),
-                    FullName = "admin",
-                    Role = roleAdmin,
-                    EmailConfirmed = true,
-                    AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
-                };
-                _db.Users.Add(admin);
-            }
+                Email = "admin@gmail.com",
+                Password = Password.HashPassword("admin@gmail.com"),
+                FullName = "admin",
+                Role = Role.Admin,
+                BirthDay = DateTime.UtcNow,
+                Gender = Gender.Male,
+                EmailConfirmed = true,
+                AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
+            };
+            _db.Users.Add(admin);
 
             var userSetDefaults = new Faker<User>();
             userSetDefaults.RuleFor(a => a.Email, "@gmail.com");
@@ -493,79 +465,38 @@ namespace DataAccess.Data
             var userAddressSetDefaults = new Faker<UserAddress>();
             userAddressSetDefaults.RuleFor(x => x.Address, f => f.Lorem.Sentence());
 
+            // Lấy danh sách các giá trị enum của OrderStatus
+            Array genderValues = Enum.GetValues(typeof(Gender));
+
             // add customer and seller
-            //Role? roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == RoleContent.Customer);
-            List<Role> roles = await _db.Roles.Where(r => r.Name != RoleContent.Admin).ToListAsync();
+            //Role? roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == Role.Customer);
+            List<Role> roles = new() { Role.Seller, Role.Customer };
             foreach (var role in roles)
             {
                 for (int i = 0; i < 10; i++)
                 {
+                    Gender randomStatus = (Gender)genderValues.GetValue(random.Next(genderValues.Length));
                     User u = userSetDefaults.Generate();
                     u.Role = role;
-                    u.Email = $"{role.Name}{i}{u.Email}";
-                    u.FullName = $"{role.Name} {i} {u.FullName}";
+                    u.Email = $"{role}{i}{u.Email}";
+                    u.FullName = $"{role} {i} {u.FullName}";
                     u.UserAddresses = new List<UserAddress>();
+                    u.BirthDay = DateTime.UtcNow;
+                    u.Gender = randomStatus;
+
                     for (int j = 0; j < 4; j++)
                     {
                         UserAddress address = userAddressSetDefaults.Generate();
                         address.Phone = GenerateRandomPhoneNumber();
                         address.User = u;
                         address.FullName = u.FullName;
+
                         if (j == 0) address.IsDefault = true;
                         u.UserAddresses.Add(address);
                     }
                     _db.Users.Add(u);
                 }
             }
-            _db.SaveChanges();
-        }
-
-        private void AddDefaultStatus()
-        {
-            if (_db.Roles.Any()) return;
-
-            List<Role> roles = new()
-            {
-                new Role { Name = RoleContent.Admin},
-                new Role { Name = RoleContent.Seller},
-                new Role { Name = RoleContent.Customer},
-            };
-
-            _db.Roles.AddRange(roles);
-
-            List<CouponType> couponTypes = new()
-            {
-                new CouponType {Name = CouponTypeContent.ByPercent},
-                new CouponType {Name = CouponTypeContent.ByValue},
-            };
-            _db.CouponTypes.AddRange(couponTypes);
-
-            List<OrderStatus> ordersStatus = new()
-            {
-                new OrderStatus {Name = OrderStatusContent.Ordered},
-                new OrderStatus {Name = OrderStatusContent.Delivering},
-                new OrderStatus {Name = OrderStatusContent.Received},
-                new OrderStatus {Name = OrderStatusContent.Refund},
-                new OrderStatus {Name = OrderStatusContent.Canceled},
-            };
-            _db.OrderStatuses.AddRange(ordersStatus);
-
-            List<ProductReviewInteractionStatus> productInteractionStatuses = new()
-            {
-                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.Like},
-                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.DisLike},
-                new ProductReviewInteractionStatus{Name = ProductInteractionStatusContent.Normal}
-            };
-            _db.ProductReviewInteractionStatuses.AddRange(productInteractionStatuses);
-
-            List<ReportStatus> reportStatuses = new()
-            {
-                new ReportStatus { Name = ReportStatusContent.Pending},
-                new ReportStatus { Name = ReportStatusContent.Accept},
-                new ReportStatus { Name = ReportStatusContent.Reject},
-            };
-            _db.ReportStatuses.AddRange(reportStatuses);
-
             _db.SaveChanges();
         }
 

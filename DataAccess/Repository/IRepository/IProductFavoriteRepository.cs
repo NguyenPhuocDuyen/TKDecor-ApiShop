@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IProductFavoriteRepository
+    public interface IProductFavoriteRepository : IRepository<ProductFavorite>
     {
-        Task<List<ProductFavorite>> FindFavoriteOfUser(Guid userId);
-        Task<ProductFavorite?> FindProductFavorite(Guid userId, Guid productId);
-        Task Add(ProductFavorite productFavorite);
-        Task Update(ProductFavorite productFavorite);
+        Task<List<ProductFavorite>> FindByUserId(Guid userId);
+        Task<ProductFavorite?> FindByUserIdAndProductId(Guid userId, Guid productId);
     }
 }

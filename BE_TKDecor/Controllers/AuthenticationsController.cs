@@ -2,7 +2,6 @@
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,6 +13,7 @@ using Utility;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.Extensions.Options;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -25,20 +25,17 @@ namespace BE_TKDecor.Controllers
         private readonly ISendMailService _sendMailService;
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
-        private readonly IRoleRepository _role;
         private readonly IRefreshTokenRepository _refreshToken;
 
         public AuthenticationsController(ISendMailService sendMailService,
             IOptions<JwtSettings> options,
             IMapper mapper,
             IUserRepository user,
-            IRoleRepository role,
             IRefreshTokenRepository refreshToken)
         {
             _sendMailService = sendMailService;
             _mapper = mapper;
             _user = user;
-            _role = role;
             _refreshToken = refreshToken;
             _jwtSettings = options.Value;
         }
@@ -49,12 +46,12 @@ namespace BE_TKDecor.Controllers
         {
             userDto.Email = userDto.Email.ToLower().Trim();
             //get user in database by email
-            User? u = await _user.FindByEmail(userDto.Email);
+            User? user = await _user.FindByEmail(userDto.Email);
             bool isAdd = true;
             //check exists
-            if (u != null)
+            if (user != null)
             {
-                if (u.EmailConfirmed == true)
+                if (user.EmailConfirmed == true)
                 {
                     return BadRequest(new ApiResponse
                     { Message = "Email already exists!" });
@@ -66,28 +63,35 @@ namespace BE_TKDecor.Controllers
             if (isAdd)
             {
                 // take customer role
-                Role? role = await _role.FindByName(RoleContent.Customer);
-                u = new User
+                user = new User
                 {
+                    Email = userDto.Email,
                     AvatarUrl = "",
-                    RoleId = role.RoleId,
+                    Role = Role.Customer,
                     EmailConfirmed = false
                 };
             }
-            //u = _mapper.Map<User>(userDto);
+
+            if (!Enum.TryParse<Gender>(userDto.Gender, out Gender gender))
+                return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
 
             // get random code
             string code = RandomCode.GenerateRandomCode();
-            u.Password = Password.HashPassword(u.Password);
-            u.EmailConfirmationCode = code;
-            u.EmailConfirmationSentAt = DateTime.UtcNow;
-            u.UpdatedAt = DateTime.UtcNow;
+            user.Password = Password.HashPassword(userDto.Password);
+
+            user.FullName = userDto.FullName;
+            user.BirthDay = userDto.BirthDay;
+            user.Gender = gender;
+
+            user.EmailConfirmationCode = code;
+            user.EmailConfirmationSentAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
 
             //send mail to confirm account
             //set data to send
             MailContent mailContent = new()
             {
-                To = u.Email,
+                To = user.Email,
                 Subject = "Activate account for TKDecor Shop",
                 Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
             };
@@ -99,11 +103,11 @@ namespace BE_TKDecor.Controllers
                 if (isAdd)
                 {
                     // add user
-                    await _user.Add(u);
+                    await _user.Add(user);
                 }
                 else
                 {
-                    await _user.Update(u);
+                    await _user.Update(user);
                 }
                 return NoContent();
             }
@@ -229,8 +233,19 @@ namespace BE_TKDecor.Controllers
 
             //convert token to string
             var token = await GenerateToken(u);
+            string roleString = Enum.GetName(typeof(Role), u.Role);
 
-            return Ok(new ApiResponse { Success = true, Data = token });
+            var data = new
+            {
+                role = roleString,
+                u.Email,
+                u.FullName,
+                u.AvatarUrl,
+                token.AccessToken,
+                token.RefreshToken,
+            };
+
+            return Ok(new ApiResponse { Success = true, Data = data });
         }
 
         // POST: api/Authentications/ForgotPassword
@@ -403,18 +418,20 @@ namespace BE_TKDecor.Controllers
             //encoding key in json
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
             //set description for token
+            string roleString = Enum.GetName(typeof(Role), user.Role);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim("UserId", user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.FullName),
-                    new Claim(ClaimTypes.Role, user.Role.Name),
+                    new Claim(ClaimTypes.Role, roleString),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             //create token

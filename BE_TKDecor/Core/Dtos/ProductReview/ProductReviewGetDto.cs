@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using Utility.SD;
 
 namespace BE_TKDecor.Core.Dtos.ProductReview
 {
@@ -20,17 +21,10 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
         public bool? IsDelete { get; set; } = false;
 
-        public virtual ICollection<ProductReviewInteractionGetDto> ProductReviewInteractions { get; set; } = new List<ProductReviewInteractionGetDto>();
-    }
+        public int Like { get; set; }
 
-    public class ProductReviewInteractionGetDto
-    {
-        public Guid ProductReviewInteractionId { get; set; }
+        public int DisLike { get; set; }
 
-        public Guid ProductReviewId { get; set; }
-
-        //public Guid ProductInteractionStatusId { get; set; }
-
-        public string Interaction { get; set; } = null!;
+        //public virtual ICollection<ProductReviewInteractionGetDto> ProductReviewInteractions { get; set; } = new List<ProductReviewInteractionGetDto>();
     }
 }

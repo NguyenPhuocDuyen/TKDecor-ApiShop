@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface ICartRepository
+    public interface ICartRepository : IRepository<Cart>
     {
         Task<List<Cart>> FindCartsByUserId(Guid userId);
         Task<Cart?> FindByUserIdAndProductId(Guid userId, Guid productId);
-        Task<Cart?> FindById(Guid id);
-        Task Add(Cart cart);
-        Task Update(Cart cart);
     }
 }

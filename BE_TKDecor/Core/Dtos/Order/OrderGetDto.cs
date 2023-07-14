@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.Order
     {
         public Guid OrderId { get; set; }
 
-        public string OrderStatusName { get; set; } = null!;
+        public string OrderStatus { get; set; } = null!;
 
         public string Email { get; set; } = null!;
 

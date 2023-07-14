@@ -20,6 +20,11 @@ namespace DataAccess.Repository
         public async Task<List<UserAddress>> FindByUserId(Guid userId)
             => await UserAddressDAO.FindByUserId(userId);
 
+        public Task<List<UserAddress>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task SetDefault(Guid userId, Guid? userAddressId = null)
         {
             try

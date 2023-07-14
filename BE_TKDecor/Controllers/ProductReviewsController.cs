@@ -4,7 +4,6 @@ using BE_TKDecor.Core.Dtos.ProductReview;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
-using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using AutoMapper;
 
 namespace BE_TKDecor.Controllers
@@ -18,32 +17,20 @@ namespace BE_TKDecor.Controllers
         private readonly IUserRepository _user;
         private readonly IProductRepository _product;
         private readonly IProductReviewRepository _productReview;
+        private readonly IOrderDetailRepository _orderDetail;
 
         public ProductReviewsController(IMapper mapper,
             IUserRepository user,
             IProductRepository product,
-            IProductReviewRepository productReview)
+            IProductReviewRepository productReview,
+            IOrderDetailRepository orderDetail)
         {
             _mapper = mapper;
             _user = user;
             _product = product;
             _productReview = productReview;
+            _orderDetail = orderDetail;
         }
-
-        //// GET: api/ProductReviews/GetAll
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var user = await GetUser();
-        //    if (user == null)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-        //    var productReview = await _productReview.FindByUserId(user.UserId);
-        //    productReview = productReview.Where(x => x.IsDelete == false).ToList();
-
-        //    var result = _mapper.Map<List<ProductReviewGetDto>>(productReview);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
 
         // POST: api/ProductReviews/Review
         [HttpPost("Review")]
@@ -57,8 +44,8 @@ namespace BE_TKDecor.Controllers
             if (product == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-            var canReview = await _productReview.CanReview(user.UserId, product.ProductId);
-            if (!canReview)
+            var orderDetail = await _orderDetail.FindByUserIdAndProductId(user.UserId, product.ProductId);
+            if (orderDetail == null)
                 return BadRequest(new ApiResponse { Message = "You are not allowed to review the product without buying it!" });
 
             var productReview = await _productReview.FindByUserIdAndProductId(user.UserId, product.ProductId);

@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository.IRepository
 {
-    public interface IProductReviewRepository
+    public interface IProductReviewRepository : IRepository<ProductReview>
     {
         Task<List<ProductReview>> FindByUserId(Guid userId);
         Task<List<ProductReview>> FindByProductId(Guid productId);
-        Task Add(ProductReview productReview);
-        Task Update(ProductReview productReview);
-        Task<bool> CanReview(Guid userId, Guid productId);
         Task<ProductReview?> FindByUserIdAndProductId(Guid userId, Guid productId);
-        Task<ProductReview?> FindById(Guid id);
     }
 }

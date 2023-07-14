@@ -3,8 +3,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class CartDAO
+    internal class CartDAO : DAO<Cart>
     {
+        internal static async Task<List<Cart>> GetAll()
+        {
+            try
+            {
+                using var context = new TkdecorContext();
+                return await context.Carts
+                    .Include(x => x.User)
+                    .ToListAsync();
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
+        }
+
         internal static async Task<List<Cart>> FindCartsByUserId(Guid userId)
         {
             try
@@ -43,28 +55,6 @@ namespace DataAccess.DAO
                         .ThenInclude(x => x.ProductImages)
                     .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
                 return cart;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Add(Cart cart)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(cart);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task Update(Cart cart)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(cart);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

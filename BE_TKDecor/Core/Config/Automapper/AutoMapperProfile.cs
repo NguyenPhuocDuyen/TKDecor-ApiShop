@@ -10,10 +10,12 @@ using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Dtos.Product3DModel;
 using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Dtos.ProductReview;
+using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BusinessObject;
+using Utility.SD;
 
 namespace BE_TKDecor.Core.Config.Automapper
 {
@@ -23,8 +25,7 @@ namespace BE_TKDecor.Core.Config.Automapper
         {
             // user
             CreateMap<UserRegisterDto, User>();
-            CreateMap<User, UserGetDto>()
-                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(x => x.Role.Name));
+            CreateMap<User, UserGetDto>();
 
             // category
             CreateMap<Category, CategoryGetDto>();
@@ -52,8 +53,7 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
-            CreateMap<Coupon, CouponGetDto>()
-                .ForMember(dest => dest.CouponTypeName, opt => opt.MapFrom(x => x.CouponType.Name));
+            CreateMap<Coupon, CouponGetDto>();
 
             // cart 
             CreateMap<CartCreateDto, Cart>();
@@ -64,7 +64,6 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // order
             CreateMap<Order, OrderGetDto>()
-                .ForMember(dest => dest.OrderStatusName, opt => opt.MapFrom(src => src.OrderStatus.Name))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<OrderDetail, OrderDetailGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
@@ -73,23 +72,22 @@ namespace BE_TKDecor.Core.Config.Automapper
             // product review
             CreateMap<ProductReview,  ProductReviewGetDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
-                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl));
+                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
+                .ForMember(dest => dest.Like, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.Like).Count()))
+                .ForMember(dest => dest.DisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
 
             // product review interaction
-            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>()
-                .ForMember(dest => dest.Interaction, opt => opt.MapFrom(src => src.ProductReviewInteractionStatuses.Name));
+            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()
                 .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
-                .ForMember(dest => dest.ReportStatusName, opt => opt.MapFrom(src => src.ReportStatus.Name))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductReported.Name));
 
             // report product review
             CreateMap<ReportProductReview, ReportProductReviewGetDto>()
                 .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
                 .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
-                .ForMember(dest => dest.ReportStatusName, opt => opt.MapFrom(src => src.ReportStatus.Name))
                 .ForMember(dest => dest.ProductReviewReportedDescription, opt => opt.MapFrom(src => src.ProductReviewReported.Description));
 
             // notification

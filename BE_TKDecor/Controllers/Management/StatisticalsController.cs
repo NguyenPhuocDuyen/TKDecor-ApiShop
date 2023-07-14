@@ -1,15 +1,14 @@
 ﻿using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;
@@ -35,7 +34,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalRevenue()
         {
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus.Name == OrderStatusContent.Received).ToList();
+            orders = orders.Where(x => x.OrderStatus == OrderStatus.Received).ToList();
             decimal totalRevenue = 0;
             foreach (var o in orders)
             {
@@ -61,7 +60,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalReturns()
         {
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus.Name == OrderStatusContent.Refund).ToList();
+            orders = orders.Where(x => x.OrderStatus == OrderStatus.Refund).ToList();
             return Ok(new ApiResponse { Success = true, Data = orders.Count });
         }
 

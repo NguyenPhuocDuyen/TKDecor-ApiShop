@@ -4,17 +4,17 @@ using BE_TKDecor.Core.Response;
 using BE_TKDecor.Hubs;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Utility;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProductsController : ControllerBase
     {
         private readonly IHubContext<NotificationHub> _notificationHub;
@@ -34,6 +34,16 @@ namespace BE_TKDecor.Controllers.Management
             _product = product;
             _productImage = productImage;
             _product3DModel = product3DModel;
+        }
+
+        // GET: api/Products/GetAll
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var products = await _product.GetAll();
+            products = products.OrderByDescending(x => x.UpdatedAt).ToList();
+            var result = _mapper.Map<List<ProductGetDto>>(products);
+            return Ok(new ApiResponse { Success = true, Data = result });
         }
 
         // POST: api/Products/Create

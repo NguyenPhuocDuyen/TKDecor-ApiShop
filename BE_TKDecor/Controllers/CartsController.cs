@@ -5,7 +5,7 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
-using DataAccess.StatusContent;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -109,7 +109,7 @@ namespace BE_TKDecor.Controllers
                 }
 
                 if (!quanlityIsValid)
-                    return Ok(new ApiResponse { Success = true, Message = "Exceeding the number, still plus max" });
+                    return BadRequest(new ApiResponse { Message = "Exceeding the number, still plus max" });
 
                 return NoContent();
             }

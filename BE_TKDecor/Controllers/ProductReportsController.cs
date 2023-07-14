@@ -3,8 +3,8 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Response;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -16,18 +16,15 @@ namespace BE_TKDecor.Controllers
         private readonly IUserRepository _user;
         private readonly IProductRepository _product;
         private readonly IProductReportRepository _productReport;
-        private readonly IReportStatusRepository _reportStatus;
 
         public ProductReportsController(IUserRepository user,
             IProductRepository product,
-            IProductReportRepository productReport,
-            IReportStatusRepository reportStatus
+            IProductReportRepository productReport
             )
         {
             _user = user;
             _product = product;
             _productReport = productReport;
-            _reportStatus = reportStatus;
         }
 
         // POST: api/ProductReports/MakeProductReport
@@ -42,17 +39,12 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var reportStatus = await _reportStatus.GetAll();
-            var statusPeding = reportStatus.FirstOrDefault(x => x.Name == ReportStatusContent.Pending);
-            if (statusPeding == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.Error });
-
             var report = await _productReport.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
             bool isAdd = true;
             // create a new report of that user for that product
             // if there is no report that product is in the peding state
-            if (report == null || (report.ReportStatus.Name != ReportStatusContent.Pending))
+            if (report == null || (report.ReportStatus != ReportStatus.Pending))
             {
                 report = new ProductReport()
                 {
@@ -60,8 +52,7 @@ namespace BE_TKDecor.Controllers
                     UserReport = user,
                     ProductReportedId = product.ProductId,
                     ProductReported = product,
-                    ReportStatusId = statusPeding.ReportStatusId,
-                    ReportStatus = statusPeding,
+                    ReportStatus = ReportStatus.Pending,
                     Reason = reportDto.Reason
                 };
             }

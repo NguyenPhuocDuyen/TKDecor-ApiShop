@@ -2,9 +2,9 @@
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
@@ -15,15 +15,12 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
-        private readonly IRoleRepository _role;
 
         public ManagementUsersController(IMapper mapper,
-            IUserRepository user,
-            IRoleRepository role)
+            IUserRepository user)
         {
             _mapper = mapper;
             _user = user;
-            _role = role;
         }
 
         // GET: api/ManagementUsers/GetAllUser
@@ -46,11 +43,12 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var role = await _role.FindByName(userDto.RoleName);
-            if (role == null)
+            Role role;
+            if (!Enum.TryParse<Role>(userDto.Role, out role))
+            {
                 return NotFound(new ApiResponse { Message = ErrorContent.RoleNotFound });
+            }
 
-            user.RoleId = role.RoleId;
             user.Role = role;
             user.UpdatedAt = DateTime.UtcNow;
             try

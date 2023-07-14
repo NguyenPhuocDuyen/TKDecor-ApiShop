@@ -18,6 +18,9 @@ namespace DataAccess.Repository
         public async Task<List<Cart>> FindCartsByUserId(Guid userId)
             => await CartDAO.FindCartsByUserId(userId);
 
+        public async Task<List<Cart>> GetAll()
+            => await CartDAO.GetAll();
+
         public async Task Update(Cart cart)
             => await CartDAO.Update(cart);
     }

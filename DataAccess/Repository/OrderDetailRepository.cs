@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    public class ReportStatusRepository : IReportStatusRepository
+    public class OrderDetailRepository : IOrderDetailRepository
     {
-        public async Task<List<ReportStatus>> GetAll()
-            => await ReportStatusDAO.GetAll();
+        public async Task<OrderDetail?> FindByUserIdAndProductId(Guid userId, Guid productId)
+            => await OrderDetailDAO.FindByUserIdAndProductId(userId, productId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BusinessObject;
 using System.ComponentModel.DataAnnotations;
+using Utility.SD;
 
 namespace BE_TKDecor.Core.Dtos.Coupon
 {
@@ -7,7 +8,8 @@ namespace BE_TKDecor.Core.Dtos.Coupon
     {
         public Guid CouponId { get; set; }
 
-        public Guid CouponTypeId { get; set; }
+        [RegularExpression($"^(ByPercent|ByValue)$")]
+        public string CouponType { get; set; } = null!;
 
         [Range(0, 9999999)]
         public decimal Value { get; set; }

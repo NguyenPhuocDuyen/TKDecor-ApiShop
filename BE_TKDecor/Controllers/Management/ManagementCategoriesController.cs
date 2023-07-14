@@ -3,9 +3,9 @@ using BE_TKDecor.Core.Dtos.Category;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
@@ -86,8 +86,7 @@ namespace BE_TKDecor.Controllers.Management
             if (categoryDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
-            var checkProductHasInCategory = await _category.CheckProductExistsByCateId(id);
-            if (checkProductHasInCategory)
+            if (categoryDb.Products.Count > 0)
                 return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
 
             categoryDb.IsDelete = true;

@@ -2,29 +2,25 @@
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementOrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IOrderRepository _order;
-        private readonly IOrderStatusRepository _orderStatus;
 
         public ManagementOrdersController(IMapper mapper,
-            IOrderRepository order,
-            IOrderStatusRepository orderStatus)
+            IOrderRepository order)
         {
             _mapper = mapper;
             _order = order;
-            _orderStatus = orderStatus;
         }
 
         // POST: api/ManagementOrders/GetOrder
@@ -59,24 +55,23 @@ namespace BE_TKDecor.Controllers.Management
             if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (order.OrderStatus.Name == orderUpdateStatusDto.OrderStatusName)
-                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-
-            // list order status
-            var orderStatus = await _orderStatus.GetAll();
-
-            // check order status exists
-            var newOrderStatus = orderStatus.FirstOrDefault(x => x.Name == orderUpdateStatusDto.OrderStatusName);
-            if (newOrderStatus == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
+            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
+            {
+                if (order.OrderStatus == status)
+                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
+            }
+            else
+            {
+                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
+            }
 
             // update order status
             // customer can cancel, refund, receive the order
             // Admin or seller can confirm the order for delivery
-            if (order.OrderStatus.Name == OrderStatusContent.Ordered)
+            if (order.OrderStatus == OrderStatus.Ordered)
             {
-                if (orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Delivering
-                    && orderUpdateStatusDto.OrderStatusName != OrderStatusContent.Canceled)
+                if (status != OrderStatus.Delivering
+                    && status != OrderStatus.Canceled)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
             else
@@ -84,8 +79,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
-            order.OrderStatus = newOrderStatus;
-            order.OrderStatusId = newOrderStatus.OrderStatusId;
+            order.OrderStatus = status;
             order.UpdatedAt = DateTime.UtcNow;
             try
             {

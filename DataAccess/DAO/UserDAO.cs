@@ -3,14 +3,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class UserDAO
+    internal class UserDAO : DAO<User>
     {
         internal static async Task<List<User>> GetAll()
         {
             try
             {
                 using var context = new TkdecorContext();
-                var users = await context.Users.Include(u => u.Role).ToListAsync();
+                var users = await context.Users
+                    .ToListAsync();
                 return users;
             }
             catch (Exception ex)
@@ -24,7 +25,7 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var user = await context.Users.Include(u => u.Role)
+                var user = await context.Users
                     .SingleOrDefaultAsync(user => user.UserId == id);
                 return user;
             }
@@ -39,37 +40,9 @@ namespace DataAccess.DAO
             try
             {
                 using var context = new TkdecorContext();
-                var user = await context.Users.Include(u => u.Role)
+                var user = await context.Users
                     .SingleOrDefaultAsync(user => user.Email == email);
                 return user;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        internal static async Task Add(User user)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        internal static async Task Update(User user)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                context.Update(user);
-                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {

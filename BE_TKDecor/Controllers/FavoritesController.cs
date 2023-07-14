@@ -3,9 +3,9 @@ using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
-using DataAccess.StatusContent;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -38,7 +38,7 @@ namespace BE_TKDecor.Controllers
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _productFavorite.FindFavoriteOfUser(user.UserId))
+            var list = (await _productFavorite.FindByUserId(user.UserId))
                 .Where(x => x.IsDelete == false)
                 .OrderByDescending(x => x.UpdatedAt);
 
@@ -63,7 +63,7 @@ namespace BE_TKDecor.Controllers
             // if not then add
             // yes then delete
             var productFavoriteDb = await _productFavorite
-                .FindProductFavorite(user.UserId, product.ProductId);
+                .FindByUserIdAndProductId(user.UserId, product.ProductId);
             try
             {
                 if (productFavoriteDb == null)
