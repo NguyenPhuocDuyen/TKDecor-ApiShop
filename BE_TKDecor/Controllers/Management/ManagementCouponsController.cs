@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementCouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -42,10 +42,14 @@ namespace BE_TKDecor.Controllers.Management
             if (couponCode != null)
                 return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
 
-            Coupon newCoupon = _mapper.Map<Coupon>(couponCode);
+            if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
+                return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
+
+            couponCode = _mapper.Map<Coupon>(couponDto);
+            couponCode.CouponType = couponType;
             try
             {
-                await _coupon.Add(newCoupon);
+                await _coupon.Add(couponCode);
                 return NoContent();
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -67,6 +71,7 @@ namespace BE_TKDecor.Controllers.Management
 
             couponDb.CouponType = couponType;
             couponDb.Value = couponDto.Value;
+            couponDb.MaxValue = couponDto.MaxValue;
             couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
             couponDb.StartDate = couponDto.StartDate;
             couponDb.EndDate = couponDto.EndDate;

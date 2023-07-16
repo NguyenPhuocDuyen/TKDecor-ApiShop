@@ -218,7 +218,7 @@ namespace DataAccess.Data
             productSetDefaults.RuleFor(x => x.Name, f => f.Lorem.Word());
             productSetDefaults.RuleFor(x => x.Description, f => f.Lorem.Paragraphs());
             productSetDefaults.RuleFor(x => x.Quantity, f => f.Random.Int(0, 1000));
-            productSetDefaults.RuleFor(x => x.Price, f => f.Random.Int(100000, 10000000));
+            productSetDefaults.RuleFor(x => x.Price, f => f.Random.Int(10, 1000));
 
             var categories = await _db.Categories.ToListAsync();
             foreach (var category in categories)
@@ -228,7 +228,7 @@ namespace DataAccess.Data
                     Product product = productSetDefaults.Generate();
                     product.CategoryId = category.CategoryId;
                     product.Category = category;
-
+                    product.Price *= 1000;
                     //3d model...
                     Product3DModel product3DModel = new()
                     {
@@ -240,7 +240,7 @@ namespace DataAccess.Data
                     product.Product3DModel = product3DModel;
                     product3DModel.Product = product;
 
-                    product.Name = $"Product {i} {product.Name} of cate-{category.CategoryId}";
+                    product.Name = $"Product {i} {product.Name} of {category.Name}";
                     product.Slug = Slug.GenerateSlug(product.Name);
                     _db.Products.Add(product);
                 }
@@ -356,7 +356,7 @@ namespace DataAccess.Data
                 coupon.CouponType = CouponType.ByPercent;
                 coupon.Code = "CodePercent" + i;
                 coupon.Value = i * 10;
-                coupon.MaxValue = 1000000;
+                coupon.MaxValue = 100000;
                 _db.Coupons.Add(coupon);
             }
 
@@ -366,7 +366,7 @@ namespace DataAccess.Data
                 coupon.CouponType = CouponType.ByValue;
                 coupon.Code = "CodeValue" + i;
                 coupon.Value = i * 10000;
-                coupon.MaxValue = 0;
+                coupon.MaxValue = coupon.Value;
                 _db.Coupons.Add(coupon);
             }
             _db.SaveChanges();

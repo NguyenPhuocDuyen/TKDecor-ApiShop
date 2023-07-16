@@ -125,7 +125,7 @@ namespace BE_TKDecor.Controllers.Management
             if (productDto.Product3DModelId != null)
             {
                 model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
-                if (model != null)
+                if (model == null)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
             if (model != null)
