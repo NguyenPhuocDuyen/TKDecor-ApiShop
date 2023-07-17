@@ -58,7 +58,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _productReport.Update(report);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

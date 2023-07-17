@@ -111,7 +111,7 @@ namespace BE_TKDecor.Controllers
                 if (!quanlityIsValid)
                     return BadRequest(new ApiResponse { Message = "Exceeding the number, still plus max" });
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -146,7 +146,7 @@ namespace BE_TKDecor.Controllers
                 if (!quanlityIsValid)
                     return Ok(new ApiResponse { Success = true, Message = "Exceeding the number, still plus max!" });
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Error }); }
         }
@@ -169,7 +169,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _cart.Update(cartDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

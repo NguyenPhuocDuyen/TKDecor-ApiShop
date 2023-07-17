@@ -47,7 +47,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _category.Add(newCategory);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -73,7 +73,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _category.Update(categoryDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -94,7 +94,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _category.Update(categoryDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

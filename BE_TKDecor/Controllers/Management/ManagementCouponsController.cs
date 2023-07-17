@@ -50,7 +50,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _coupon.Add(couponCode);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -79,7 +79,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _coupon.Update(couponDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -97,7 +97,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _coupon.Update(couponDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

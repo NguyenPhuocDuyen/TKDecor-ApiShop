@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers
             // send mail
             await _sendMailService.SendMail(mailContent);
 
-            return NoContent();
+            return Ok(new ApiResponse { Success = true });
         }
     }
 }

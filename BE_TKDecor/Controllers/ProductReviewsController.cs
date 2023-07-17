@@ -84,7 +84,7 @@ namespace BE_TKDecor.Controllers
                 {
                     await _productReview.Update(productReview);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -106,7 +106,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _productReview.Update(productReview);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

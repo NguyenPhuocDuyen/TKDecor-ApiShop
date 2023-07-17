@@ -60,8 +60,7 @@ namespace BE_TKDecor.Controllers
             var interactionReview = await _interaction
                 .FindByUserIdAndProductReviewId(user.UserId, interactionDto.ProductReviewId);
 
-            Interaction status;
-            if (!Enum.TryParse<Interaction>(interactionDto.Interaction, out status))
+            if (!Enum.TryParse<Interaction>(interactionDto.Interaction, out Interaction status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
 
             bool isAdd = false;
@@ -95,7 +94,7 @@ namespace BE_TKDecor.Controllers
                 {
                     await _interaction.Update(interactionReview);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

@@ -96,7 +96,7 @@ namespace BE_TKDecor.Controllers.Management
             {
                 await _product.Add(newProduct);
                 //await _notificationHub.Clients.All.SendAsync("LoadNotification");
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -182,7 +182,7 @@ namespace BE_TKDecor.Controllers.Management
 
                 // Update information except photos
                 await _product.Update(productDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -200,7 +200,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product.Update(product);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

@@ -58,7 +58,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -96,7 +96,7 @@ namespace BE_TKDecor.Controllers
                 // send mail
                 await _sendMailService.SendMail(mailContent);
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -161,7 +161,7 @@ namespace BE_TKDecor.Controllers
                     await _sendMailService.SendMail(mailContent);
                     return BadRequest(new ApiResponse { Message = "Password change time expired!. Pls check mail again to see new code!" });
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

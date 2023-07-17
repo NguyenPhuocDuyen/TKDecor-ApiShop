@@ -51,8 +51,7 @@ namespace BE_TKDecor.Controllers.Management
             if (report.ReportStatus != ReportStatus.Pending)
                 return BadRequest(new ApiResponse { Message = "Report product review has been processed!" });
 
-            ReportStatus status;
-            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out status))
+            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out ReportStatus status))
             {
                 return BadRequest(new ApiResponse { Message = ErrorContent.ReportStatusNotFound });
             }
@@ -72,7 +71,7 @@ namespace BE_TKDecor.Controllers.Management
                     await _productReview.Update(productReview);
                 }
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

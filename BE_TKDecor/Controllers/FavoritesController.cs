@@ -80,7 +80,7 @@ namespace BE_TKDecor.Controllers
                     productFavoriteDb.IsDelete = !productFavoriteDb.IsDelete;
                     await _productFavorite.Update(productFavoriteDb);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

@@ -56,7 +56,7 @@ namespace BE_TKDecor.Controllers
                 item.IsRead = true;
                 await _notification.Update(item);
             }
-            return NoContent();
+            return Ok(new ApiResponse { Success = true });
         }
 
         // GET: api/Notifications/Subscribe
@@ -72,7 +72,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

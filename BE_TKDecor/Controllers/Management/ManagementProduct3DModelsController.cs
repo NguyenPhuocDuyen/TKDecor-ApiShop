@@ -42,7 +42,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product3DModel.Add(model);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -63,7 +63,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product3DModel.Update(model);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

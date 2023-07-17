@@ -59,9 +59,9 @@ namespace BE_TKDecor.Controllers
                 isAdd = false;
             }
 
-            // initial new user
             if (isAdd)
             {
+                // initial new user
                 // take customer role
                 user = new User
                 {
@@ -109,7 +109,7 @@ namespace BE_TKDecor.Controllers
                 {
                     await _user.Update(user);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -160,7 +160,7 @@ namespace BE_TKDecor.Controllers
                 {
                     return BadRequest(new ApiResponse { Message = "The code has expired. Please check your email again!" });
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -202,7 +202,7 @@ namespace BE_TKDecor.Controllers
             {
                 // add user
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -284,7 +284,7 @@ namespace BE_TKDecor.Controllers
             {
                 //update user/
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -323,7 +323,7 @@ namespace BE_TKDecor.Controllers
             {
                 //update to database and return info user
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

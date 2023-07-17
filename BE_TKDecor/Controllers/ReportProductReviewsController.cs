@@ -75,7 +75,7 @@ namespace BE_TKDecor.Controllers
                     await _reportProductReview.Update(report);
                 }
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
