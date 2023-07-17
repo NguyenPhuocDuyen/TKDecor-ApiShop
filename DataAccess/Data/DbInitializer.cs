@@ -448,7 +448,7 @@ namespace DataAccess.Data
                 Password = Password.HashPassword("admin@gmail.com"),
                 FullName = "admin",
                 Role = Role.Admin,
-                BirthDay = DateTime.UtcNow,
+                BirthDay = DateTime.Now,
                 Gender = Gender.Male,
                 EmailConfirmed = true,
                 AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
@@ -481,7 +481,7 @@ namespace DataAccess.Data
                     u.Email = $"{role}{i}{u.Email}";
                     u.FullName = $"{role} {i} {u.FullName}";
                     u.UserAddresses = new List<UserAddress>();
-                    u.BirthDay = DateTime.UtcNow;
+                    u.BirthDay = DateTime.Now;
                     u.Gender = randomStatus;
 
                     for (int j = 0; j < 4; j++)

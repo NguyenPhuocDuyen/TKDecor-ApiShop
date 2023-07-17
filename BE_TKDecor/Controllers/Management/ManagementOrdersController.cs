@@ -80,7 +80,7 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             order.OrderStatus = status;
-            order.UpdatedAt = DateTime.UtcNow;
+            order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);

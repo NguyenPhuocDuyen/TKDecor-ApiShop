@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementCategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -69,7 +69,7 @@ namespace BE_TKDecor.Controllers.Management
 
             categoryDb.Name = categoryDto.Name;
             categoryDb.Thumbnail = categoryDto.Thumbnail;
-            categoryDb.UpdatedAt = DateTime.UtcNow;
+            categoryDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _category.Update(categoryDb);
@@ -90,7 +90,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
 
             categoryDb.IsDelete = true;
-            categoryDb.UpdatedAt = DateTime.UtcNow;
+            categoryDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _category.Update(categoryDb);

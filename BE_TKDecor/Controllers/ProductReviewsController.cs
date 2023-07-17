@@ -70,7 +70,7 @@ namespace BE_TKDecor.Controllers
                 productReview.IsDelete = false;
                 productReview.Rate = productReviewDto.Rate;
                 productReview.Description = productReviewDto.Description;
-                productReview.UpdatedAt = DateTime.UtcNow;
+                productReview.UpdatedAt = DateTime.Now;
                 productReview.IsDelete = false;
             }
 
@@ -102,7 +102,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
             productReview.IsDelete = true;
-            productReview.UpdatedAt = DateTime.UtcNow;
+            productReview.UpdatedAt = DateTime.Now;
             try
             {
                 await _productReview.Update(productReview);

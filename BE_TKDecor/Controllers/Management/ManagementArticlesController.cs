@@ -12,7 +12,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementArticlesController : ControllerBase
     {
 
@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers.Management
             articleDb.Title = articleDto.Title;
             articleDb.Content = articleDto.Content;
             articleDb.Thumbnail = articleDto.Thumbnail;
-            articleDb.UpdatedAt = DateTime.UtcNow;
+            articleDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(articleDb);
@@ -99,7 +99,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsDelete = true;
-            article.UpdatedAt = DateTime.UtcNow;
+            article.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(article);
@@ -117,7 +117,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsPublish = articleDto.Published;
-            article.UpdatedAt = DateTime.UtcNow;
+            article.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(article);

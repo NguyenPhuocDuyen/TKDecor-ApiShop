@@ -165,7 +165,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             cartDb.IsDelete = true;
-            cartDb.UpdatedAt = DateTime.UtcNow;
+            cartDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _cart.Update(cartDb);

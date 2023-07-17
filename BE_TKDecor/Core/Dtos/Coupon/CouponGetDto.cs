@@ -2,7 +2,7 @@
 
 namespace BE_TKDecor.Core.Dtos.Coupon
 {
-    public class CouponGetDto
+    public class CouponGetDto : BaseEntity
     {
         public Guid CouponId { get; set; }
 
@@ -16,14 +16,10 @@ namespace BE_TKDecor.Core.Dtos.Coupon
 
         public int RemainingUsageCount { get; set; }
 
-        public DateTime? StartDate { get; set; } = DateTime.UtcNow;
+        public DateTime StartDate { get; set; } 
 
-        public DateTime? EndDate { get; set; } = DateTime.UtcNow.AddMonths(1);
+        public DateTime EndDate { get; set; }
 
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public bool? IsActive { get; set; } = false;
+        public bool IsActive { get; set; }
     }
 }

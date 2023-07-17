@@ -54,7 +54,7 @@ namespace BE_TKDecor.Controllers
 
             user.FullName = userDto.FullName;
             user.AvatarUrl = userDto.AvatarUrl;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.Now;
             try
             {
                 await _user.Update(user);
@@ -75,8 +75,8 @@ namespace BE_TKDecor.Controllers
             string code = RandomCode.GenerateRandomCode();
             user.ResetPasswordRequired = true;
             user.ResetPasswordCode = code;
-            user.ResetPasswordSentAt = DateTime.UtcNow;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.ResetPasswordSentAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
 
             try
             {
@@ -122,7 +122,7 @@ namespace BE_TKDecor.Controllers
                 { Message = "Wrong password!" });
 
             bool codeOutOfDate = false;
-            if (user.ResetPasswordSentAt > DateTime.UtcNow.AddMinutes(-5))
+            if (user.ResetPasswordSentAt > DateTime.Now.AddMinutes(-5))
             {
                 codeOutOfDate = true;
             }
@@ -139,7 +139,7 @@ namespace BE_TKDecor.Controllers
                 user.Password = Password.HashPassword(userDto.NewPassword);
                 user.ResetPasswordRequired = false;
             }
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.Now;
             try
             {
                 // update success before send new code for user

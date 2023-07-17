@@ -145,7 +145,7 @@ namespace BE_TKDecor.Controllers.Management
             productDb.Slug = newSlug;
             productDb.Quantity = productDto.Quantity;
             productDb.Price = productDto.Price;
-            productDb.UpdatedAt = DateTime.UtcNow;
+            productDb.UpdatedAt = DateTime.Now;
 
             List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
             try
@@ -196,7 +196,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             product.IsDelete = true;
-            product.UpdatedAt = DateTime.UtcNow;
+            product.UpdatedAt = DateTime.Now;
             try
             {
                 await _product.Update(product);

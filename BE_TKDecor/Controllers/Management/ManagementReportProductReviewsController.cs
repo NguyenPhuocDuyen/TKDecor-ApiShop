@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementReportProductReviewsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -58,7 +58,7 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             report.ReportStatus = status;
-            report.UpdatedAt = DateTime.UtcNow;
+            report.UpdatedAt = DateTime.Now;
             try
             {
                 await _reportProductReview.Update(report);
@@ -67,7 +67,7 @@ namespace BE_TKDecor.Controllers.Management
                 var productReview = await _productReview.FindById(report.ProductReviewReportedId);
                 if (productReview != null)
                 {
-                    productReview.UpdatedAt = DateTime.UtcNow;
+                    productReview.UpdatedAt = DateTime.Now;
                     productReview.IsDelete = true;
                     await _productReview.Update(productReview);
                 }

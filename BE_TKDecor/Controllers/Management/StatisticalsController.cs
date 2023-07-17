@@ -8,7 +8,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;
@@ -72,10 +72,10 @@ namespace BE_TKDecor.Controllers.Management
             int take = 5)
         {
             if (!startDate.HasValue)
-                startDate = DateTime.UtcNow.AddMonths(-1);
+                startDate = DateTime.Now.AddMonths(-1);
 
             if (!endDate.HasValue)
-                endDate = DateTime.UtcNow;
+                endDate = DateTime.Now;
 
             var orders = await _order.GetAll();
             orders = orders.Where(x => x.CreatedAt >= startDate && x.CreatedAt <= endDate).ToList();

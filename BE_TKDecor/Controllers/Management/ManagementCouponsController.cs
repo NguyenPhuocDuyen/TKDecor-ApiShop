@@ -75,7 +75,7 @@ namespace BE_TKDecor.Controllers.Management
             couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;
             couponDb.StartDate = couponDto.StartDate;
             couponDb.EndDate = couponDto.EndDate;
-            couponDb.UpdatedAt = DateTime.UtcNow;
+            couponDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _coupon.Update(couponDb);
@@ -92,7 +92,7 @@ namespace BE_TKDecor.Controllers.Management
             if (couponDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-            couponDb.UpdatedAt = DateTime.UtcNow;
+            couponDb.UpdatedAt = DateTime.Now;
             couponDb.IsActive = false;
             try
             {

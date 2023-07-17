@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProduct3DModelsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = "Model3D being used by the product: " + model.Product.Name });
 
             model.IsDelete = true;
-            model.UpdatedAt = DateTime.UtcNow;
+            model.UpdatedAt = DateTime.Now;
             try
             {
                 await _product3DModel.Update(model);

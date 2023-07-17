@@ -61,7 +61,7 @@ namespace BE_TKDecor.Controllers
                 isAdd = false;
                 report.IsDelete = false;
                 report.Reason = reportDto.Reason;
-                report.UpdatedAt = DateTime.UtcNow;
+                report.UpdatedAt = DateTime.Now;
             }
 
             try

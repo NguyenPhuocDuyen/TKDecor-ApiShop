@@ -101,7 +101,7 @@ namespace BE_TKDecor.Controllers
             userAddressDb.FullName = userAddressDto.FullName;
             userAddressDb.Address = userAddressDto.Address;
             userAddressDb.Phone = userAddressDto.Phone;
-            userAddressDb.UpdatedAt = DateTime.UtcNow;
+            userAddressDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _userAddress.Update(userAddressDb);
@@ -122,7 +122,7 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = "Can't not delete default address!" });
 
             userAddress.IsDelete = true;
-            userAddress.UpdatedAt = DateTime.UtcNow;
+            userAddress.UpdatedAt = DateTime.Now;
             try
             {
                 await _userAddress.Update(userAddress);

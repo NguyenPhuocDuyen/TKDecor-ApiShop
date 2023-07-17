@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers
             }
             else
             {
-                interactionReview.UpdatedAt = DateTime.UtcNow;
+                interactionReview.UpdatedAt = DateTime.Now;
             }
             interactionReview.Interaction = status;
 

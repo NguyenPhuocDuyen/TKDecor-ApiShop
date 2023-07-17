@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProductReportsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -54,7 +54,7 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             report.ReportStatus = status;
-            report.UpdatedAt = DateTime.UtcNow;
+            report.UpdatedAt = DateTime.Now;
             try
             {
                 await _productReport.Update(report);

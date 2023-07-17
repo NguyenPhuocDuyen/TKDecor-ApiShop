@@ -1,10 +1,10 @@
-﻿namespace BE_TKDecor.Core.Dtos.Cart
+﻿using BusinessObject;
+
+namespace BE_TKDecor.Core.Dtos.Cart
 {
-    public class CartGetDto
+    public class CartGetDto : BaseEntity
     {
         public Guid CartId { get; set; }
-
-        //public int ProductId { get; set; }
 
         public string ProductName { get; set; } = null!;
 
@@ -13,9 +13,5 @@
         public int Quantity { get; set; }
 
         public List<string> ProductImages { get; set; } = new List<string>();
-
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }
