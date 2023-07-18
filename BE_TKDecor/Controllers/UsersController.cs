@@ -10,6 +10,7 @@ using Utility.Mail;
 using System.Net;
 using System.Text;
 using System.Net.Http.Headers;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -52,8 +53,13 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse
                 { Message = ErrorContent.UserNotFound });
 
+            if (!Enum.TryParse(userDto.Gender, out Gender gender))
+                return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
+
             user.FullName = userDto.FullName;
             user.AvatarUrl = userDto.AvatarUrl;
+            user.BirthDay = userDto.BirthDay;
+            user.Gender = gender;
             user.UpdatedAt = DateTime.Now;
             try
             {

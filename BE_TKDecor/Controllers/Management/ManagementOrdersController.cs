@@ -55,7 +55,7 @@ namespace BE_TKDecor.Controllers.Management
             if (order == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
+            if (Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
             {
                 if (order.OrderStatus == status)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
