@@ -29,7 +29,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _product.GetAll();
-            list = list.Where(x => x.IsDelete == false && x.Quantity > 0)
+            list = list.Where(x => !x.IsDelete && x.Quantity > 0)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
             // paging skip 12*0 and take 12 after skip
@@ -44,14 +44,12 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> FeaturedProducts()
         {
             var products = await _product.GetAll();
-            products = products.Where(x => x.IsDelete == false && x.Quantity > 0).ToList();
-            var sort = products
-                .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
-                .Take(9)
-                .ToList();
+            products = products.Where(x => !x.IsDelete && x.Quantity > 0)
+                    .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
+                    .Take(9)
+                    .ToList();
 
-            var result = _mapper.Map<List<ProductGetDto>>(sort);
-
+            var result = _mapper.Map<List<ProductGetDto>>(products);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -60,11 +58,13 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetReview(Guid id)
         {
             var product = await _product.FindById(id);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var revews = await _productReview.FindByProductId(product.ProductId);
-            revews = revews.Where(x => x.IsDelete == false).ToList();
+            revews = revews.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
 
             var result = _mapper.Map<List<ProductReviewGetDto>>(revews);
             return Ok(new ApiResponse { Success = true, Data = result });

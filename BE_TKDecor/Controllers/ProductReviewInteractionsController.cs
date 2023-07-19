@@ -35,11 +35,13 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
-            productReviewInteraction = productReviewInteraction.Where(x => x.IsDelete == false).ToList();
+            productReviewInteraction = productReviewInteraction
+                .Where(x => !x.IsDelete)
+                .ToList();
 
             var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -50,11 +52,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Interaction(ProductReviewInteractionDto interactionDto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var productReview = await _productReview.FindById(interactionDto.ProductReviewId);
-            if (productReview == null)
+            if (productReview == null || productReview.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
             var interactionReview = await _interaction
@@ -78,10 +80,7 @@ namespace BE_TKDecor.Controllers
                 interactionReview.ProductReviewId = productReview.ProductReviewId;
                 interactionReview.ProductReview = productReview;
             }
-            else
-            {
-                interactionReview.UpdatedAt = DateTime.Now;
-            }
+            interactionReview.UpdatedAt = DateTime.Now;
             interactionReview.Interaction = status;
 
             try

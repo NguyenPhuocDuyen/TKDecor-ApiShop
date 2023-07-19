@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementCouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -28,8 +28,11 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var coupons = (await _coupon.GetAll())
-                   .OrderByDescending(x => x.UpdatedAt).ToList();
+            var coupons = await _coupon.GetAll();
+            coupons = coupons.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<CouponGetDto>>(coupons);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -60,10 +63,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> PutCoupon(Guid id, CouponUpdateDto couponDto)
         {
             if (id != couponDto.CouponId)
-                return BadRequest(new ApiResponse { Message = "ID does not match!" });
+                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var couponDb = await _coupon.FindById(id);
-            if (couponDb == null)
+            if (couponDb == null || couponDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
             if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
@@ -89,11 +92,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> DeleteCoupon(Guid id)
         {
             var couponDb = await _coupon.FindById(id);
-            if (couponDb == null)
+            if (couponDb == null || couponDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
             couponDb.UpdatedAt = DateTime.Now;
-            couponDb.IsActive = false;
+            couponDb.IsDelete = true;
             try
             {
                 await _coupon.Update(couponDb);

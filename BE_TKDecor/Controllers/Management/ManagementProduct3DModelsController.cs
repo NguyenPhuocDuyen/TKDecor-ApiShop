@@ -29,7 +29,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var models = await _product3DModel.GetAll();
-            models = models.OrderByDescending(x => x.UpdatedAt).ToList();
+            models = models.Where(x => !x.IsDelete) 
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<Product3DModelGetDto>>(models);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -52,7 +55,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Delete(Guid id)
         {
             var model = await _product3DModel.FindById(id);
-            if (model == null)
+            if (model == null || model.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
 
             if (model.Product != null)

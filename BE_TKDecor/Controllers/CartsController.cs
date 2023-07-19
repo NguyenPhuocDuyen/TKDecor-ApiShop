@@ -35,13 +35,14 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetCarts()
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var carts = (await _cart.FindCartsByUserId(user.UserId))
-                    .Where(x => x.IsDelete == false)
+                    .Where(x => !x.IsDelete)
                     .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
+
             var result = _mapper.Map<List<CartGetDto>>(carts);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -51,12 +52,12 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> AddProductToCart(CartCreateDto cartDto)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // get current product info
             var product = await _product.FindById(cartDto.ProductId);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             // get product information in cart
@@ -71,10 +72,10 @@ namespace BE_TKDecor.Controllers
             // If not, create a new one, if yes, add the quantity
             if (cartDb == null)
             {
+                isAdd = true;
                 cartDb = _mapper.Map<Cart>(cartDto);
                 cartDb.IsDelete = false;
                 cartDb.UserId = user.UserId;
-                isAdd = true;
             }
             else
             {
@@ -121,11 +122,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto cartDto)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var cartDb = await _cart.FindById(id);
-            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete == true)
+            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             // Variable check number of valid products
@@ -156,12 +157,12 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // Find and delete cart
             var cartDb = await _cart.FindById(id);
-            if (cartDb == null || cartDb.UserId != user.UserId)
+            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
                 return NotFound(new ApiResponse { Message = "Cart not found!" });
 
             cartDb.IsDelete = true;

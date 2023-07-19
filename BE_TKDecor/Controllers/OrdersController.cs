@@ -41,12 +41,14 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var orders = await _order.FindByUserId(user.UserId);
-            orders = orders.Where(x => x.IsDelete == false)
-                .OrderByDescending(x => x.UpdatedAt).ToList();
+            orders = orders.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -56,14 +58,14 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> FindById(Guid id)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var orders = await _order.FindById(id);
-            if (orders == null || orders.UserId != user.UserId)
+            var order = await _order.FindById(id);
+            if (order == null || order.UserId != user.UserId || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            var result = _mapper.Map<OrderGetDto>(orders);
+            var result = _mapper.Map<OrderGetDto>(order);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -72,15 +74,15 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> MakeOrder(OrderMakeDto orderDto)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // get coupon
             Coupon? coupon = null;
             if (orderDto.CodeCoupon != null)
             {
                 coupon = await _coupon.FindByCode(orderDto.CodeCoupon);
-                if (coupon == null)
+                if (coupon == null || coupon.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
             }
             // check address
@@ -103,6 +105,7 @@ namespace BE_TKDecor.Controllers
                 Note = orderDto.Note,
                 //TotalPrice
             };
+
             // add order detail
             foreach (var cartId in orderDto.ListCartIdSelect)
             {
@@ -110,8 +113,8 @@ namespace BE_TKDecor.Controllers
                 if (!cartsDb.Select(x => x.CartId).ToList().Contains(cartId))
                     return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
 
-                var cart = cartsDb.FirstOrDefault(x => x.CartId == cartId && x.UserId == user.UserId);
-                if (cart == null)
+                var cart = cartsDb.FirstOrDefault(x => x.CartId == cartId);
+                if (cart == null || cart.IsDelete || cart.UserId != user.UserId)
                     return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
 
                 OrderDetail orderDetail = new()
@@ -172,27 +175,20 @@ namespace BE_TKDecor.Controllers
         [HttpPut("UpdateStatusOrder/{id}")]
         public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
         {
-            var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
-
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
+            
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // seller and admin have the right to accept orders for delivery
             var order = await _order.FindById(id);
-            if (order == null || order.UserId != user.UserId)
+            if (order == null || order.UserId != user.UserId || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
-            {
-                if (order.OrderStatus == status)
-                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-            }
-            else
-            {
+            if (!Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-            }
 
             // update order status
             // customer can cancel, refund, receive the order

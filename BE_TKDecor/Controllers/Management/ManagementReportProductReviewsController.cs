@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementReportProductReviewsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -31,7 +31,9 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var reports = await _reportProductReview.GetAll();
-            reports = reports.OrderByDescending(x => x.UpdatedAt).ToList();
+            reports = reports.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
 
             var result = _mapper.Map<List<ReportProductReviewGetDto>>(reports);
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -45,7 +47,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var report = await _reportProductReview.FindById(id);
-            if (report == null)
+            if (report == null || report.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ReportProductReviewNotFound });
 
             if (report.ReportStatus != ReportStatus.Pending)
@@ -57,6 +59,7 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             report.ReportStatus = status;
+            report.ProductReviewReported.IsDelete = true;
             report.UpdatedAt = DateTime.Now;
             try
             {

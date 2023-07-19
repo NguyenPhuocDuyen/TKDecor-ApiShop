@@ -41,7 +41,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var products = await _product.GetAll();
-            products = products.OrderByDescending(x => x.UpdatedAt).ToList();
+            products = products.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<ProductGetDto>>(products);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -62,7 +65,7 @@ namespace BE_TKDecor.Controllers.Management
             if (productDto.Product3DModelId != null)
             {
                 var model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
-                if (model == null)
+                if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
 
@@ -118,7 +121,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
             var productDb = await _product.FindById(id);
-            if (productDb == null)
+            if (productDb == null || productDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var p = await _product.FindByName(productDto.Name);
@@ -134,7 +137,7 @@ namespace BE_TKDecor.Controllers.Management
             if (productDto.Product3DModelId != null)
             {
                 model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
-                if (model == null)
+                if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
 
@@ -202,7 +205,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _product.FindById(id);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             product.IsDelete = true;

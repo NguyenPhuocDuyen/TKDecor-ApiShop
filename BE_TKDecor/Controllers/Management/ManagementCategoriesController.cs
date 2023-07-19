@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementCategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -29,9 +29,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var list = await _category.GetAll();
-            list = list.OrderByDescending(x => x.UpdatedAt).ToList();
-            var result = _mapper.Map<List<CategoryGetDto>>(list);
+            list = list.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
 
+            var result = _mapper.Map<List<CategoryGetDto>>(list);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -57,10 +59,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Update(Guid id, CategoryUpdateDto categoryDto)
         {
             if (id != categoryDto.CategoryId)
-                return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
+                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var categoryDb = await _category.FindById(categoryDto.CategoryId);
-            if (categoryDb == null)
+            if (categoryDb == null || categoryDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             var categoryName = await _category.FindByName(categoryDto.Name);
@@ -83,7 +85,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Delete(Guid id)
         {
             var categoryDb = await _category.FindById(id);
-            if (categoryDb == null)
+            if (categoryDb == null || categoryDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             if (categoryDb.Products.Count > 0)

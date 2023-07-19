@@ -38,6 +38,9 @@ namespace BE_TKDecor.Controllers
         {
             // get user by user id
             var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             var result = _mapper.Map<UserGetDto>(user);
 
             return Ok(new ApiResponse
@@ -49,12 +52,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> UpdateUserInfo(UserUpdateDto userDto)
         {
             var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse
-                { Message = ErrorContent.UserNotFound });
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             if (!Enum.TryParse(userDto.Gender, out Gender gender))
-                return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
+                return NotFound(new ApiResponse { Message = ErrorContent.GenderNotFound });
 
             user.FullName = userDto.FullName;
             user.AvatarUrl = userDto.AvatarUrl;
@@ -74,7 +76,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> RequestChangePassword()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // get random code
@@ -112,7 +114,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> ChangePassword(UserChangePasswordDto userDto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             if (!user.ResetPasswordRequired is not true)
@@ -124,8 +126,7 @@ namespace BE_TKDecor.Controllers
             //check correct password
             bool isCorrectPassword = Password.VerifyPassword(userDto.Password, user.Password);
             if (!isCorrectPassword)
-                return BadRequest(new ApiResponse
-                { Message = "Wrong password!" });
+                return BadRequest(new ApiResponse { Message = "Wrong password!" });
 
             bool codeOutOfDate = false;
             if (user.ResetPasswordSentAt > DateTime.Now.AddMinutes(-5))
@@ -170,37 +171,6 @@ namespace BE_TKDecor.Controllers
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        }
-
-        [HttpGet]
-        public async Task<HttpResponseMessage> ExportToCsv()
-        {
-            var user = await GetUser();
-
-            // Tạo đối tượng StringBuilder để xây dựng chuỗi CSV
-            var csv = new StringBuilder();
-
-            // Ghi tiêu đề của các cột vào chuỗi CSV
-            csv.AppendLine("FullName,Email,Column3");
-
-            // Ghi dữ liệu từng dòng vào chuỗi CSV
-            //foreach (var item in data)
-            //{
-            csv.AppendLine($"{user.FullName},{user.Email}");
-            //}
-
-            // Tạo đối tượng HttpResponseMessage
-            var response = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(csv.ToString())
-            };
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            {
-                FileName = "data.csv"
-            };
-
-            return response;
         }
 
         private async Task<User?> GetUser()

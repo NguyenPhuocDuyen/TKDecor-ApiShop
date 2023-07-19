@@ -31,11 +31,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetUserAddresses()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var list = (await _userAddress.FindByUserId(user.UserId))
-                .Where(x => x.IsDelete == false)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
@@ -47,7 +47,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var address = await _userAddress.FindById(dto.UserAddressId);
@@ -67,7 +67,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             UserAddress newAddress = _mapper.Map<UserAddress>(userAddressDto);
@@ -94,8 +94,12 @@ namespace BE_TKDecor.Controllers
             if (id != userAddressDto.UserAddressId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             var userAddressDb = await _userAddress.FindById(id);
-            if (userAddressDb == null || userAddressDb.IsDelete)
+            if (userAddressDb == null || userAddressDb.IsDelete || userAddressDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             userAddressDb.FullName = userAddressDto.FullName;

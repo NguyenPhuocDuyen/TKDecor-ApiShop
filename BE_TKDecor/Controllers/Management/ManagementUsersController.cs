@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    //[Authorize(Roles = RoleContent.Admin)]
     public class ManagementUsersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -27,8 +27,12 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("GetAllUser")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var user = await _user.GetAll();
-            var result = _mapper.Map<List<UserGetDto>>(user);
+            var users = await _user.GetAll();
+            users = users.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
+            var result = _mapper.Map<List<UserGetDto>>(users);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -40,14 +44,11 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var user = await _user.FindById(userId);
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            Role role;
-            if (!Enum.TryParse<Role>(userDto.Role, out role))
-            {
+            if (!Enum.TryParse<Role>(userDto.Role, out Role role))
                 return NotFound(new ApiResponse { Message = ErrorContent.RoleNotFound });
-            }
 
             user.Role = role;
             user.UpdatedAt = DateTime.Now;

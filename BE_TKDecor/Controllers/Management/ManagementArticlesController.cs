@@ -35,11 +35,11 @@ namespace BE_TKDecor.Controllers.Management
         {
             var list = await _article.GetAll();
             list = list
-                //.Where(x => x.IsDelete == false)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
-            var result = _mapper.Map<List<ArticleGetDto>>(list);
 
+            var result = _mapper.Map<List<ArticleGetDto>>(list);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -47,6 +47,10 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(ArticleCreateDto articleDto)
         {
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             var articleDb = await _article.FindByTitle(articleDto.Title);
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Article already exist!" });
@@ -55,10 +59,6 @@ namespace BE_TKDecor.Controllers.Management
             articleDb = await _article.FindBySlug(newSlug);
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
-
-            var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // create new article info
             Article newArticle = _mapper.Map<Article>(articleDto);
@@ -82,7 +82,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var articleDb = await _article.FindById(id);
-            if (articleDb == null)
+            if (articleDb == null || articleDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             var newSlug = Slug.GenerateSlug(articleDto.Title);
@@ -108,7 +108,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> DeleteArticle(Guid id)
         {
             var article = await _article.FindById(id);
-            if (article == null)
+            if (article == null || article.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsDelete = true;
@@ -126,7 +126,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> SetPublish(ArticleSetPublishDto articleDto)
         {
             var article = await _article.FindById(articleDto.ArticleId);
-            if (article == null)
+            if (article == null || article.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsPublish = articleDto.Published;

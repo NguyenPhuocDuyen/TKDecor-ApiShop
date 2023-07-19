@@ -25,8 +25,12 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetCoupon(string code)
         {
             var coupon = await _coupon.FindByCode(code);
-            if (coupon == null || coupon.IsActive == false || coupon.IsDelete == true)
+            if (coupon == null || coupon.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+
+            var currentDay = DateTime.Now;
+            if (currentDay < coupon.StartDate || currentDay > coupon.EndDate || !coupon.IsActive)
+                return BadRequest(new ApiResponse { Message = "Coupon is not available!" });
 
             var result = _mapper.Map<CouponGetDto>(coupon);
             return Ok(new ApiResponse { Success = true, Data = result });

@@ -217,8 +217,8 @@ namespace DataAccess.Data
             var productSetDefaults = new Faker<Product>();
             productSetDefaults.RuleFor(x => x.Name, f => f.Lorem.Word());
             productSetDefaults.RuleFor(x => x.Description, f => f.Lorem.Paragraphs());
-            productSetDefaults.RuleFor(x => x.Quantity, f => f.Random.Int(0, 1000));
-            productSetDefaults.RuleFor(x => x.Price, f => f.Random.Int(10, 1000));
+            productSetDefaults.RuleFor(x => x.Quantity, f => f.Random.Int(0, 100));
+            productSetDefaults.RuleFor(x => x.Price, f => f.Random.Int(10, 100));
 
             var categories = await _db.Categories.ToListAsync();
             foreach (var category in categories)

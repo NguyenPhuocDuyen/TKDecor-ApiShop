@@ -25,11 +25,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _category.GetAll();
-            list = list.Where(x => x.IsDelete == false)
+            list = list.Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
-            var result = _mapper.Map<List<CategoryGetDto>>(list);
 
+            var result = _mapper.Map<List<CategoryGetDto>>(list);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
     }
