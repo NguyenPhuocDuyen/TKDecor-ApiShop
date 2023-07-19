@@ -12,7 +12,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementArticlesController : ControllerBase
     {
 
@@ -48,6 +48,11 @@ namespace BE_TKDecor.Controllers.Management
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Article already exist!" });
 
+            var newSlug = Slug.GenerateSlug(articleDto.Title);
+            articleDb = await _article.FindBySlug(newSlug);
+            if (articleDb != null)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+
             var user = await GetUser();
             if (user == null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
@@ -56,7 +61,7 @@ namespace BE_TKDecor.Controllers.Management
             Article newArticle = _mapper.Map<Article>(articleDto);
             newArticle.UserId = user.UserId;
             newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
-            newArticle.IsPublish = true;
+            newArticle.IsPublish = false;
             try
             {
                 await _article.Add(newArticle);
@@ -76,6 +81,11 @@ namespace BE_TKDecor.Controllers.Management
             var articleDb = await _article.FindById(id);
             if (articleDb == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
+
+            var newSlug = Slug.GenerateSlug(articleDto.Title);
+            var articleSlug = await _article.FindBySlug(newSlug);
+            if (articleSlug != null && articleSlug.ArticleId != id)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
             // update info article
             articleDb.Title = articleDto.Title;

@@ -14,7 +14,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProductsController : ControllerBase
     {
         private readonly IHubContext<NotificationHub> _notificationHub;
@@ -55,8 +55,8 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
-            var proSlug = await _product.FindBySlug(newSlug);
-            if (proSlug != null)
+            productDb = await _product.FindBySlug(newSlug);
+            if (productDb != null)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
             Product3DModel? model = new();

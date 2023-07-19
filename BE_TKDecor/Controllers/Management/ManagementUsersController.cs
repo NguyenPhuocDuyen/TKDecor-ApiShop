@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = RoleContent.Admin)]
     public class ManagementUsersController : ControllerBase
     {
         private readonly IMapper _mapper;

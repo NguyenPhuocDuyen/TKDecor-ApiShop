@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementCouponsController : ControllerBase
     {
         private readonly IMapper _mapper;

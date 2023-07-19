@@ -36,8 +36,8 @@ namespace BE_TKDecor.Controllers
             _cart = cart;
         }
 
-        // GET: api/Orders/GetOrder
-        [HttpGet("GetAll")]
+        // GET: api/Orders/GetAllOfUser
+        [HttpGet("GetAllOfUser")]
         public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
@@ -45,7 +45,8 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var orders = await _order.FindByUserId(user.UserId);
-            orders = orders.Where(x => x.IsDelete == false).ToList();
+            orders = orders.Where(x => x.IsDelete == false)
+                .OrderByDescending(x => x.UpdatedAt).ToList();
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -171,16 +172,19 @@ namespace BE_TKDecor.Controllers
         [HttpPut("UpdateStatusOrder/{id}")]
         public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
         {
+            var user = await GetUser();
+            if (user == null)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             // seller and admin have the right to accept orders for delivery
             var order = await _order.FindById(id);
-            if (order == null)
+            if (order == null || order.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            OrderStatus status;
-            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out status))
+            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
             {
                 if (order.OrderStatus == status)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
