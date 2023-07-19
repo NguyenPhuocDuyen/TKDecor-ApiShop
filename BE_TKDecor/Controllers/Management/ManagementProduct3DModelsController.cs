@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProduct3DModelsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -29,7 +29,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var models = await _product3DModel.GetAll();
-            models = models.OrderByDescending(x => x.UpdatedAt).ToList();
+            models = models.Where(x => !x.IsDelete) 
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<Product3DModelGetDto>>(models);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -42,7 +45,7 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _product3DModel.Add(model);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -52,18 +55,18 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Delete(Guid id)
         {
             var model = await _product3DModel.FindById(id);
-            if (model == null)
+            if (model == null || model.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
 
             if (model.Product != null)
                 return BadRequest(new ApiResponse { Message = "Model3D being used by the product: " + model.Product.Name });
 
             model.IsDelete = true;
-            model.UpdatedAt = DateTime.UtcNow;
+            model.UpdatedAt = DateTime.Now;
             try
             {
                 await _product3DModel.Update(model);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

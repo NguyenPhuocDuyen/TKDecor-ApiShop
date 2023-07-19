@@ -1,4 +1,5 @@
 ﻿using BE_TKDecor.Core.Dtos.Mail;
+using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Mvc;
 using Utility.Mail;
 
@@ -30,7 +31,7 @@ namespace BE_TKDecor.Controllers
             // send mail
             await _sendMailService.SendMail(mailContent);
 
-            return NoContent();
+            return Ok(new ApiResponse { Success = true });
         }
     }
 }

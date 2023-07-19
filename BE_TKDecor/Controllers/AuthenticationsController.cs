@@ -23,7 +23,6 @@ namespace BE_TKDecor.Controllers
     {
         private readonly JwtSettings _jwtSettings;
         private readonly ISendMailService _sendMailService;
-        private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IRefreshTokenRepository _refreshToken;
 
@@ -34,7 +33,6 @@ namespace BE_TKDecor.Controllers
             IRefreshTokenRepository refreshToken)
         {
             _sendMailService = sendMailService;
-            _mapper = mapper;
             _user = user;
             _refreshToken = refreshToken;
             _jwtSettings = options.Value;
@@ -59,9 +57,9 @@ namespace BE_TKDecor.Controllers
                 isAdd = false;
             }
 
-            // initial new user
             if (isAdd)
             {
+                // initial new user
                 // take customer role
                 user = new User
                 {
@@ -84,8 +82,8 @@ namespace BE_TKDecor.Controllers
             user.Gender = gender;
 
             user.EmailConfirmationCode = code;
-            user.EmailConfirmationSentAt = DateTime.UtcNow;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.EmailConfirmationSentAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
 
             //send mail to confirm account
             //set data to send
@@ -109,7 +107,7 @@ namespace BE_TKDecor.Controllers
                 {
                     await _user.Update(user);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -130,12 +128,12 @@ namespace BE_TKDecor.Controllers
                 { Message = "Wrong code!" });
 
             bool codeOutOfDate = false;
-            if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
             {
                 codeOutOfDate = true;
                 string code = RandomCode.GenerateRandomCode();
                 user.EmailConfirmationCode = code;
-                user.EmailConfirmationSentAt = DateTime.UtcNow;
+                user.EmailConfirmationSentAt = DateTime.Now;
                 //send mail to confirm account
                 //set data to send
                 MailContent mailContent = new()
@@ -152,7 +150,7 @@ namespace BE_TKDecor.Controllers
                 //set email confirm
                 user.EmailConfirmed = true;
             }
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.Now;
             try
             {
                 await _user.Update(user);
@@ -160,7 +158,7 @@ namespace BE_TKDecor.Controllers
                 {
                     return BadRequest(new ApiResponse { Message = "The code has expired. Please check your email again!" });
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -180,11 +178,11 @@ namespace BE_TKDecor.Controllers
                 { Message = "Email has been confirmed!" });
 
             //check code expires to create new code: 5 minutes
-            if (user.EmailConfirmationSentAt <= DateTime.UtcNow.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
                 user.EmailConfirmationCode = RandomCode.GenerateRandomCode();
 
-            user.EmailConfirmationSentAt = DateTime.UtcNow;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.EmailConfirmationSentAt = DateTime.Now;
+            user.UpdatedAt = DateTime.Now;
 
             //send mail to confirm account
             //set data to send
@@ -202,7 +200,7 @@ namespace BE_TKDecor.Controllers
             {
                 // add user
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -263,9 +261,9 @@ namespace BE_TKDecor.Controllers
             string code = RandomCode.GenerateRandomCode();
             //property authen mail
             user.ResetPasswordCode = code;
-            user.ResetPasswordSentAt = DateTime.UtcNow;
+            user.ResetPasswordSentAt = DateTime.Now;
             user.ResetPasswordRequired = true;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.Now;
 
             //send mail to confirm account
             //set data to send
@@ -284,7 +282,7 @@ namespace BE_TKDecor.Controllers
             {
                 //update user/
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -302,7 +300,7 @@ namespace BE_TKDecor.Controllers
                 { Message = ErrorContent.UserNotFound });
 
             //check token expires: 5 minutes
-            if (user.ResetPasswordSentAt <= DateTime.UtcNow.AddMinutes(-5))
+            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
                 return BadRequest(new ApiResponse
                 { Message = "Expired Tokens!" });
 
@@ -318,12 +316,12 @@ namespace BE_TKDecor.Controllers
             user.ResetPasswordRequired = false;
             //set new password
             user.Password = Password.HashPassword(userDto.Password);
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.Now;
             try
             {
                 //update to database and return info user
                 await _user.Update(user);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -367,7 +365,7 @@ namespace BE_TKDecor.Controllers
                 var utcExpireDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
                 var expireDate = ConvertUnixTimeToDateTime(utcExpireDate);
-                if (expireDate > DateTime.UtcNow)
+                if (expireDate > DateTime.Now)
                     return Ok(new ApiResponse
                     { Message = "Access token has not yet expired" });
 
@@ -431,7 +429,7 @@ namespace BE_TKDecor.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.Now.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             //create token
@@ -449,8 +447,8 @@ namespace BE_TKDecor.Controllers
                 Token = refreshToken,
                 IsUsed = false,
                 IsRevoked = false,
-                IssuedAt = DateTime.UtcNow,
-                ExpiredAt = DateTime.UtcNow.AddDays(7)
+                IssuedAt = DateTime.Now,
+                ExpiredAt = DateTime.Now.AddDays(7)
             };
             await _refreshToken.Add(refreshTokenEntity);
 

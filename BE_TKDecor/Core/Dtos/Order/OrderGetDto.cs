@@ -2,7 +2,7 @@
 
 namespace BE_TKDecor.Core.Dtos.Order
 {
-    public class OrderGetDto
+    public class OrderGetDto : BaseEntity
     {
         public Guid OrderId { get; set; }
 
@@ -19,10 +19,6 @@ namespace BE_TKDecor.Core.Dtos.Order
         public string Note { get; set; } = null!;
 
         public decimal TotalPrice { get; set; }
-
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual ICollection<OrderDetailGetDto> OrderDetails { get; set; } = new List<OrderDetailGetDto>();
     }

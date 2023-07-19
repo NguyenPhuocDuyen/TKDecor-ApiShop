@@ -12,7 +12,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementArticlesController : ControllerBase
     {
 
@@ -34,9 +34,12 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var list = await _article.GetAll();
-            list = list.OrderByDescending(x => x.UpdatedAt).ToList();
-            var result = _mapper.Map<List<ArticleGetDto>>(list);
+            list = list
+                .Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
 
+            var result = _mapper.Map<List<ArticleGetDto>>(list);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -44,23 +47,28 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(ArticleCreateDto articleDto)
         {
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             var articleDb = await _article.FindByTitle(articleDto.Title);
             if (articleDb != null)
                 return BadRequest(new ApiResponse { Message = "Article already exist!" });
 
-            var user = await GetUser();
-            if (user == null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
+            var newSlug = Slug.GenerateSlug(articleDto.Title);
+            articleDb = await _article.FindBySlug(newSlug);
+            if (articleDb != null)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
             // create new article info
             Article newArticle = _mapper.Map<Article>(articleDto);
             newArticle.UserId = user.UserId;
             newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
-            newArticle.IsPublish = true;
+            newArticle.IsPublish = false;
             try
             {
                 await _article.Add(newArticle);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
 
@@ -74,18 +82,23 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var articleDb = await _article.FindById(id);
-            if (articleDb == null)
+            if (articleDb == null || articleDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
+
+            var newSlug = Slug.GenerateSlug(articleDto.Title);
+            var articleSlug = await _article.FindBySlug(newSlug);
+            if (articleSlug != null && articleSlug.ArticleId != id)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
             // update info article
             articleDb.Title = articleDto.Title;
             articleDb.Content = articleDto.Content;
             articleDb.Thumbnail = articleDto.Thumbnail;
-            articleDb.UpdatedAt = DateTime.UtcNow;
+            articleDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(articleDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -95,15 +108,15 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> DeleteArticle(Guid id)
         {
             var article = await _article.FindById(id);
-            if (article == null)
+            if (article == null || article.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsDelete = true;
-            article.UpdatedAt = DateTime.UtcNow;
+            article.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(article);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -113,15 +126,15 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> SetPublish(ArticleSetPublishDto articleDto)
         {
             var article = await _article.FindById(articleDto.ArticleId);
-            if (article == null)
+            if (article == null || article.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             article.IsPublish = articleDto.Published;
-            article.UpdatedAt = DateTime.UtcNow;
+            article.UpdatedAt = DateTime.Now;
             try
             {
                 await _article.Update(article);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

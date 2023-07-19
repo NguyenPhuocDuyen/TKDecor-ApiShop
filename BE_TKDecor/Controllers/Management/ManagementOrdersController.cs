@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementOrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -28,6 +28,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var orders = await _order.GetAll();
+            orders = orders.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<OrderGetDto>>(orders);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -36,11 +40,11 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("FindById/{id}")]
         public async Task<IActionResult> FindById(Guid id)
         {
-            var orders = await _order.FindById(id);
-            if (orders == null)
+            var order = await _order.FindById(id);
+            if (order == null || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            var result = _mapper.Map<OrderGetDto>(orders);
+            var result = _mapper.Map<OrderGetDto>(order);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -52,19 +56,12 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var order = await _order.FindById(id);
-            if (order == null)
+            if (order == null || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
-            {
-                if (order.OrderStatus == status)
-                    return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
-            }
-            else
-            {
+            if (!Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-            }
-
+            
             // update order status
             // customer can cancel, refund, receive the order
             // Admin or seller can confirm the order for delivery
@@ -80,11 +77,11 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             order.OrderStatus = status;
-            order.UpdatedAt = DateTime.UtcNow;
+            order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

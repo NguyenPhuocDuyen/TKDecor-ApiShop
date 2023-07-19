@@ -20,36 +20,17 @@ namespace BE_TKDecor.Controllers
             _coupon = coupon;
         }
 
-        //// GET: api/Coupons/GetALl
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var coupons = (await _coupon.GetAll())
-        //            .Where(x => x.IsActive == true && x.IsDelete == false)
-        //            .OrderByDescending(x => x.UpdatedAt).ToList();
-        //    var result = _mapper.Map<List<CouponGetDto>>(coupons);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
-
-        //// GET: api/Coupons/GetById/5
-        //[HttpGet("GetById/{id}")]
-        //public async Task<IActionResult> GetCoupon(Guid id)
-        //{
-        //    var coupon = await _coupon.FindById(id);
-        //    if (coupon == null || coupon.IsActive == false || coupon.IsDelete == true)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
-
-        //    var result = _mapper.Map<CouponGetDto>(coupon);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
-
         // GET: api/Coupons/GetByCode/5
         [HttpGet("GetByCode/{code}")]
         public async Task<IActionResult> GetCoupon(string code)
         {
             var coupon = await _coupon.FindByCode(code);
-            if (coupon == null || coupon.IsActive == false || coupon.IsDelete == true)
+            if (coupon == null || coupon.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+
+            var currentDay = DateTime.Now;
+            if (currentDay < coupon.StartDate || currentDay > coupon.EndDate || !coupon.IsActive)
+                return BadRequest(new ApiResponse { Message = "Coupon is not available!" });
 
             var result = _mapper.Map<CouponGetDto>(coupon);
             return Ok(new ApiResponse { Success = true, Data = result });

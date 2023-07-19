@@ -41,7 +41,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var products = await _product.GetAll();
-            products = products.OrderByDescending(x => x.UpdatedAt).ToList();
+            products = products.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
             var result = _mapper.Map<List<ProductGetDto>>(products);
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -55,31 +58,40 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
-            var proSlug = await _product.FindBySlug(newSlug);
-            if (proSlug != null)
+            productDb = await _product.FindBySlug(newSlug);
+            if (productDb != null)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
-            Product3DModel? model = new();
             if (productDto.Product3DModelId != null)
             {
-                model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
-                if (model != null)
+                var model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
+                if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
 
-            Product newProduct = _mapper.Map<Product>(productDto);
-            newProduct.Slug = newSlug;
-            newProduct.ProductImages = new List<ProductImage>();
-            if (model != null)
+            //Product newProduct = _mapper.Map<Product>(productDto);
+            Product newProduct = new()
             {
-                newProduct.Product3DModelId = model.Product3DModelId;
-                newProduct.Product3DModel = model;
-            }
-            else
-            {
-                newProduct.Product3DModel = null;
-                newProduct.Product3DModelId = null;
-            }
+                CategoryId = productDto.CategoryId,
+                Product3DModelId = productDto.Product3DModelId,
+                Name = productDto.Name,
+                Description = productDto.Description,
+                Quantity = productDto.Quantity,
+                Price = productDto.Price,
+                Slug = newSlug,
+                ProductImages = new List<ProductImage>()
+            };
+
+            //if (model != null)
+            //{
+            //    newProduct.Product3DModelId = model.Product3DModelId;
+            //    newProduct.Product3DModel = model;
+            //}
+            //else
+            //{
+            //    newProduct.Product3DModel = null;
+            //    newProduct.Product3DModelId = null;
+            //}
 
             //set image for product
             foreach (var urlImage in productDto.ProductImages)
@@ -96,7 +108,7 @@ namespace BE_TKDecor.Controllers.Management
             {
                 await _product.Add(newProduct);
                 //await _notificationHub.Clients.All.SendAsync("LoadNotification");
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -109,7 +121,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.Error });
 
             var productDb = await _product.FindById(id);
-            if (productDb == null)
+            if (productDb == null || productDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var p = await _product.FindByName(productDto.Name);
@@ -125,9 +137,10 @@ namespace BE_TKDecor.Controllers.Management
             if (productDto.Product3DModelId != null)
             {
                 model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
-                if (model != null)
+                if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
+
             if (model != null)
             {
                 productDb.Product3DModelId = model.Product3DModelId;
@@ -145,7 +158,7 @@ namespace BE_TKDecor.Controllers.Management
             productDb.Slug = newSlug;
             productDb.Quantity = productDto.Quantity;
             productDb.Price = productDto.Price;
-            productDb.UpdatedAt = DateTime.UtcNow;
+            productDb.UpdatedAt = DateTime.Now;
 
             List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
             try
@@ -182,7 +195,7 @@ namespace BE_TKDecor.Controllers.Management
 
                 // Update information except photos
                 await _product.Update(productDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -192,15 +205,15 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _product.FindById(id);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             product.IsDelete = true;
-            product.UpdatedAt = DateTime.UtcNow;
+            product.UpdatedAt = DateTime.Now;
             try
             {
                 await _product.Update(product);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

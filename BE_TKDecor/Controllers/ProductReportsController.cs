@@ -31,38 +31,34 @@ namespace BE_TKDecor.Controllers
         [HttpPost("MakeProductReport")]
         public async Task<ActionResult<ProductReport>> MakeProductReport(ProductReportCreateDto reportDto)
         {
-            var product = await _product.FindById(reportDto.ProductReportedId);
-            if (product == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var product = await _product.FindById(reportDto.ProductReportedId);
+            if (product == null || product.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var report = await _productReport.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
-            bool isAdd = true;
+            bool isAdd = false;
             // create a new report of that user for that product
             // if there is no report that product is in the peding state
-            if (report == null || (report.ReportStatus != ReportStatus.Pending))
+            if (report == null)
             {
+                isAdd = true;
                 report = new ProductReport()
                 {
                     UserReportId = user.UserId,
                     UserReport = user,
                     ProductReportedId = product.ProductId,
                     ProductReported = product,
-                    ReportStatus = ReportStatus.Pending,
-                    Reason = reportDto.Reason
                 };
             }
-            else
-            {
-                isAdd = false;
-                report.IsDelete = false;
-                report.Reason = reportDto.Reason;
-                report.UpdatedAt = DateTime.UtcNow;
-            }
+            report.IsDelete = false;
+            report.ReportStatus = ReportStatus.Pending;
+            report.Reason = reportDto.Reason;
+            report.UpdatedAt = DateTime.Now;
 
             try
             {
@@ -75,7 +71,7 @@ namespace BE_TKDecor.Controllers
                     await _productReport.Update(report);
                 }
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

@@ -2,7 +2,7 @@
 
 namespace BE_TKDecor.Core.Dtos.User
 {
-    public class UserGetDto
+    public class UserGetDto : BaseEntity
     {
         public Guid UserId { get; set; }
 
@@ -19,11 +19,5 @@ namespace BE_TKDecor.Core.Dtos.User
         public string AvatarUrl { get; set; } = null!;
 
         public bool IsSubscriber { get; set; }
-
-        //public DateTime CreatedAt { get; set; }
-
-        //public DateTime UpdatedAt { get; set; }
-
-        //public bool IsDeleted { get; set; }
     }
 }

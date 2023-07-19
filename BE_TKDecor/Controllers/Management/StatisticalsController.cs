@@ -8,7 +8,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;
@@ -26,6 +26,8 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalUser()
         {
             var users = await _user.GetAll();
+            users = users.Where(x => !x.IsDelete).ToList();
+
             return Ok(new ApiResponse { Success = true , Data = users.Count });
         }
 
@@ -34,7 +36,9 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalRevenue()
         {
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus == OrderStatus.Received).ToList();
+            orders = orders.Where(x => x.OrderStatus == OrderStatus.Received && !x.IsDelete)
+                .ToList();
+
             decimal totalRevenue = 0;
             foreach (var o in orders)
             {
@@ -52,6 +56,8 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalOrder()
         {
             var orders = await _order.GetAll();
+            orders = orders.Where(x => !x.IsDelete).ToList();
+
             return Ok(new ApiResponse { Success = true, Data = orders.Count });
         }
 
@@ -60,7 +66,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalReturns()
         {
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus == OrderStatus.Refund).ToList();
+            orders = orders.Where(x => x.OrderStatus == OrderStatus.Refund && !x.IsDelete).ToList();
             return Ok(new ApiResponse { Success = true, Data = orders.Count });
         }
 
@@ -72,13 +78,13 @@ namespace BE_TKDecor.Controllers.Management
             int take = 5)
         {
             if (!startDate.HasValue)
-                startDate = DateTime.UtcNow.AddMonths(-1);
+                startDate = DateTime.Now.AddMonths(-1);
 
             if (!endDate.HasValue)
-                endDate = DateTime.UtcNow;
+                endDate = DateTime.Now;
 
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.CreatedAt >= startDate && x.CreatedAt <= endDate).ToList();
+            orders = orders.Where(x => !x.IsDelete && x.CreatedAt >= startDate && x.CreatedAt <= endDate).ToList();
 
             var productQuantities = orders
                 .SelectMany(order => order.OrderDetails) // get all orderDetails from orders

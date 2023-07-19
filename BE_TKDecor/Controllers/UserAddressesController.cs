@@ -31,11 +31,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetUserAddresses()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var list = (await _userAddress.FindByUserId(user.UserId))
-                .Where(x => x.IsDelete == false)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
@@ -47,7 +47,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var address = await _userAddress.FindById(dto.UserAddressId);
@@ -57,7 +57,7 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _userAddress.SetDefault(user.UserId, dto.UserAddressId);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -67,7 +67,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             UserAddress newAddress = _mapper.Map<UserAddress>(userAddressDto);
@@ -82,7 +82,7 @@ namespace BE_TKDecor.Controllers
                     await _userAddress.SetDefault(user.UserId, null);
                 }
 
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -94,18 +94,22 @@ namespace BE_TKDecor.Controllers
             if (id != userAddressDto.UserAddressId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
             var userAddressDb = await _userAddress.FindById(id);
-            if (userAddressDb == null || userAddressDb.IsDelete)
+            if (userAddressDb == null || userAddressDb.IsDelete || userAddressDb.UserId != user.UserId)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             userAddressDb.FullName = userAddressDto.FullName;
             userAddressDb.Address = userAddressDto.Address;
             userAddressDb.Phone = userAddressDto.Phone;
-            userAddressDb.UpdatedAt = DateTime.UtcNow;
+            userAddressDb.UpdatedAt = DateTime.Now;
             try
             {
                 await _userAddress.Update(userAddressDb);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -122,11 +126,11 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = "Can't not delete default address!" });
 
             userAddress.IsDelete = true;
-            userAddress.UpdatedAt = DateTime.UtcNow;
+            userAddress.UpdatedAt = DateTime.Now;
             try
             {
                 await _userAddress.Update(userAddress);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

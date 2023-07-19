@@ -35,15 +35,14 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetFavoriteOfUser()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var list = (await _productFavorite.FindByUserId(user.UserId))
-                .Where(x => x.IsDelete == false)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt);
 
             var result = _mapper.Map<List<FavoriteGetDto>>(list);
-
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -52,11 +51,11 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> SetFavorite(FavoriteSetDto favoriteDto)
         {
             var product = await _product.FindById(favoriteDto.ProductId);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             // Get current information whether the user likes this product
@@ -80,7 +79,7 @@ namespace BE_TKDecor.Controllers
                     productFavoriteDb.IsDelete = !productFavoriteDb.IsDelete;
                     await _productFavorite.Update(productFavoriteDb);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

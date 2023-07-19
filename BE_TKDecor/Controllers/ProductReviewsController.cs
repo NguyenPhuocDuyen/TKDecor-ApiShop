@@ -37,11 +37,11 @@ namespace BE_TKDecor.Controllers
         public async Task<ActionResult<ProductReview>> ReviewProductReview(ProductReviewCreateDto productReviewDto)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var product = await _product.FindById(productReviewDto.ProductId);
-            if (product == null)
+            if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var orderDetail = await _orderDetail.FindByUserIdAndProductId(user.UserId, product.ProductId);
@@ -60,19 +60,16 @@ namespace BE_TKDecor.Controllers
                     User = user,
                     ProductId = product.ProductId,
                     Product = product,
-                    Rate = productReviewDto.Rate,
-                    Description = productReviewDto.Description
                 };
             }
             else
             {
                 isAdd = false;
                 productReview.IsDelete = false;
-                productReview.Rate = productReviewDto.Rate;
-                productReview.Description = productReviewDto.Description;
-                productReview.UpdatedAt = DateTime.UtcNow;
-                productReview.IsDelete = false;
+                productReview.UpdatedAt = DateTime.Now;
             }
+            productReview.Rate = productReviewDto.Rate;
+            productReview.Description = productReviewDto.Description;
 
             try
             {
@@ -84,7 +81,7 @@ namespace BE_TKDecor.Controllers
                 {
                     await _productReview.Update(productReview);
                 }
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
@@ -94,19 +91,19 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> DeleteProductReview(Guid id)
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var productReview = await _productReview.FindById(id);
-            if (productReview == null)
+            if (productReview == null || productReview.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
             productReview.IsDelete = true;
-            productReview.UpdatedAt = DateTime.UtcNow;
+            productReview.UpdatedAt = DateTime.Now;
             try
             {
                 await _productReview.Update(productReview);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

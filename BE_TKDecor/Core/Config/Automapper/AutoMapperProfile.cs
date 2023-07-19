@@ -53,6 +53,7 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
+            CreateMap<CouponUpdateDto, Coupon>();
             CreateMap<Coupon, CouponGetDto>();
 
             // cart 
@@ -81,12 +82,12 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()
-                .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
+                .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductReported.Name));
 
             // report product review
             CreateMap<ReportProductReview, ReportProductReviewGetDto>()
-                .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
+                //.ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
                 .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
                 .ForMember(dest => dest.ProductReviewReportedDescription, opt => opt.MapFrom(src => src.ProductReviewReported.Description));
 

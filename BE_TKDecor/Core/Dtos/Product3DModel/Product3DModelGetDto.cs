@@ -1,6 +1,8 @@
-﻿namespace BE_TKDecor.Core.Dtos.Product3DModel
+﻿using BusinessObject;
+
+namespace BE_TKDecor.Core.Dtos.Product3DModel
 {
-    public class Product3DModelGetDto
+    public class Product3DModelGetDto : BaseEntity
     {
         public Guid Product3DModelId { get; set; }
 

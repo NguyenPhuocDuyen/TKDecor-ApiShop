@@ -10,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
     public class ManagementProductReportsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -30,7 +30,9 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var reports = await _productReport.GetAll();
-            reports = reports.OrderByDescending(x => x.UpdatedAt).ToList();
+            reports = reports.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
 
             var result = _mapper.Map<List<ProductReportGetDto>>(reports);
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -44,21 +46,18 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var report = await _productReport.FindById(id);
-            if (report == null)
+            if (report == null || report.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductReportNotFound });
 
-            ReportStatus status;
-            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out status))
-            {
+            if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out ReportStatus status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.ReportStatusNotFound });
-            }
 
             report.ReportStatus = status;
-            report.UpdatedAt = DateTime.UtcNow;
+            report.UpdatedAt = DateTime.Now;
             try
             {
                 await _productReport.Update(report);
-                return NoContent();
+                return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
