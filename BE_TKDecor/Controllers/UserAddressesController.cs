@@ -42,6 +42,21 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/UserAddresses/GetUserAddressDefault
+        [HttpGet("GetUserAddressDefault")]
+        public async Task<IActionResult> GetUserAddressDefault()
+        {
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            var address = (await _userAddress.FindByUserId(user.UserId))
+                .FirstOrDefault(x => !x.IsDelete && x.IsDefault);
+
+            var result = _mapper.Map<UserAddressGetDto>(address);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
         // GET: api/UserAddresses/SetDefault
         [HttpPost("SetDefault")]
         public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
