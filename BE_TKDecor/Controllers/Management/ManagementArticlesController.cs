@@ -51,23 +51,44 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null || user.IsDelete)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var articleDb = await _article.FindByTitle(articleDto.Title);
-            if (articleDb != null)
-                return BadRequest(new ApiResponse { Message = "Article already exist!" });
-
             var newSlug = Slug.GenerateSlug(articleDto.Title);
-            articleDb = await _article.FindBySlug(newSlug);
-            if (articleDb != null)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+            var articleDb = await _article.FindBySlug(newSlug);
 
-            // create new article info
-            Article newArticle = _mapper.Map<Article>(articleDto);
-            newArticle.UserId = user.UserId;
-            newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
-            newArticle.IsPublish = false;
+            bool isAdd = true;
+
+            if (articleDb == null)
+            {
+                // create new article info
+                articleDb = _mapper.Map<Article>(articleDto);
+                articleDb.Slug = newSlug;
+            }
+            else
+            {
+                // if article exits and not delete 
+                if (!articleDb.IsDelete)
+                    return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+
+                articleDb.IsDelete = false;
+                isAdd = false;
+
+                articleDb.Title = articleDto.Title;
+                articleDb.Content = articleDto.Content;
+                articleDb.Thumbnail = articleDto.Thumbnail;
+                articleDb.IsPublish = articleDto.IsPublish;
+                articleDb.UpdatedAt = DateTime.Now;
+            }
+            articleDb.UserId = user.UserId;
+
             try
             {
-                await _article.Add(newArticle);
+                if (isAdd)
+                {
+                    await _article.Add(articleDb);
+                }
+                else
+                {
+                    await _article.Update(articleDb);
+                }
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

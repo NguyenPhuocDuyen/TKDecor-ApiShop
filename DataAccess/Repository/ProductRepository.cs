@@ -10,8 +10,6 @@ namespace DataAccess.Repository
 
         public async Task<Product?> FindById(Guid id) => await ProductDAO.FindById(id);
 
-        public async Task<Product?> FindByName(string name) => await ProductDAO.FindByName(name);
-
         public async Task<Product?> FindBySlug(string slug) => await ProductDAO.FindBySlug(slug);
 
         public async Task Add(Product product) => await ProductDAO.Add(product);

@@ -9,7 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Task<Product?> FindByName(string Name);
         Task<Product?> FindBySlug(string slug);
     }
 }

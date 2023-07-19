@@ -42,13 +42,34 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Create(CategoryCreateDto categoryDto)
         {
             var categoryDb = await _category.FindByName(categoryDto.Name);
-            if (categoryDb != null)
-                return BadRequest(new ApiResponse { Message = "Category name already exists!" });
+            bool isAdd = true;
+            if (categoryDb == null)
+            {
+                categoryDb = _mapper.Map<Category>(categoryDto);
+            }
+            else
+            {
+                if (!categoryDb.IsDelete)
+                    return BadRequest(new ApiResponse { Message = "Category name already exists!" });
 
-            Category newCategory = _mapper.Map<Category>(categoryDto);
+                categoryDb.IsDelete = false;
+                isAdd = false;
+
+                categoryDb.Name = categoryDto.Name;
+                categoryDb.Thumbnail = categoryDto.Thumbnail;
+                categoryDb.UpdatedAt = DateTime.Now;
+            }
+
             try
             {
-                await _category.Add(newCategory);
+                if (isAdd)
+                {
+                    await _category.Add(categoryDb);
+                }
+                else
+                {
+                    await _category.Update(categoryDb);
+                }
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

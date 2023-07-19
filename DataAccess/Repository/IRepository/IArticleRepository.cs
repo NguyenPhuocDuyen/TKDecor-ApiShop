@@ -9,7 +9,6 @@ namespace DataAccess.Repository.IRepository
 {
     public interface IArticleRepository : IRepository<Article>
     {
-        Task<Article?> FindByTitle(string Title);
         Task<Article?> FindBySlug(string slug);
     }
 }

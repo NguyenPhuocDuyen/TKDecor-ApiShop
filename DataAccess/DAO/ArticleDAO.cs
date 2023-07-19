@@ -29,18 +29,6 @@ namespace DataAccess.DAO
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task<Article?> FindByTitle(string title)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                return await context.Articles
-                    .Include(x => x.User)
-                    .FirstOrDefaultAsync(x => x.Title == title);
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
         internal static async Task<Article?> FindBySlug(string slug)
         {
             try

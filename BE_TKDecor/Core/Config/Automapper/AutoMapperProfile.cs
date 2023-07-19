@@ -53,7 +53,6 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
-            CreateMap<CouponUpdateDto, Coupon>();
             CreateMap<Coupon, CouponGetDto>();
 
             // cart 

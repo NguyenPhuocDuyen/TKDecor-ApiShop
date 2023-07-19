@@ -53,15 +53,6 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
-            var productDb = await _product.FindByName(productDto.Name);
-            if (productDb != null)
-                return BadRequest(new ApiResponse { Message = "Product name already exists!" });
-
-            var newSlug = Slug.GenerateSlug(productDto.Name);
-            productDb = await _product.FindBySlug(newSlug);
-            if (productDb != null)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
-
             if (productDto.Product3DModelId != null)
             {
                 var model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
@@ -69,29 +60,14 @@ namespace BE_TKDecor.Controllers.Management
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
 
-            //Product newProduct = _mapper.Map<Product>(productDto);
-            Product newProduct = new()
-            {
-                CategoryId = productDto.CategoryId,
-                Product3DModelId = productDto.Product3DModelId,
-                Name = productDto.Name,
-                Description = productDto.Description,
-                Quantity = productDto.Quantity,
-                Price = productDto.Price,
-                Slug = newSlug,
-                ProductImages = new List<ProductImage>()
-            };
+            var newSlug = Slug.GenerateSlug(productDto.Name);
+            var productDb = await _product.FindBySlug(newSlug);
+            if (productDb != null)
+                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
-            //if (model != null)
-            //{
-            //    newProduct.Product3DModelId = model.Product3DModelId;
-            //    newProduct.Product3DModel = model;
-            //}
-            //else
-            //{
-            //    newProduct.Product3DModel = null;
-            //    newProduct.Product3DModelId = null;
-            //}
+            Product newProduct = _mapper.Map<Product>(productDto);
+            newProduct.Slug = newSlug;
+            newProduct.ProductImages = new List<ProductImage>();
 
             //set image for product
             foreach (var urlImage in productDto.ProductImages)
@@ -103,11 +79,10 @@ namespace BE_TKDecor.Controllers.Management
                 };
                 newProduct.ProductImages.Add(productImage);
             }
-            //Url3dModel = product.Url3dModel,
+
             try
             {
                 await _product.Add(newProduct);
-                //await _notificationHub.Clients.All.SendAsync("LoadNotification");
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -123,10 +98,6 @@ namespace BE_TKDecor.Controllers.Management
             var productDb = await _product.FindById(id);
             if (productDb == null || productDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-            var p = await _product.FindByName(productDto.Name);
-            if (p != null && p.ProductId != id)
-                return BadRequest(new ApiResponse { Message = "Product name already exists!" });
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
             var proSlug = await _product.FindBySlug(newSlug);

@@ -20,9 +20,6 @@ namespace DataAccess.Repository
         public async Task<Article?> FindBySlug(string slug) 
             => await ArticleDAO.FindBySlug(slug);
 
-        public async Task<Article?> FindByTitle(string Title)
-            => await ArticleDAO.FindByTitle(Title);
-
         public async Task<List<Article>> GetAll()
             => await ArticleDAO.GetAll();
 

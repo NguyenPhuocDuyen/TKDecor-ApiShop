@@ -37,22 +37,65 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // POST: api/ManagementCoupons/SetActive
+        [HttpPost("SetActive")]
+        public async Task<IActionResult> SetActive(CouponSetActiveDto dto)
+        {
+            var coupon = await _coupon.FindById(dto.CouponId);
+            if (coupon == null || coupon.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+
+            coupon.IsActive = !coupon.IsActive;
+            coupon.UpdatedAt = DateTime.Now;
+            try
+            {
+                await _coupon.Update(coupon);
+                return Ok(new ApiResponse { Success = true });
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
         // POST: api/ManagementCoupons/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CouponCreateDto couponDto)
         {
-            var couponCode = await _coupon.FindByCode(couponDto.Code);
-            if (couponCode != null)
-                return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
-
             if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
                 return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
 
-            couponCode = _mapper.Map<Coupon>(couponDto);
+            bool isAdd = true;
+
+            var couponCode = await _coupon.FindByCode(couponDto.Code);
+            if (couponCode == null)
+            {
+                couponCode = _mapper.Map<Coupon>(couponDto);
+            }
+            else
+            {
+                if (!couponCode.IsDelete)
+                    return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
+
+                couponCode.IsDelete = false;
+                isAdd = false;
+
+                couponCode.Value = couponDto.Value;
+                couponCode.MaxValue = couponDto.MaxValue;
+                couponCode.RemainingUsageCount = couponDto.RemainingUsageCount;
+                couponCode.StartDate = couponDto.StartDate;
+                couponCode.EndDate = couponDto.EndDate;
+                couponCode.UpdatedAt = DateTime.Now;
+            }
             couponCode.CouponType = couponType;
+
             try
             {
-                await _coupon.Add(couponCode);
+                if (isAdd)
+                {
+                    await _coupon.Add(couponCode);
+                }
+                else
+                {
+                    await _coupon.Update(couponCode);
+                }
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
