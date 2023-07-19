@@ -12,7 +12,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementArticlesController : ControllerBase
     {
 
@@ -34,7 +34,10 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var list = await _article.GetAll();
-            list = list.OrderByDescending(x => x.UpdatedAt).ToList();
+            list = list
+                //.Where(x => x.IsDelete == false)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
             var result = _mapper.Map<List<ArticleGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });

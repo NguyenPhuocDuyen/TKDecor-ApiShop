@@ -25,7 +25,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var list = await _article.GetAll();
-            list = list.Where(x => x.IsDelete == false && x.IsPublish == true)
+            list = list.Where(x => !x.IsDelete && x.IsPublish)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
             var result = _mapper.Map<List<ArticleGetDto>>(list);
@@ -38,7 +38,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetBySlug(string slug)
         {
             var article = await _article.FindBySlug(slug);
-            if (article == null || article.IsDelete == true)
+            if (article == null || article.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
 
             var result = _mapper.Map<ArticleGetDto>(article);

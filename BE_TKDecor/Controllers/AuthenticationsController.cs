@@ -23,7 +23,6 @@ namespace BE_TKDecor.Controllers
     {
         private readonly JwtSettings _jwtSettings;
         private readonly ISendMailService _sendMailService;
-        private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IRefreshTokenRepository _refreshToken;
 
@@ -34,7 +33,6 @@ namespace BE_TKDecor.Controllers
             IRefreshTokenRepository refreshToken)
         {
             _sendMailService = sendMailService;
-            _mapper = mapper;
             _user = user;
             _refreshToken = refreshToken;
             _jwtSettings = options.Value;
