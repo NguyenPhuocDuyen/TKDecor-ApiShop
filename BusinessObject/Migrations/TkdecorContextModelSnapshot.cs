@@ -163,37 +163,46 @@ namespace BusinessObject.Migrations
                 {
                     b.Property<Guid>("ChatMessageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("chat_message_id");
 
                     b.Property<Guid>("ChatRoomId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("chat_room_id");
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("content");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
 
                     b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("is_delete");
 
                     b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("is_read");
 
                     b.Property<Guid>("SenderId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("sender_id");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
 
-                    b.HasKey("ChatMessageId");
+                    b.HasKey("ChatMessageId")
+                        .HasName("PK__ChatMessage__59CF6536A836CD8D");
 
-                    b.HasIndex("ChatRoomId");
+                    b.HasIndex(new[] { "ChatRoomId" }, "IX_ChatMessage_chat_room_id");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex(new[] { "SenderId" }, "IX_ChatMessage_sender_id");
 
-                    b.ToTable("ChatMessages");
+                    b.ToTable("ChatMessage", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.ChatRoom", b =>
@@ -1053,7 +1062,6 @@ namespace BusinessObject.Migrations
                     b.HasOne("BusinessObject.User", "Sender")
                         .WithMany("ChatMessages")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ChatRoom");
@@ -1064,16 +1072,14 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.ChatRoom", b =>
                 {
                     b.HasOne("BusinessObject.User", "Customer")
-                        .WithMany()
+                        .WithMany("CustomerChatRooms")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BusinessObject.User", "Staff")
-                        .WithMany("ChatRooms")
+                        .WithMany("StaffChatRooms")
                         .HasForeignKey("StaffId")
-                        .IsRequired()
-                        .HasConstraintName("FK_ChatRoom_User");
+                        .IsRequired();
 
                     b.Navigation("Customer");
 
@@ -1328,7 +1334,7 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("ChatMessages");
 
-                    b.Navigation("ChatRooms");
+                    b.Navigation("CustomerChatRooms");
 
                     b.Navigation("Notifications");
 
@@ -1345,6 +1351,8 @@ namespace BusinessObject.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("ReportProductReviews");
+
+                    b.Navigation("StaffChatRooms");
 
                     b.Navigation("UserAddresses");
                 });

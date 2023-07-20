@@ -175,8 +175,10 @@ namespace BE_TKDecor.Controllers.Management
 
             var newSlug = Slug.GenerateSlug(productDto.Name);
             var proSlug = await _product.FindBySlug(newSlug);
-            if (proSlug != null && proSlug.ProductId != id)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+            if (proSlug != null)
+                newSlug += Guid.NewGuid();
+            //if (proSlug != null && proSlug.ProductId != id)
+            //    return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
             if (!string.IsNullOrEmpty(productDto.Product3DModelId.ToString()))
             {

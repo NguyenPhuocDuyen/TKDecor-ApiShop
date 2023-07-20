@@ -8,7 +8,7 @@ namespace DataAccess.Data
 {
     public class DbInitializer : IDbInitializer
     {
-        private Random random = new();
+        private readonly Random random = new();
 
         private readonly TkdecorContext _db = new();
 

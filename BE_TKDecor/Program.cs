@@ -146,6 +146,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // add hub
+app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<UserHub>("/hubs/user");
 app.MapHub<NotificationHub>("/hubs/notification");
 
