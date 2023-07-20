@@ -22,18 +22,21 @@ namespace BE_TKDecor.Controllers.Management
         private readonly IProductRepository _product;
         private readonly IProductImageRepository _productImage;
         private readonly IProduct3DModelRepository _product3DModel;
+        private readonly ICategoryRepository _category;
 
         public ManagementProductsController(IHubContext<NotificationHub> notificationHub,
             IMapper mapper,
             IProductRepository product,
             IProductImageRepository productImage,
-            IProduct3DModelRepository product3DModel)
+            IProduct3DModelRepository product3DModel,
+            ICategoryRepository category)
         {
             _notificationHub = notificationHub;
             _mapper = mapper;
             _product = product;
             _productImage = productImage;
             _product3DModel = product3DModel;
+            _category = category;
         }
 
         // GET: api/Products/GetAll
@@ -60,32 +63,97 @@ namespace BE_TKDecor.Controllers.Management
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
             }
 
+            var category = await _category.FindById(productDto.CategoryId);
+            if (category == null)
+                return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
+
+            bool isAdd = true;
+
             var newSlug = Slug.GenerateSlug(productDto.Name);
             var productDb = await _product.FindBySlug(newSlug);
-            if (productDb != null)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
-
-            Product newProduct = _mapper.Map<Product>(productDto);
-            newProduct.Slug = newSlug;
-            newProduct.ProductImages = new List<ProductImage>();
-
-            //set image for product
-            foreach (var urlImage in productDto.ProductImages)
+            if (productDb == null)
             {
-                ProductImage productImage = new()
-                {
-                    Product = newProduct,
-                    ImageUrl = urlImage,
-                };
-                newProduct.ProductImages.Add(productImage);
+                productDb = _mapper.Map<Product>(productDto);
+                productDb.Slug = newSlug;
+                productDb.ProductImages = new List<ProductImage>();
+            }
+            else
+            {
+                if (!productDb.IsDelete)
+                    return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+
+                isAdd = false;
+                productDb.IsDelete = false;
+                productDb.CategoryId = category.CategoryId;
+                productDb.Category = category;
+                productDb.Product3DModelId = productDto.Product3DModelId;
+                productDb.Name = productDto.Name;
+                productDb.Description = productDto.Description;
+                productDb.Quantity = productDto.Quantity;
+                productDb.Price = productDto.Price;
             }
 
+            List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
             try
             {
-                await _product.Add(newProduct);
+                // delete the old photo if it's not in the new photo list
+                foreach (var imageUrlOld in listImageUrlOld)
+                {
+                    if (!productDto.ProductImages.Contains(imageUrlOld))
+                    {
+                        var imageOld = productDb.ProductImages.FirstOrDefault(x => x.ImageUrl == imageUrlOld);
+                        if (imageOld != null)
+                        {
+                            productDb.ProductImages.Remove(imageOld);
+                            await _productImage.Delete(imageOld);
+                        }
+                    }
+                }
+
+                // add a new photo if it's not in the list of photos
+                foreach (var imageUrlNew in productDto.ProductImages)
+                {
+                    if (!listImageUrlOld.Contains(imageUrlNew))
+                    {
+                        ProductImage imageNew = new()
+                        {
+                            ProductId = productDb.ProductId,
+                            Product = productDb,
+                            ImageUrl = imageUrlNew
+                        };
+                        productDb.ProductImages.Add(imageNew);
+                    }
+                }
+                if (isAdd)
+                {
+                    await _product.Add(productDb);
+                }
+                else
+                {
+                    await _product.Update(productDb);
+                }
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            //catch (Exception ex) { }
+
+            //set image for product
+            //foreach (var urlImage in productDto.ProductImages)
+            //{
+            //    ProductImage productImage = new()
+            //    {
+            //        Product = newProduct,
+            //        ImageUrl = urlImage,
+            //    };
+            //    newProduct.ProductImages.Add(productImage);
+            //}
+
+            //try
+            //{
+            //    await _product.Add(newProduct);
+            //    return Ok(new ApiResponse { Success = true });
+            //}
+            //catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // PUT: api/Products/Update/5
