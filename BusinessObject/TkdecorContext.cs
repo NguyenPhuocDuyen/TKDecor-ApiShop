@@ -350,8 +350,7 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.Product3DModelId, "IX_Product_3d_Model_id");
 
             entity.HasIndex(e => e.Slug, "IX_Product_slug")
-                .IsUnique()
-                .HasFilter("([slug] IS NOT NULL)");
+                .IsUnique();
 
             entity.Property(e => e.ProductId).HasColumnType("uniqueidentifier").HasColumnName("product_id");
             entity.Property(e => e.CategoryId).HasColumnType("uniqueidentifier").HasColumnName("category_id");

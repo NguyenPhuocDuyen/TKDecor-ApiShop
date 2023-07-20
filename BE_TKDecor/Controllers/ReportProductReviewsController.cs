@@ -41,33 +41,29 @@ namespace BE_TKDecor.Controllers
             var report = await _reportProductReview
                 .FindByUserIdAndProductReviewId(user.UserId, reportDto.ProductReviewReportedId);
 
-            bool isAdd = false;
-            // create a new report of that user for that product review
-            // if there is no report that product review is in the peding state
-            if (report == null)
-            {
-                isAdd = true;
-                report = new ReportProductReview()
-                {
-                    UserReportId = user.UserId,
-                    UserReport = user,
-                    ProductReviewReportedId = productReview.ProductReviewId,
-                    ProductReviewReported = productReview,
-                };
-            }
-            report.IsDelete = false;
-            report.UpdatedAt = DateTime.Now;
-            report.ReportStatus = ReportStatus.Pending;
-            report.Reason = reportDto.Reason;
+            bool isAdd = true;
+
+            if (report != null && report.ReportStatus == ReportStatus.Pending)
+                isAdd = false;
 
             try
             {
                 if (isAdd)
                 {
-                    await _reportProductReview.Add(report);
+                    ReportProductReview newReport = new()
+                    {
+                        UserReportId = user.UserId,
+                        ProductReviewReportedId = productReview.ProductReviewId,
+                        ReportStatus = ReportStatus.Pending,
+                        Reason = reportDto.Reason
+                    };
+                    await _reportProductReview.Add(newReport);
                 }
                 else
                 {
+                    report.IsDelete = false;
+                    report.Reason = reportDto.Reason;
+                    report.UpdatedAt = DateTime.Now;
                     await _reportProductReview.Update(report);
                 }
 
