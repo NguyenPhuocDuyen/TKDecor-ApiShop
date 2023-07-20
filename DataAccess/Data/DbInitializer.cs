@@ -28,7 +28,6 @@ namespace DataAccess.Data
             AddCategories();
             await AddCoupons();
             await AddNotifications();
-            await AddMessages();
             await AddProducts();
             await AddProductImages();
             await AddCarts();
@@ -316,27 +315,6 @@ namespace DataAccess.Data
                     Notification notification = notificationSetDefaults.Generate();
                     notification.User = u;
                     _db.Notifications.Add(notification);
-                }
-            }
-            _db.SaveChanges();
-        }
-
-        private async Task AddMessages()
-        {
-            if (_db.Chats.Any()) return;
-
-            var messageSetDefaults = new Faker<Chat>();
-            messageSetDefaults.RuleFor(x => x.Message, f => f.Lorem.Sentence());
-
-            var users = await _db.Users.ToListAsync();
-            foreach (var sender in users)
-            {
-                foreach (var receiver in users)
-                {
-                    Chat message = messageSetDefaults.Generate();
-                    message.Sender = sender;
-                    message.Receiver = receiver;
-                    _db.Chats.Add(message);
                 }
             }
             _db.SaveChanges();

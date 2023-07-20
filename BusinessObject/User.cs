@@ -38,10 +38,6 @@ public partial class User : BaseEntity
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
-    public virtual ICollection<Chat> ChatReceivers { get; set; } = new List<Chat>();
-
-    public virtual ICollection<Chat> ChatSenders { get; set; } = new List<Chat>();
-
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
@@ -59,4 +55,6 @@ public partial class User : BaseEntity
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();
 
     public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
+
+    public virtual ICollection<MessageChat> MessageChats { get; set; } = new List<MessageChat>();
 }

@@ -25,8 +25,6 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<Coupon> Coupons { get; set; }
 
-    public virtual DbSet<Chat> Chats { get; set; }
-
     public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
@@ -202,41 +200,6 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-        });
-
-        modelBuilder.Entity<Chat>(entity =>
-        {
-            entity.HasKey(e => e.ChatId).HasName("PK__Chat__0BBF6EE6112EA443");
-
-            entity.ToTable("Chat");
-
-            entity.HasIndex(e => e.ReceiverId, "IX_Chat_receiver_id");
-
-            entity.HasIndex(e => e.SenderId, "IX_Chat_sender_id");
-
-            entity.Property(e => e.ChatId).HasColumnType("uniqueidentifier").HasColumnName("chat_id");
-
-            entity.Property(e => e.IsRead).HasColumnName("is_read");
-            entity.Property(e => e.Message).HasColumnName("message");
-            entity.Property(e => e.ReceiverId).HasColumnType("uniqueidentifier").HasColumnName("receiver_id");
-            entity.Property(e => e.SenderId).HasColumnType("uniqueidentifier").HasColumnName("sender_id");
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
-            entity.Property(e => e.UpdatedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-
-            entity.HasOne(d => d.Receiver).WithMany(p => p.ChatReceivers)
-                .HasForeignKey(d => d.ReceiverId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Chat_User1");
-
-            entity.HasOne(d => d.Sender).WithMany(p => p.ChatSenders)
-                .HasForeignKey(d => d.SenderId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Chat_User");
         });
 
         modelBuilder.Entity<Notification>(entity =>

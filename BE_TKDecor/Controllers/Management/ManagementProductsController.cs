@@ -76,6 +76,7 @@ namespace BE_TKDecor.Controllers.Management
             var productDb = await _product.FindBySlug(newSlug);
             if (productDb == null)
             {
+                productDb = new Product();
                 productDb = _mapper.Map<Product>(productDto);
                 productDb.Slug = newSlug;
                 productDb.ProductImages = new List<ProductImage>();
