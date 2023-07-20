@@ -110,9 +110,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
-            builder.AllowAnyOrigin()
+            builder.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
                    .AllowAnyMethod()
-                   .AllowAnyHeader();
+                   .AllowCredentials();
         });
 });
 
@@ -125,8 +126,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwagger();
+app.UseSwaggerUI();
 //}
 //add
 using (var scope = app.Services.CreateScope())
@@ -148,6 +149,6 @@ app.MapControllers();
 // add hub
 app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<UserHub>("/hubs/user");
-app.MapHub<NotificationHub>("/hubs/notification");
+//app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

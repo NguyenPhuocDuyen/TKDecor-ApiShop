@@ -16,12 +16,15 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IProduct3DModelRepository _product3DModel;
+        private readonly IProductRepository _product;
 
         public ManagementProduct3DModelsController(IMapper mapper,
-            IProduct3DModelRepository product3DModel)
+            IProduct3DModelRepository product3DModel,
+            IProductRepository product)
         {
             _mapper = mapper;
             _product3DModel = product3DModel;
+            _product = product;
         }
 
         // GET: api/ManagementProduct3DModels/GetAll
@@ -29,9 +32,33 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var models = await _product3DModel.GetAll();
-            models = models.Where(x => !x.IsDelete) 
+            models = models.Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
+
+            var result = _mapper.Map<List<Product3DModelGetDto>>(models);
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
+        // GET: api/ManagementProduct3DModels/GetAllByProductId
+        [HttpGet("GetAllByProductId/{id}")]
+        public async Task<IActionResult> GetAllByProductId(Guid id)
+        {
+            var models = await _product3DModel.GetAll();
+            models = models.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.UpdatedAt)
+                .ToList();
+
+            var product = await _product.FindById(id);
+            if (product != null && product.Product3DModelId != null)
+            {
+                models = models.Where(x => x.Product == null 
+                            || x.Product3DModelId == product.Product3DModelId)
+                    .ToList();
+            } else
+            {
+                models = models.Where(x => x.Product == null).ToList();
+            }
 
             var result = _mapper.Map<List<Product3DModelGetDto>>(models);
             return Ok(new ApiResponse { Success = true, Data = result });
