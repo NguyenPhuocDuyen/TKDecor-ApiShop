@@ -165,7 +165,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Update(Guid id, ProductUpdateDto productDto)
         {
             if (id != productDto.ProductId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.Error });
+                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var productDb = await _product.FindById(id);
             if (productDb == null || productDb.IsDelete)
@@ -176,25 +176,29 @@ namespace BE_TKDecor.Controllers.Management
             if (proSlug != null && proSlug.ProductId != id)
                 return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
 
-            Product3DModel? model = new();
-            if (productDto.Product3DModelId != null)
+            if (!string.IsNullOrEmpty(productDto.Product3DModelId.ToString()))
             {
-                model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
+                var model = await _product3DModel.FindById((Guid)productDto.Product3DModelId);
                 if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
-            }
 
-            if (model != null)
+                productDb.Product3DModelId = productDto.Product3DModelId;
+            } else
             {
-                productDb.Product3DModelId = model.Product3DModelId;
-                productDb.Product3DModel = model;
-            }
-            else
-            {
-                productDb.Product3DModel = null;
                 productDb.Product3DModelId = null;
+                productDb.Product3DModel = null;
             }
 
+            //if (model != null)
+            //{
+            //    productDb.Product3DModelId = model.Product3DModelId;
+            //    productDb.Product3DModel = model;
+            //}
+            //else
+            //{
+            //    productDb.Product3DModel = null;
+            //    productDb.Product3DModelId = null;
+            //}
             productDb.CategoryId = productDto.CategoryId;
             productDb.Name = productDto.Name;
             productDb.Description = productDto.Description;

@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace BusinessObject
 {
-    public class MessageChat : BaseEntity
+    public class ChatMessage : BaseEntity
     {
-        public Guid MessageChatId { get; set; }
-        public Guid RoomChatId { get; set; }
+        public Guid ChatMessageId { get; set; }
+        public Guid ChatRoomId { get; set; }
         public Guid SenderId { get; set; }
         public string Content { get; set; } = null!;
         public bool IsRead { get; set; }
 
-        [ForeignKey(nameof(RoomChatId))]
-        public virtual RoomChat RoomChat { get; set; } = null!;
+        [ForeignKey(nameof(ChatRoomId))]
+        public virtual ChatRoom ChatRoom { get; set; } = null!;
 
         [ForeignKey(nameof(SenderId))]
         public virtual User Sender { get; set; } = null!;

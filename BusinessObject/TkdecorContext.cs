@@ -23,6 +23,10 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
+    public virtual DbSet<ChatRoom> ChatRooms { get; set; }
+
+    public virtual DbSet<ChatMessage> ChatMessages { get; set; }
+
     public virtual DbSet<Coupon> Coupons { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
@@ -164,6 +168,37 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
         });
 
+        modelBuilder.Entity<ChatRoom>(entity =>
+        {
+            entity.HasKey(e => e.ChatRoomId).HasName("PK__ChatRoom__58CF6536A836CD8D");
+            entity.ToTable("ChatRoom");
+
+            entity.HasIndex(e => e.StaffId, "IX_ChatRoom_staff_id");
+
+            entity.HasIndex(e => e.CustomerId, "IX_ChatRoom_customer_id");
+
+            entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
+            entity.Property(e => e.StaffId).HasColumnType("uniqueidentifier").HasColumnName("staff_id");
+            entity.Property(e => e.CustomerId).HasColumnType("uniqueidentifier").HasColumnName("customer_id");
+
+            entity.Property(e => e.IsClose).HasColumnName("is_close");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
+            entity.Property(e => e.IsDelete).HasColumnName("is_delete");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.ChatRooms)
+                .HasForeignKey(d => d.StaffId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ChatRoom_User");
+
+            //entity.HasOne(d => d.User).WithMany(p => p.Carts)
+            //    .HasForeignKey(d => d.UserId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull)
+            //    .HasConstraintName("FK_Cart_User");
+
+        });
+
         modelBuilder.Entity<Coupon>(entity =>
         {
             entity.HasKey(e => e.CouponId).HasName("PK__Coupon__58CF6389A836CD8D");
@@ -246,7 +281,7 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.OrderStatus)
                 .HasColumnName("order_status")
                 .HasConversion(status => status.ToString(),
-                      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus),statusString));
+                      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus), statusString));
             entity.Property(e => e.Phone)
                 .IsUnicode(false)
                 .HasColumnName("phone");

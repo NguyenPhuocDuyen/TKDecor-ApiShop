@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace BusinessObject
 {
-    public class RoomChat : BaseEntity
+    public class ChatRoom : BaseEntity
     {
-        public Guid RoomChatId { get; set; }
+        public Guid ChatRoomId { get; set; }
         public Guid StaffId { get; set; }
         public Guid CustomerId { get; set; }
+        public bool IsClose { get; set; }
 
         [ForeignKey(nameof(StaffId))]
         public virtual User Staff { get; set; } = null!;
@@ -19,6 +20,6 @@ namespace BusinessObject
         [ForeignKey(nameof(CustomerId))]
         public virtual User Customer { get; set; } = null!;
 
-        public virtual ICollection<MessageChat> MessageChats { get; set; } = new List<MessageChat>();
+        public virtual ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
     }
 }

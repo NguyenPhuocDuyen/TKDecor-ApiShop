@@ -56,5 +56,7 @@ public partial class User : BaseEntity
 
     public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 
-    public virtual ICollection<MessageChat> MessageChats { get; set; } = new List<MessageChat>();
+    public virtual ICollection<ChatRoom> ChatRooms { get; set; } = new List<ChatRoom>();
+
+    public ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
 }
