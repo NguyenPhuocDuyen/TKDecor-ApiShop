@@ -98,12 +98,12 @@ namespace BE_TKDecor.Controllers
             Order newOrder = new()
             {
                 UserId = user.UserId,
-                User = user,
                 OrderStatus = OrderStatus.Ordered,
                 FullName = address.FullName,
                 Phone = address.Phone,
                 Address = address.Address,
                 Note = orderDto.Note,
+                OrderDetails = new List<OrderDetail>(),
                 //TotalPrice
             };
 
@@ -122,7 +122,6 @@ namespace BE_TKDecor.Controllers
                 {
                     Order = newOrder,
                     ProductId = cart.ProductId,
-                    Product = cart.Product,
                     Quantity = cart.Quantity,
                     PaymentPrice = cart.Product.Price
                 };
@@ -135,7 +134,6 @@ namespace BE_TKDecor.Controllers
             if (coupon != null)
             {
                 newOrder.CouponId = coupon.CouponId;
-                newOrder.Coupon = coupon;
                 if (coupon.CouponType == CouponType.ByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)
