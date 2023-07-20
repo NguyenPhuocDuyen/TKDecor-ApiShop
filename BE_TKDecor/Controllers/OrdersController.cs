@@ -79,12 +79,13 @@ namespace BE_TKDecor.Controllers
 
             // get coupon
             Coupon? coupon = null;
-            if (orderDto.CodeCoupon != null)
+            if (!string.IsNullOrEmpty(orderDto.CodeCoupon))
             {
                 coupon = await _coupon.FindByCode(orderDto.CodeCoupon);
                 if (coupon == null || coupon.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
             }
+
             // check address
             var address = await _userAddress.FindById(orderDto.AddressId);
             if (address == null || address.UserId != user.UserId)

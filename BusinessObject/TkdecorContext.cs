@@ -87,12 +87,15 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsPublish).HasColumnName("is_publish");
             entity.Property(e => e.Thumbnail).HasColumnName("thumbnail");
             entity.Property(e => e.Title).HasColumnName("title");
+
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
+
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
 
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
@@ -692,6 +695,25 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
+
+            entity.Property(e => e.CityCode)
+                .HasColumnName("city_code");
+            entity.Property(e => e.City)
+                .HasColumnName("city");
+
+            entity.Property(e => e.DistrictCode)
+                .HasColumnName("district_code");
+            entity.Property(e => e.District)
+                .HasColumnName("district");
+
+            entity.Property(e => e.WardCode)
+                .HasColumnName("ward_code");
+            entity.Property(e => e.Ward)
+                .HasColumnName("ward");
+
+            entity.Property(e => e.Street)
+                .HasColumnName("street");
+
             entity.Property(e => e.IsDefault).HasColumnName("is_default");
             entity.Property(e => e.Phone)
                 .IsUnicode(false)

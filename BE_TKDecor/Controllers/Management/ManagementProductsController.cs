@@ -23,13 +23,15 @@ namespace BE_TKDecor.Controllers.Management
         private readonly IProductImageRepository _productImage;
         private readonly IProduct3DModelRepository _product3DModel;
         private readonly ICategoryRepository _category;
+        private readonly ICartRepository _cart;
 
         public ManagementProductsController(IHubContext<NotificationHub> notificationHub,
             IMapper mapper,
             IProductRepository product,
             IProductImageRepository productImage,
             IProduct3DModelRepository product3DModel,
-            ICategoryRepository category)
+            ICategoryRepository category,
+            ICartRepository cart)
         {
             _notificationHub = notificationHub;
             _mapper = mapper;
@@ -37,6 +39,7 @@ namespace BE_TKDecor.Controllers.Management
             _productImage = productImage;
             _product3DModel = product3DModel;
             _category = category;
+            _cart = cart;
         }
 
         // GET: api/Products/GetAll
@@ -248,6 +251,11 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             product.IsDelete = true;
+            foreach (var item in product.Carts)
+            {
+                item.IsDelete = true;
+                await _cart.Update(item);
+            }
             product.UpdatedAt = DateTime.Now;
             try
             {

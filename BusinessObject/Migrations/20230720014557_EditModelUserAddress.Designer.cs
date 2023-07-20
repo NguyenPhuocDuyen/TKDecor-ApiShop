@@ -4,6 +4,7 @@ using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    partial class TkdecorContextModelSnapshot : ModelSnapshot
+    [Migration("20230720014557_EditModelUserAddress")]
+    partial class EditModelUserAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -915,8 +918,9 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("city");
 
-                    b.Property<int>("CityCode")
-                        .HasColumnType("int")
+                    b.Property<string>("CityCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("city_code");
 
                     b.Property<DateTime>("CreatedAt")
@@ -928,8 +932,9 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("district");
 
-                    b.Property<int>("DistrictCode")
-                        .HasColumnType("int")
+                    b.Property<string>("DistrictCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("district_code");
 
                     b.Property<string>("FullName")
@@ -969,8 +974,9 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ward");
 
-                    b.Property<int>("WardCode")
-                        .HasColumnType("int")
+                    b.Property<string>("WardCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("ward_code");
 
                     b.HasKey("UserAddressId")

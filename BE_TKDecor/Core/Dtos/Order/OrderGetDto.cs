@@ -16,7 +16,7 @@ namespace BE_TKDecor.Core.Dtos.Order
 
         public string Address { get; set; } = null!;
 
-        public string Note { get; set; } = null!;
+        public string? Note { get; set; }
 
         public decimal TotalPrice { get; set; }
 

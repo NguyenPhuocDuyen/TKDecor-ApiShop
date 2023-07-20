@@ -120,6 +120,13 @@ namespace BE_TKDecor.Controllers
             userAddressDb.FullName = userAddressDto.FullName;
             userAddressDb.Address = userAddressDto.Address;
             userAddressDb.Phone = userAddressDto.Phone;
+            userAddressDb.CityCode = userAddressDto.CityCode;
+            userAddressDb.City = userAddressDto.City;
+            userAddressDb.DistrictCode = userAddressDto.DistrictCode;
+            userAddressDb.District = userAddressDto.District;
+            userAddressDb.WardCode = userAddressDto.WardCode;
+            userAddressDb.Ward = userAddressDto.Ward;
+            userAddressDb.Street = userAddressDto.Street;
             userAddressDb.UpdatedAt = DateTime.Now;
             try
             {

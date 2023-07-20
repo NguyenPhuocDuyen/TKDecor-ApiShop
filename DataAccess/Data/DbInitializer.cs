@@ -464,6 +464,13 @@ namespace DataAccess.Data
 
             var userAddressSetDefaults = new Faker<UserAddress>();
             userAddressSetDefaults.RuleFor(x => x.Address, f => f.Lorem.Sentence());
+            userAddressSetDefaults.RuleFor(x => x.CityCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.City, "Thành phố Hà Nội");
+            userAddressSetDefaults.RuleFor(x => x.DistrictCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.District, "Quận Ba Đình");
+            userAddressSetDefaults.RuleFor(x => x.WardCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.Ward, "Phường Phúc Xá");
+            userAddressSetDefaults.RuleFor(x => x.Street, "324 hẻm 6");
 
             // Lấy danh sách các giá trị enum của OrderStatus
             Array genderValues = Enum.GetValues(typeof(Gender));
