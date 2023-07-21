@@ -9,7 +9,7 @@ namespace Utility.SD
     public enum Role
     {
         Admin,
-        Seller,
+        Staff,
         Customer,
     }
 }

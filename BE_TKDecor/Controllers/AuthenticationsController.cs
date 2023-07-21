@@ -218,6 +218,9 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse
                 { Message = ErrorContent.AccountIncorrect });
 
+            if (u.IsDelete)
+                return BadRequest(new ApiResponse { Message = "Account is blocked!" });
+
             //check correct password
             bool isCorrectPassword = Password.VerifyPassword(userDto.Password, u.Password);
             if (!isCorrectPassword)
@@ -429,7 +432,7 @@ namespace BE_TKDecor.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 }),
-                Expires = DateTime.Now.AddMinutes(10),
+                Expires = DateTime.Now.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
             //create token
@@ -448,7 +451,7 @@ namespace BE_TKDecor.Controllers
                 IsUsed = false,
                 IsRevoked = false,
                 IssuedAt = DateTime.Now,
-                ExpiredAt = DateTime.Now.AddDays(7)
+                ExpiredAt = DateTime.Now.AddMonths(1)
             };
             await _refreshToken.Add(refreshTokenEntity);
 

@@ -23,10 +23,6 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<ChatRoom> ChatRooms { get; set; }
-
-    public virtual DbSet<ChatMessage> ChatMessages { get; set; }
-
     public virtual DbSet<Coupon> Coupons { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
@@ -168,61 +164,61 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
         });
 
-        modelBuilder.Entity<ChatMessage>(entity =>
-        {
-            entity.HasKey(e => e.ChatMessageId).HasName("PK__ChatMessage__59CF6536A836CD8D");
-            entity.ToTable("ChatMessage");
+        //modelBuilder.Entity<ChatMessage>(entity =>
+        //{
+        //    entity.HasKey(e => e.ChatMessageId).HasName("PK__ChatMessage__59CF6536A836CD8D");
+        //    entity.ToTable("ChatMessage");
 
-            entity.HasIndex(e => e.ChatRoomId, "IX_ChatMessage_chat_room_id");
+        //    entity.HasIndex(e => e.ChatRoomId, "IX_ChatMessage_chat_room_id");
 
-            entity.HasIndex(e => e.SenderId, "IX_ChatMessage_sender_id");
+        //    entity.HasIndex(e => e.SenderId, "IX_ChatMessage_sender_id");
 
-            entity.Property(e => e.ChatMessageId).HasColumnType("uniqueidentifier").HasColumnName("chat_message_id");
-            entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
-            entity.Property(e => e.SenderId).HasColumnType("uniqueidentifier").HasColumnName("sender_id");
+        //    entity.Property(e => e.ChatMessageId).HasColumnType("uniqueidentifier").HasColumnName("chat_message_id");
+        //    entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
+        //    entity.Property(e => e.SenderId).HasColumnType("uniqueidentifier").HasColumnName("sender_id");
 
-            entity.Property(e => e.Content).HasColumnName("content");
-            entity.Property(e => e.IsRead).HasColumnName("is_read");
+        //    entity.Property(e => e.Content).HasColumnName("content");
+        //    entity.Property(e => e.IsRead).HasColumnName("is_read");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
-            entity.Property(e => e.IsDelete).HasColumnName("is_delete");
+        //    entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
+        //    entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
+        //    entity.Property(e => e.IsDelete).HasColumnName("is_delete");
 
-            entity.HasOne(cm => cm.Sender)
-                .WithMany(u => u.ChatMessages)
-                .HasForeignKey(cm => cm.SenderId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        });
+        //    entity.HasOne(cm => cm.Sender)
+        //        .WithMany(u => u.ChatMessages)
+        //        .HasForeignKey(cm => cm.SenderId)
+        //        .OnDelete(DeleteBehavior.ClientSetNull);
+        //});
 
-        modelBuilder.Entity<ChatRoom>(entity =>
-        {
-            entity.HasKey(e => e.ChatRoomId).HasName("PK__ChatRoom__58CF6536A836CD8D");
-            entity.ToTable("ChatRoom");
+        //modelBuilder.Entity<ChatRoom>(entity =>
+        //{
+        //    entity.HasKey(e => e.ChatRoomId).HasName("PK__ChatRoom__58CF6536A836CD8D");
+        //    entity.ToTable("ChatRoom");
 
-            entity.HasIndex(e => e.StaffId, "IX_ChatRoom_staff_id");
+        //    entity.HasIndex(e => e.StaffId, "IX_ChatRoom_staff_id");
 
-            entity.HasIndex(e => e.CustomerId, "IX_ChatRoom_customer_id");
+        //    entity.HasIndex(e => e.CustomerId, "IX_ChatRoom_customer_id");
 
-            entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
-            entity.Property(e => e.StaffId).HasColumnType("uniqueidentifier").HasColumnName("staff_id");
-            entity.Property(e => e.CustomerId).HasColumnType("uniqueidentifier").HasColumnName("customer_id");
+        //    entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
+        //    entity.Property(e => e.StaffId).HasColumnType("uniqueidentifier").HasColumnName("staff_id");
+        //    entity.Property(e => e.CustomerId).HasColumnType("uniqueidentifier").HasColumnName("customer_id");
 
-            entity.Property(e => e.IsClose).HasColumnName("is_close");
+        //    entity.Property(e => e.IsClose).HasColumnName("is_close");
 
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
-            entity.Property(e => e.IsDelete).HasColumnName("is_delete");
+        //    entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
+        //    entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
+        //    entity.Property(e => e.IsDelete).HasColumnName("is_delete");
 
-            entity.HasOne(cr => cr.Staff)
-                .WithMany(u => u.StaffChatRooms)
-                .HasForeignKey(cr => cr.StaffId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+        //    entity.HasOne(cr => cr.Staff)
+        //        .WithMany(u => u.StaffChatRooms)
+        //        .HasForeignKey(cr => cr.StaffId)
+        //        .OnDelete(DeleteBehavior.ClientSetNull);
 
-            entity.HasOne(cr => cr.Customer)
-                .WithMany(u => u.CustomerChatRooms)
-                .HasForeignKey(cr => cr.CustomerId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-        });
+        //    entity.HasOne(cr => cr.Customer)
+        //        .WithMany(u => u.CustomerChatRooms)
+        //        .HasForeignKey(cr => cr.CustomerId)
+        //        .OnDelete(DeleteBehavior.ClientSetNull);
+        //});
 
         modelBuilder.Entity<Coupon>(entity =>
         {

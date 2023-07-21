@@ -55,10 +55,4 @@ public partial class User : BaseEntity
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();
 
     public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
-
-    public virtual ICollection<ChatRoom> StaffChatRooms { get; set; } = new List<ChatRoom>();
-
-    public virtual ICollection<ChatRoom> CustomerChatRooms { get; set; } = new List<ChatRoom>();
-
-    public virtual ICollection<ChatMessage> ChatMessages { get; set; } = new List<ChatMessage>();
 }

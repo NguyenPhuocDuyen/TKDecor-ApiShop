@@ -455,7 +455,7 @@ namespace DataAccess.Data
 
             // add customer and seller
             //Role? roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == Role.Customer);
-            List<Role> roles = new() { Role.Seller, Role.Customer };
+            List<Role> roles = new() { Role.Staff, Role.Customer };
             foreach (var role in roles)
             {
                 for (int i = 0; i < 10; i++)

@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.User
     {
         public Guid UserId { get; set; }
 
-        [RegularExpression($"^(Seller|Customer|Admin)$")]
+        [RegularExpression($"^(Staff|Customer|Admin)$")]
         public string Role { get; set; } = null!;
     }
 }

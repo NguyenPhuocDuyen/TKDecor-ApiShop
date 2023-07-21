@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.DAO
 {
-    internal class RefreshTokenDAO
+    internal class RefreshTokenDAO : DAO<RefreshToken>
     {
         internal static async Task<RefreshToken?> FindByToken(string token)
         {
@@ -13,38 +13,31 @@ namespace DataAccess.DAO
                 var refreshToken = await context.RefreshTokens.OrderByDescending(x => x.IssuedAt).FirstOrDefaultAsync(x => x.Token == token);
                 return refreshToken;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task Add(RefreshToken refreshToken)
+        internal static async Task Delete(RefreshToken refreshToken)
         {
             try
             {
                 using var context = new TkdecorContext();
-                await context.RefreshTokens.AddAsync(refreshToken);
+                context.Remove(refreshToken);
                 await context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        internal static async Task Update(RefreshToken refreshToken)
+        internal static async Task<List<RefreshToken>> FindByUserId(Guid userId)
         {
             try
             {
                 using var context = new TkdecorContext();
-                context.RefreshTokens.Update(refreshToken);
-                await context.SaveChangesAsync();
+                var refreshTokens = await context.RefreshTokens
+                    .Where(x => x.UserId == userId)
+                    .ToListAsync();
+                return refreshTokens;
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }
