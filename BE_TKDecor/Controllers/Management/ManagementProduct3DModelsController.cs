@@ -78,7 +78,7 @@ namespace BE_TKDecor.Controllers.Management
         }
 
         // POST: api/ManagementProduct3DModels/Delete
-        [HttpPost("Delete/{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var model = await _product3DModel.FindById(id);
