@@ -7,9 +7,6 @@ using BE_TKDecor.Core.Response;
 using AutoMapper;
 using Utility;
 using Utility.Mail;
-using System.Net;
-using System.Text;
-using System.Net.Http.Headers;
 using Utility.SD;
 
 namespace BE_TKDecor.Controllers
@@ -168,6 +165,24 @@ namespace BE_TKDecor.Controllers
                     await _sendMailService.SendMail(mailContent);
                     return BadRequest(new ApiResponse { Message = "Password change time expired!. Pls check mail again to see new code!" });
                 }
+                return Ok(new ApiResponse { Success = true });
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        }
+
+        [HttpPost("Subscribe")]
+        public async Task<IActionResult> Subscribe()
+        {
+            var user = await GetUser();
+            if (user == null || user.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+
+            user.IsSubscriber = !user.IsSubscriber;
+            user.UpdatedAt = DateTime.Now;
+
+            try
+            {
+                await _user.Update(user);
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
