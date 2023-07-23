@@ -186,7 +186,8 @@ namespace BE_TKDecor.Controllers.Management
                 if (model == null || model.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
 
-                productDb.Product3DModelId = productDto.Product3DModelId;
+                productDb.Product3DModelId = model.Product3DModelId;
+                productDb.Product3DModel = model;
             }
             else
             {
