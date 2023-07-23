@@ -1,4 +1,6 @@
-﻿using BE_TKDecor.Core.Response;
+﻿using AutoMapper;
+using BE_TKDecor.Core.Dtos.Order;
+using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -14,12 +16,15 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IUserRepository _user;
         private readonly IOrderRepository _order;
+        private readonly IMapper _mapper;
 
         public StatisticalsController(IUserRepository user,
-            IOrderRepository order)
+            IOrderRepository order,
+            IMapper mapper)
         {
             _user = user;
             _order = order;
+            _mapper = mapper;
         }
 
         // GET: api/Statisticals/GetTotalUser
@@ -115,6 +120,21 @@ namespace BE_TKDecor.Controllers.Management
                 TotalOrder = orders.Count,
                 PercentageChange = Math.Round(percentageChange, 3)
             };
+
+            return Ok(new ApiResponse { Success = true, Data = result });
+        }
+
+        // GET: api/Statisticals/RecentOrders
+        [HttpGet("RecentOrders")]
+        public async Task<IActionResult> RecentOrders()
+        {
+            var orders = await _order.GetAll();
+            orders = orders.Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(10)
+                .ToList();
+
+            var result = _mapper.Map<List<OrderGetDto>>(orders);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
