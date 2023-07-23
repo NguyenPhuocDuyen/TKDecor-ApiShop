@@ -23,6 +23,7 @@ namespace DataAccess.Data
             }
             catch (Exception) { }
 
+            AddModel3D();
             await AddUser();
             await AddArticles();
             AddCategories();
@@ -37,6 +38,25 @@ namespace DataAccess.Data
             await AddOrders();
             await AddProductReview();
             await AddReportProductReview();
+        }
+
+        private void AddModel3D()
+        {
+            if (_db.Product3Dmodels.Any()) return;
+
+            var mode3dDefault = new Faker<Product3DModel>();
+            mode3dDefault.RuleFor(x => x.ModelName, f => f.Lorem.Word());
+            mode3dDefault.RuleFor(x => x.VideoUrl, f => "");
+            mode3dDefault.RuleFor(x => x.ModelUrl, "https://cdn-luma.com/e13d5b281b9c97e6fbc3defda9a2812bcca09f323705dff6b77646f0d5655dc9.glb");
+            mode3dDefault.RuleFor(x => x.ThumbnailUrl, "https://fronty.com/static/uploads/01.22-02.22/pexels-uzunov-rostislav-5011647.jpg");
+
+            for (var i = 0; i < 4; i++)
+            {
+                Product3DModel newModel = mode3dDefault.Generate();
+                newModel.ModelName += i;
+                _db.Product3Dmodels.Add(newModel);
+            }
+            _db.SaveChanges();
         }
 
         private async Task AddProductImages()
@@ -382,7 +402,7 @@ namespace DataAccess.Data
             var categorySetDefaults = new Faker<Category>();
             categorySetDefaults.RuleFor(x => x.Name, f => f.Lorem.Word());
             categorySetDefaults.RuleFor(x => x.Thumbnail, "https://takepsd.com/wp-content/uploads/2020/11/116020272.jpg");
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Category category = categorySetDefaults.Generate();
                 category.Name = $"Category {i}: {category.Name}";
