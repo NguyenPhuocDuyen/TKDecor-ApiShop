@@ -26,6 +26,8 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public int CountRate { get; set; }
 
+        public bool IsFavorite { get; set; } = false;
+
         public List<string> ProductImages { get; set; } = new List<string>();
 
         public virtual Product3DModelGetDto? Product3DModel { get; set; }

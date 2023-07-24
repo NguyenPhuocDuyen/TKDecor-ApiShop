@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Favorite;
+using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Response;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
@@ -38,11 +39,23 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _productFavorite.FindByUserId(user.UserId))
-                .Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt);
+            var list = await _product.GetAll();
+            list = list.Where(x => !x.IsDelete && x.Quantity > 0)
+                    .OrderByDescending(x => x.UpdatedAt)
+                    .ToList();
 
-            var result = _mapper.Map<List<FavoriteGetDto>>(list);
+            var result = new List<ProductGetDto>();
+            foreach (var product in list)
+            {
+                var productDto = _mapper.Map<ProductGetDto>(product);
+
+                // Check if the user has liked the product or not
+                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+
+                result.Add(productDto);
+            }
+            result = result.Where(x => x.IsFavorite).ToList();
+
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
@@ -76,6 +89,7 @@ namespace BE_TKDecor.Controllers
                 }
                 else
                 {
+                    productFavoriteDb.UpdatedAt = DateTime.Now;
                     productFavoriteDb.IsDelete = !productFavoriteDb.IsDelete;
                     await _productFavorite.Update(productFavoriteDb);
                 }
