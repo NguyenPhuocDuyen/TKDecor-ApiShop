@@ -72,7 +72,7 @@ namespace BE_TKDecor.Controllers.Management
             else
             {
                 if (!couponCode.IsDelete)
-                    return BadRequest(new ApiResponse { Message = "Coupon code already exists!" });
+                    return BadRequest(new ApiResponse { Message = "Mã giảm giá đã tồn tại!" });
 
                 couponCode.IsDelete = false;
                 isAdd = false;

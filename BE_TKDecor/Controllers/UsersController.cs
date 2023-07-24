@@ -93,10 +93,10 @@ namespace BE_TKDecor.Controllers
                 MailContent mailContent = new()
                 {
                     To = user.Email,
-                    Subject = "Change password at TKDecor Shop",
-                    Body = $"<h4>You have requested to change the password for the TKDecor web site. " +
-                    $"If you do not have a request to change your password, ignore this email!</h4>" +
-                    $"<p>Here is your code: <strong>{code}</strong></p>"
+                    Subject = "Đổi mật khẩu tại TKDecor Shop",
+                    Body = $"<h4>Bạn yêu cầu đổi mật khẩu cho web TKDecor. " +
+                    $"Nếu bạn không có yêu cầu đổi mật khẩu, hãy bỏ qua email này!</h4>" +
+                    $"<p>Đây là mã xác nhận đổi mật khẩu: <strong>{code}</strong></p>"
                 };
                 // send mail
                 await _sendMailService.SendMail(mailContent);
@@ -114,16 +114,16 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            if (!user.ResetPasswordRequired is not true)
-                return BadRequest(new ApiResponse { Message = "User is not required to change password!" });
+            if (!user.ResetPasswordRequired)
+                return BadRequest(new ApiResponse { Message = "Người dùng không yêu cầu đổi mật khẩu!" });
 
             if (user.ResetPasswordCode != userDto.Code)
-                return BadRequest(new ApiResponse { Message = "Wrong code!" });
+                return BadRequest(new ApiResponse { Message = "Sai mã xác nhận!" });
 
             //check correct password
             bool isCorrectPassword = Password.VerifyPassword(userDto.Password, user.Password);
             if (!isCorrectPassword)
-                return BadRequest(new ApiResponse { Message = "Wrong password!" });
+                return BadRequest(new ApiResponse { Message = "Sai mật khẩu!" });
 
             bool codeOutOfDate = false;
             if (user.ResetPasswordSentAt > DateTime.Now.AddMinutes(-5))
@@ -156,33 +156,15 @@ namespace BE_TKDecor.Controllers
                     MailContent mailContent = new()
                     {
                         To = user.Email,
-                        Subject = "Change password at TKDecor Shop",
-                        Body = $"<h4>You have requested to change the password for the TKDecor web site. " +
-                        $"If you do not have a request to change your password, ignore this email!</h4>" +
-                        $"<p>Here is your code: <strong>{user.ResetPasswordCode}</strong></p>"
+                        Subject = "Đổi mật khẩu tại TKDecor Shop",
+                        Body = $"<h4>Bạn yêu cầu đổi mật khẩu cho web TKDecor. " +
+                        $"Nếu bạn không có yêu cầu đổi mật khẩu, hãy bỏ qua email này!</h4>" +
+                        $"<p>Đây là mã xác nhận: <strong>{user.ResetPasswordCode}</strong></p>"
                     };
                     // send mail
                     await _sendMailService.SendMail(mailContent);
-                    return BadRequest(new ApiResponse { Message = "Password change time expired!. Pls check mail again to see new code!" });
+                    return BadRequest(new ApiResponse { Message = "Hết thời gian mã xác nhận đổi mật khẩu. Vui lòng kiểm tra lại mail để xem mã mới!" });
                 }
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        }
-
-        [HttpPost("Subscribe")]
-        public async Task<IActionResult> Subscribe()
-        {
-            var user = await GetUser();
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            user.IsSubscriber = !user.IsSubscriber;
-            user.UpdatedAt = DateTime.Now;
-
-            try
-            {
-                await _user.Update(user);
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

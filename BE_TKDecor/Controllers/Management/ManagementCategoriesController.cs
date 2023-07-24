@@ -50,7 +50,7 @@ namespace BE_TKDecor.Controllers.Management
             else
             {
                 if (!categoryDb.IsDelete)
-                    return BadRequest(new ApiResponse { Message = "Category name already exists!" });
+                    return BadRequest(new ApiResponse { Message = "Tên danh mục đã tồn tại!" });
 
                 categoryDb.IsDelete = false;
                 isAdd = false;
@@ -88,7 +88,7 @@ namespace BE_TKDecor.Controllers.Management
 
             var categoryName = await _category.FindByName(categoryDto.Name);
             if (categoryName != null && categoryName.CategoryId != id)
-                return BadRequest(new ApiResponse { Message = "Category name already exists!" });
+                return BadRequest(new ApiResponse { Message = "Tên danh mục đã tồn tại!" });
 
             categoryDb.Name = categoryDto.Name;
             categoryDb.Thumbnail = categoryDto.Thumbnail;
@@ -110,7 +110,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             if (categoryDb.Products.Count > 0)
-                return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
+                return BadRequest(new ApiResponse { Message = "Vẫn còn sản phẩm trong danh mục không thể xóa!" });
 
             categoryDb.IsDelete = true;
             categoryDb.UpdatedAt = DateTime.Now;

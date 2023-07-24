@@ -675,7 +675,7 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-            entity.Property(e => e.IsSubscriber).HasColumnName("is_subscriber");
+            //entity.Property(e => e.IsSubscriber).HasColumnName("is_subscriber");
             entity.Property(e => e.Password)
                 .IsUnicode(false)
                 .HasColumnName("password");

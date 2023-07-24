@@ -207,7 +207,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("GetRevenueChart")]
         public async Task<IActionResult> GetRevenueChart(int? year)
         {
-            if (!year.HasValue || year > DateTime.Now.Year)
+            if (!year.HasValue)
                 year = DateTime.Now.Year;
 
             var orders = await _order.GetAll();

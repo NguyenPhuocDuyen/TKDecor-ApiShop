@@ -46,7 +46,7 @@ namespace BE_TKDecor.Controllers
 
             var orderDetail = await _orderDetail.FindByUserIdAndProductId(user.UserId, product.ProductId);
             if (orderDetail == null)
-                return BadRequest(new ApiResponse { Message = "You are not allowed to review the product without buying it!" });
+                return BadRequest(new ApiResponse { Message = "Bạn không được phép đánh giá nếu chưa mua sản phẩm!" });
 
             var productReview = await _productReview.FindByUserIdAndProductId(user.UserId, product.ProductId);
 

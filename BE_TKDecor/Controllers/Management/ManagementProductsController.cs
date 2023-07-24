@@ -265,6 +265,7 @@ namespace BE_TKDecor.Controllers.Management
             foreach (var item in product.Carts)
             {
                 item.IsDelete = true;
+                item.UpdatedAt = DateTime.Now;
                 await _cart.Update(item);
             }
             product.UpdatedAt = DateTime.Now;

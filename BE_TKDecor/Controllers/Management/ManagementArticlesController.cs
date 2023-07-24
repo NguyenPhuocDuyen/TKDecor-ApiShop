@@ -111,7 +111,7 @@ namespace BE_TKDecor.Controllers.Management
             var newSlug = Slug.GenerateSlug(articleDto.Title);
             var articleSlug = await _article.FindBySlug(newSlug);
             if (articleSlug != null && articleSlug.ArticleId != id)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+                return BadRequest(new ApiResponse { Message = "Vui lòng đổi tên do dữ liệu trùng lặp!" });
 
             // update info article
             articleDb.Title = articleDto.Title;

@@ -35,7 +35,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var notifications = await _notification.FindByUserId(user.UserId);
-            notifications = notifications.Where(x => x.IsDelete == false).ToList();
+            notifications = notifications.Where(x => !x.IsDelete).ToList();
             var result = _mapper.Map<List<NotificationGetDto>>(notifications);
 
             return Ok(new ApiResponse { Success = true, Data = result });
@@ -50,31 +50,13 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var notifications = await _notification.FindByUserId(user.UserId);
-            notifications = notifications.Where(x => x.IsRead == false).ToList();
+            notifications = notifications.Where(x => !x.IsRead).ToList();
             foreach (var item in notifications)
             {
                 item.IsRead = true;
                 await _notification.Update(item);
             }
             return Ok(new ApiResponse { Success = true });
-        }
-
-        // GET: api/Notifications/Subscribe
-        [HttpGet("Subscribe/{isSubscribe}")]
-        public async Task<IActionResult> Subscribe(bool isSubscribe = true)
-        {
-            var user = await GetUser();
-            if (user == null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            user.IsSubscriber = isSubscribe;
-            user.UpdatedAt = DateTime.UtcNow;
-            try
-            {
-                await _user.Update(user);
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         private async Task<User?> GetUser()

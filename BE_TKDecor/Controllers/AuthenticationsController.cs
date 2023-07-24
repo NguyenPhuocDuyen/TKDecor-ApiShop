@@ -52,7 +52,7 @@ namespace BE_TKDecor.Controllers
                 if (user.EmailConfirmed == true)
                 {
                     return BadRequest(new ApiResponse
-                    { Message = "Email already exists!" });
+                    { Message = "Email đã tồn tại!" });
                 }
                 isAdd = false;
             }
@@ -90,8 +90,8 @@ namespace BE_TKDecor.Controllers
             MailContent mailContent = new()
             {
                 To = user.Email,
-                Subject = "Activate account for TKDecor Shop",
-                Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
+                Subject = "Kích hoạt tài khoản TKDecor Shop",
+                Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> <p>Đây là mã xác nhận của bạn: <strong>{code}</strong></p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);
@@ -125,7 +125,7 @@ namespace BE_TKDecor.Controllers
 
             if (user.EmailConfirmationCode != userDto.Code.Trim())
                 return BadRequest(new ApiResponse
-                { Message = "Wrong code!" });
+                { Message = "Sai mã xác nhận!" });
 
             bool codeOutOfDate = false;
             if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
@@ -139,8 +139,8 @@ namespace BE_TKDecor.Controllers
                 MailContent mailContent = new()
                 {
                     To = user.Email,
-                    Subject = "Activate account for TKDecor Shop",
-                    Body = $"<h4>You have created an account for TKDecor web.</h4> <p>Here is your code: <strong>{code}</strong></p>"
+                    Subject = "Kích hoạt tài khoản TKDecor Shop",
+                    Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> <p>Đây là mã xác nhận của bạn: <strong>{code}</strong></p>"
                 };
                 // send mail
                 await _sendMailService.SendMail(mailContent);
@@ -156,7 +156,7 @@ namespace BE_TKDecor.Controllers
                 await _user.Update(user);
                 if (codeOutOfDate)
                 {
-                    return BadRequest(new ApiResponse { Message = "The code has expired. Please check your email again!" });
+                    return BadRequest(new ApiResponse { Message = "Mã xác nhận đã hết hạn sử dụng. Vui lòng kiểm tra lại mã xác nhận mới trong email của bạn!" });
                 }
                 return Ok(new ApiResponse { Success = true });
             }
@@ -175,7 +175,7 @@ namespace BE_TKDecor.Controllers
 
             if (user.EmailConfirmed is true)
                 return BadRequest(new ApiResponse
-                { Message = "Email has been confirmed!" });
+                { Message = "Email đã được xác nhận!" });
 
             //check code expires to create new code: 5 minutes
             if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
@@ -189,9 +189,9 @@ namespace BE_TKDecor.Controllers
             MailContent mailContent = new()
             {
                 To = user.Email,
-                Subject = "Activate account for TKDecor Shop",
-                Body = $"<h4>You have created an account for TKDecor web.</h4> " +
-                $"<p>Here is your code: <strong>{user.EmailConfirmationCode}</strong></p>"
+                Subject = "Kích hoạt tài khoản TKDecor Shop",
+                Body = $"<h4>Bạn đã tạo tài khoản cho web TKDecor.</h4> " +
+                $"<p>Đây là mã xác nhận của bạn: <strong>{user.EmailConfirmationCode}</strong></p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);
@@ -219,7 +219,7 @@ namespace BE_TKDecor.Controllers
                 { Message = ErrorContent.AccountIncorrect });
 
             if (u.IsDelete)
-                return BadRequest(new ApiResponse { Message = "Account is blocked!" });
+                return BadRequest(new ApiResponse { Message = "Tài khoản bị chặn!" });
 
             //check correct password
             bool isCorrectPassword = Password.VerifyPassword(userDto.Password, u.Password);
@@ -228,9 +228,9 @@ namespace BE_TKDecor.Controllers
                 { Message = ErrorContent.AccountIncorrect });
 
             //check confirm email
-            if (u.EmailConfirmed is not true)
+            if (!u.EmailConfirmed)
                 return BadRequest(new ApiResponse
-                { Message = "Unconfirmed email!" });
+                { Message = "Email chưa được xác nhận!" });
 
             //convert token to string
             var token = await GenerateToken(u);
@@ -273,10 +273,10 @@ namespace BE_TKDecor.Controllers
             MailContent mailContent = new()
             {
                 To = user.Email,
-                Subject = "Reset password for TKDecor Shop account",
-                Body = $"<h1>If you do not reset the password for your TKDecor Shop account, please ignore this email</h1>" +
-                   $"<h4>If you have reset the password for your TKDecor Shop account, please enter the code below.</h4>" +
-                   $"<p>Here is your code: <strong>{code}</strong></p>"
+                Subject = "Đặt lại mật khẩu tài khoản TKDecor Shop",
+                Body = $"<h1>Nếu bạn không đặt lại mật khẩu cho tài khoản TKDecor Shop, vui lòng bỏ qua email này</h1>" +
+                   $"<h4>Nếu bạn đã đặt lại mật khẩu cho tài khoản Shop TKDecor của mình, vui lòng nhập mã xác nhận bên dưới.</h4>" +
+                   $"<p>Đây là mã xác nhận của bạn: <strong>{code}</strong></p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);
@@ -302,18 +302,18 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse
                 { Message = ErrorContent.UserNotFound });
 
+            if (!user.ResetPasswordRequired)
+                return BadRequest(new ApiResponse
+                { Message = "Tài khoản không yêu cầu đặt lại mật khẩu!" });
+
             //check token expires: 5 minutes
             if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
                 return BadRequest(new ApiResponse
-                { Message = "Expired Tokens!" });
-
-            if (user.ResetPasswordRequired is not true)
-                return BadRequest(new ApiResponse
-                { Message = "The account does not require a password reset!" });
+                { Message = "Mã xác nhận hết hạn!" });
 
             if (user.ResetPasswordCode != userDto.Code)
                 return BadRequest(new ApiResponse
-                { Message = "Wrong code!" });
+                { Message = "Sai mã xác nhận!" });
 
             //if reset password, will back status do not reset password
             user.ResetPasswordRequired = false;
@@ -361,7 +361,7 @@ namespace BE_TKDecor.Controllers
                     var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase);
                     if (!result)//false
                         return Ok(new ApiResponse
-                        { Message = "Invalid token" });
+                        { Message = "Mã xác thực không hợp lệ" });
                 }
 
                 //check 3: Check accessToken expire?
@@ -370,28 +370,28 @@ namespace BE_TKDecor.Controllers
                 var expireDate = ConvertUnixTimeToDateTime(utcExpireDate);
                 if (expireDate > DateTime.Now)
                     return Ok(new ApiResponse
-                    { Message = "Access token has not yet expired" });
+                    { Message = "Mã xác thực truy cập chưa hết hạn!" });
 
                 //check 4: Check refreshtoken exist in DB
                 var storedToken = await _refreshToken.FindByToken(model.RefreshToken);
                 if (storedToken == null)
                     return Ok(new ApiResponse
-                    { Message = "Refresh token does not exist" });
+                    { Message = "Mã xác thực làm mới không tồn tại!" });
 
                 //check 5: check refreshToken is used/revoked?
                 if (storedToken.IsUsed)
                     return Ok(new ApiResponse
-                    { Message = "Refresh token has been used" });
+                    { Message = "Mã xác thực làm mới đã được sử dụng!" });
 
                 if (storedToken.IsRevoked)
                     return Ok(new ApiResponse
-                    { Message = "Refresh token has been revoked" });
+                    { Message = "Mã xác thực làm mới đã bị thu hồi!" });
 
                 //check 6: AccessToken id == JwtId in RefreshToken
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
                 if (storedToken.JwtId != jti)
                     return Ok(new ApiResponse
-                    { Message = "Token doesn't match" });
+                    { Message = "Mã xác thực không khớp!" });
 
                 //Update token is used
                 storedToken.IsRevoked = true;
@@ -405,11 +405,11 @@ namespace BE_TKDecor.Controllers
                 return Ok(new ApiResponse
                 {
                     Success = true,
-                    Message = "Renew token success",
+                    Message = "Gia hạn mã xác thực thành công",
                     Data = token
                 });
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Error }); }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         private async Task<TokenModel> GenerateToken(User user)

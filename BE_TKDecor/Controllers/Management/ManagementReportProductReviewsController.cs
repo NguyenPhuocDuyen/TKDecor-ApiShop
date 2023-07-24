@@ -51,7 +51,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ReportProductReviewNotFound });
 
             if (report.ReportStatus != ReportStatus.Pending)
-                return BadRequest(new ApiResponse { Message = "Report product review has been processed!" });
+                return BadRequest(new ApiResponse { Message = "Báo cáo đánh giá sản phẩm đã được xử lý!" });
 
             if (!Enum.TryParse<ReportStatus>(reportDto.ReportStatus, out ReportStatus status))
             {

@@ -86,7 +86,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
 
             if (model.Product != null)
-                return BadRequest(new ApiResponse { Message = "Model3D being used by the product: " + model.Product.Name });
+                return BadRequest(new ApiResponse { Message = "Model3D đang được sản phẩm sử dụng bởi " + model.Product.Name });
 
             model.IsDelete = true;
             model.UpdatedAt = DateTime.Now;

@@ -145,7 +145,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             if (userAddress.IsDefault)
-                return BadRequest(new ApiResponse { Message = "Can't not delete default address!" });
+                return BadRequest(new ApiResponse { Message = "Không thể xóa địa chỉ mặc định!" });
 
             userAddress.IsDelete = true;
             userAddress.UpdatedAt = DateTime.Now;
