@@ -25,27 +25,6 @@ namespace DataAccess.Repository
             throw new NotImplementedException();
         }
 
-        public async Task SetDefault(Guid userId, Guid? userAddressId = null)
-        {
-            try
-            {
-                var listAddressOfUser = await UserAddressDAO.FindByUserId(userId);
-                foreach (var address in listAddressOfUser)
-                {
-                    address.IsDefault = false;
-                    if (userAddressId != null)
-                    {
-                        if (userAddressId == address.UserAddressId)
-                        {
-                            address.IsDefault = true;
-                        }
-                    }
-                    await UserAddressDAO.Update(address);
-                }
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
         public async Task Update(UserAddress userAddress)
             => await UserAddressDAO.Update(userAddress);
     }

@@ -69,9 +69,12 @@ namespace BE_TKDecor.Controllers
             if (address == null || address.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
+            address.IsDefault = true;
+            address.UpdatedAt = DateTime.Now;
             try
             {
-                await _userAddress.SetDefault(user.UserId, dto.UserAddressId);
+                await _userAddress.Update(address);
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -92,9 +95,10 @@ namespace BE_TKDecor.Controllers
                 await _userAddress.Add(newAddress);
 
                 var listAddress = await _userAddress.FindByUserId(user.UserId);
-                if (listAddress.Count <= 1)
+                if (listAddress.Count == 1)
                 {
-                    await _userAddress.SetDefault(user.UserId, null);
+                    listAddress[0].IsDefault = true;
+                    await _userAddress.Update(listAddress[0]);
                 }
 
                 return Ok(new ApiResponse { Success = true });

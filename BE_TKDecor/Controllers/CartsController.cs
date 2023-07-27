@@ -79,6 +79,7 @@ namespace BE_TKDecor.Controllers
             }
             else
             {
+                cartDb.UpdatedAt = DateTime.Now;
                 if (cartDb.IsDelete == true)
                 {
                     cartDb.IsDelete = false;
@@ -133,6 +134,7 @@ namespace BE_TKDecor.Controllers
             bool quanlityIsValid = true;
 
             cartDb.Quantity = cartDto.Quantity;
+            cartDb.UpdatedAt = DateTime.Now;
 
             if (cartDb.Quantity > cartDb.Product.Quantity)
             {

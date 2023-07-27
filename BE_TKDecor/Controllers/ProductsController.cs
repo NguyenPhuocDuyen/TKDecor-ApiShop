@@ -5,7 +5,7 @@ using BE_TKDecor.Core.Dtos.Product;
 using AutoMapper;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BusinessObject;
-using System.Collections.Generic;
+using Utility;
 
 namespace BE_TKDecor.Controllers
 {
@@ -31,7 +31,12 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Products/GetAll
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            string search = "",
+            string sort = "default",
+            int pageIndex = 1,
+            int pageSize = 20
+            )
         {
             var list = await _product.GetAll();
             list = list.Where(x => !x.IsDelete && x.Quantity > 0)
@@ -39,7 +44,7 @@ namespace BE_TKDecor.Controllers
                     .ToList();
 
             var user = await GetUser();
-            var result = new List<ProductGetDto>();
+            var listProductGet = new List<ProductGetDto>();
             foreach (var product in list)
             {
                 var productDto = _mapper.Map<ProductGetDto>(product);
@@ -47,8 +52,29 @@ namespace BE_TKDecor.Controllers
                 // Check if the user has liked the product or not
                 productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
 
-                result.Add(productDto);
+                listProductGet.Add(productDto);
             }
+
+            // filter search
+            if (!string.IsNullOrEmpty(search))
+            {
+                listProductGet = listProductGet.Where(x => x.Name.Contains(search)
+                || x.Description.Contains(search)
+                || x.CategoryName.Contains(search)
+                ).ToList();
+            }
+
+            // filter sort
+            listProductGet = sort switch
+            {
+                "price-high-to-low" => listProductGet.OrderByDescending(x => x.Price).ToList(),
+                "price-low-to-high" => listProductGet.OrderBy(x => x.Price).ToList(),
+                "average-rate" => listProductGet.OrderByDescending(x => x.AverageRate).ToList(),
+                _ => listProductGet.OrderByDescending(x => x.UpdatedAt).ToList(),
+            };
+
+            PaginatedList<ProductGetDto> result = PaginatedList<ProductGetDto>.CreateAsync(
+                listProductGet, pageIndex, pageSize);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }

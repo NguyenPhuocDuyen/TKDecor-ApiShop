@@ -54,6 +54,7 @@ namespace BE_TKDecor.Controllers
             foreach (var item in notifications)
             {
                 item.IsRead = true;
+                item.UpdatedAt = DateTime.Now;
                 await _notification.Update(item);
             }
             return Ok(new ApiResponse { Success = true });
