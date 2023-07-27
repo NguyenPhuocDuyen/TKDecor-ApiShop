@@ -50,7 +50,7 @@ namespace BE_TKDecor.Controllers
                 var productDto = _mapper.Map<ProductGetDto>(product);
 
                 // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
                 result.Add(productDto);
             }

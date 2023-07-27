@@ -6,6 +6,7 @@ using AutoMapper;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BusinessObject;
 using Utility;
+using System.Collections.Generic;
 
 namespace BE_TKDecor.Controllers
 {
@@ -50,7 +51,7 @@ namespace BE_TKDecor.Controllers
                 var productDto = _mapper.Map<ProductGetDto>(product);
 
                 // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
                 listProductGet.Add(productDto);
             }
@@ -96,7 +97,7 @@ namespace BE_TKDecor.Controllers
                 var productDto = _mapper.Map<ProductGetDto>(product);
 
                 // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
                 result.Add(productDto);
             }
@@ -104,7 +105,7 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Products/Review/2
+        // GET: api/Products/GetReview/2
         [HttpGet("GetReview/{id}")]
         public async Task<IActionResult> GetReview(Guid id)
         {
@@ -117,25 +118,40 @@ namespace BE_TKDecor.Controllers
                 .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
 
-            var result = _mapper.Map<List<ProductReviewGetDto>>(revews);
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
-
-        // GET: api/Products/GetById/5
-        [HttpGet("GetById/{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            var product = await _product.FindById(id);
-
-            if (product == null || product.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-            var result = _mapper.Map<ProductGetDto>(product);
             var user = await GetUser();
-            result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+            var result = new List<ProductReviewGetDto>();
+            foreach (var review in revews)
+            {
+                var reviewDto = _mapper.Map<ProductReviewGetDto>(review);
+
+                // Check if the user has liked the product or not
+                var interaction = review.ProductReviewInteractions.FirstOrDefault(pf => !pf.IsDelete && pf.UserId == user?.UserId);
+                if (interaction != null)
+                {
+                    reviewDto.InteractionOfUser = interaction.Interaction.ToString();
+                }
+
+                result.Add(reviewDto);
+            }
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
+
+        //// GET: api/Products/GetById/5
+        //[HttpGet("GetById/{id}")]
+        //public async Task<IActionResult> GetById(Guid id)
+        //{
+        //    var product = await _product.FindById(id);
+
+        //    if (product == null || product.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+
+        //    var result = _mapper.Map<ProductGetDto>(product);
+        //    var user = await GetUser();
+        //    result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+
+        //    return Ok(new ApiResponse { Success = true, Data = result });
+        //}
 
         // GET: api/Products/GetBySlug/5
         [HttpGet("GetBySlug/{slug}")]
@@ -148,7 +164,7 @@ namespace BE_TKDecor.Controllers
 
             var result = _mapper.Map<ProductGetDto>(product);
             var user = await GetUser();
-            result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+            result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
