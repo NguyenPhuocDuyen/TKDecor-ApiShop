@@ -42,8 +42,16 @@ namespace BE_TKDecor.Controllers
                 _ => listArticleGet.OrderBy(x => x.UpdatedAt).ToList(),
             };
 
-            PaginatedList<ArticleGetDto> result = PaginatedList<ArticleGetDto>.CreateAsync(
+            PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
                 listArticleGet, pageIndex, pageSize);
+
+            var result = new
+            {
+                products = pagingArticle,
+                pagingArticle.PageIndex,
+                pagingArticle.TotalPages,
+                pagingArticle.TotalItem
+            };
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }

@@ -82,8 +82,16 @@ namespace BE_TKDecor.Controllers
                 _ => listProductGet.OrderByDescending(x => x.UpdatedAt).ToList(),
             };
 
-            PaginatedList<ProductGetDto> result = PaginatedList<ProductGetDto>.CreateAsync(
+            PaginatedList<ProductGetDto> pagingProduct = PaginatedList<ProductGetDto>.CreateAsync(
                 listProductGet, pageIndex, pageSize);
+
+            var result = new
+            {
+                products = pagingProduct,
+                pagingProduct.PageIndex,
+                pagingProduct.TotalPages,
+                pagingProduct.TotalItem
+            };
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
@@ -156,8 +164,16 @@ namespace BE_TKDecor.Controllers
                 _ => listReviewGetDto.OrderByDescending(x => x.UpdatedAt).ToList(),
             };
 
-            PaginatedList<ProductReviewGetDto> result = PaginatedList<ProductReviewGetDto>.CreateAsync(
+            PaginatedList<ProductReviewGetDto> pagingReviews = PaginatedList<ProductReviewGetDto>.CreateAsync(
                listReviewGetDto, pageIndex, pageSize);
+
+            var result = new
+            {
+                reviews = pagingReviews,
+                pagingReviews.PageIndex,
+                pagingReviews.TotalPages,
+                pagingReviews.TotalItem
+            };
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }

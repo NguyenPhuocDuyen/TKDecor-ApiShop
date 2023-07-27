@@ -11,6 +11,7 @@ namespace Utility
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
         public int TotalItem { get; private set; }
+
         public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
         {
             TotalItem = count;
