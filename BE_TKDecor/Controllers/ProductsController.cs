@@ -6,7 +6,6 @@ using AutoMapper;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BusinessObject;
 using Utility;
-using System.Collections.Generic;
 
 namespace BE_TKDecor.Controllers
 {
@@ -33,6 +32,7 @@ namespace BE_TKDecor.Controllers
         // GET: api/Products/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll(
+            Guid? categoryId,
             string search = "",
             string sort = "default",
             int pageIndex = 1,
@@ -45,6 +45,23 @@ namespace BE_TKDecor.Controllers
                     .ToList();
 
             var user = await GetUser();
+
+            // filter categoryId
+            if (categoryId != null)
+            {
+                list = list.Where(x => x.CategoryId == categoryId).ToList();
+            }
+
+            // filter search
+            if (!string.IsNullOrEmpty(search))
+            {
+                list = list.Where(x => x.Name.Contains(search)
+                || x.Description.Contains(search)
+                || x.Category.Name.Contains(search)
+                ).ToList();
+            }
+
+            // map dto
             var listProductGet = new List<ProductGetDto>();
             foreach (var product in list)
             {
@@ -54,15 +71,6 @@ namespace BE_TKDecor.Controllers
                 productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
                 listProductGet.Add(productDto);
-            }
-
-            // filter search
-            if (!string.IsNullOrEmpty(search))
-            {
-                listProductGet = listProductGet.Where(x => x.Name.Contains(search)
-                || x.Description.Contains(search)
-                || x.CategoryName.Contains(search)
-                ).ToList();
             }
 
             // filter sort
@@ -107,7 +115,12 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Products/GetReview/2
         [HttpGet("GetReview/{id}")]
-        public async Task<IActionResult> GetReview(Guid id)
+        public async Task<IActionResult> GetReview(
+            Guid id,
+            string sort = "Default",
+            int pageIndex = 1,
+            int pageSize = 20
+            )
         {
             var product = await _product.FindById(id);
             if (product == null || product.IsDelete)
@@ -119,7 +132,7 @@ namespace BE_TKDecor.Controllers
                 .ToList();
 
             var user = await GetUser();
-            var result = new List<ProductReviewGetDto>();
+            var listReviewGetDto = new List<ProductReviewGetDto>();
             foreach (var review in revews)
             {
                 var reviewDto = _mapper.Map<ProductReviewGetDto>(review);
@@ -131,8 +144,20 @@ namespace BE_TKDecor.Controllers
                     reviewDto.InteractionOfUser = interaction.Interaction.ToString();
                 }
 
-                result.Add(reviewDto);
+                listReviewGetDto.Add(reviewDto);
             }
+
+            // filter sort
+            listReviewGetDto = sort switch
+            {
+                "rate-high-to-low" => listReviewGetDto.OrderByDescending(x => x.Rate).ToList(),
+                "rate-low-to-high" => listReviewGetDto.OrderBy(x => x.Rate).ToList(),
+                "rate-most-like" => listReviewGetDto.OrderByDescending(x => x.TotalLike).ToList(),
+                _ => listReviewGetDto.OrderByDescending(x => x.UpdatedAt).ToList(),
+            };
+
+            PaginatedList<ProductReviewGetDto> result = PaginatedList<ProductReviewGetDto>.CreateAsync(
+               listReviewGetDto, pageIndex, pageSize);
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }
