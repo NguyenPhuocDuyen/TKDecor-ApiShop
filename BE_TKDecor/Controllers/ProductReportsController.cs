@@ -88,7 +88,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = $"Báo cáo sản phẩm {product.Name} thành công"
                 };
                 await _notification.Add(newNotification);
@@ -105,7 +104,6 @@ namespace BE_TKDecor.Controllers
                     Notification notiForStaffOrAdmin = new()
                     {
                         UserId = staff.UserId,
-                        User = staff,
                         Message = $"{user.Email} đã cáo sản phẩm {product.Name}"
                     };
                     await _notification.Add(notiForStaffOrAdmin);

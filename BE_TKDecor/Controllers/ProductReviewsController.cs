@@ -97,7 +97,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = $"Đã đánh giá sản phẩm {product.Name} thành công"
                 };
                 await _notification.Add(newNotification);

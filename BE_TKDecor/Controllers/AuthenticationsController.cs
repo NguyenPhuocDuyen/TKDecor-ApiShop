@@ -172,7 +172,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = "Chào mừng bạn tới web TKDecor của chúng tôi"
                 };
                 await _notification.Add(newNotification);
@@ -308,7 +307,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = "Bạn đã yêu cầu quên mật khẩu"
                 };
                 await _notification.Add(newNotification);
@@ -356,7 +354,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = "Xác nhận mật khẩu mới thành công"
                 };
                 await _notification.Add(newNotification);

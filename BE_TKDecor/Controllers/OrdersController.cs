@@ -93,6 +93,12 @@ namespace BE_TKDecor.Controllers
                 coupon = await _coupon.FindByCode(orderDto.CodeCoupon);
                 if (coupon == null || coupon.IsDelete)
                     return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+
+                if (coupon.RemainingUsageCount == 0)
+                    return BadRequest(new ApiResponse { Message = "Mã giảm giá hết lượt sử dụng" });
+
+                if (!coupon.IsActive || coupon.StartDate > DateTime.Now || coupon.EndDate < DateTime.Now)
+                    return BadRequest(new ApiResponse { Message = "Mã giảm giá không có hiệu lực" });
             }
 
             // check address
@@ -142,6 +148,7 @@ namespace BE_TKDecor.Controllers
             // check coupon discount
             if (coupon != null)
             {
+                coupon.RemainingUsageCount -= 1;
                 newOrder.CouponId = coupon.CouponId;
                 if (coupon.CouponType == CouponType.ByPercent)
                 {
@@ -164,6 +171,11 @@ namespace BE_TKDecor.Controllers
             {
                 // create order
                 await _order.Add(newOrder);
+
+                // update coupon
+                if (coupon != null)
+                    await _coupon.Update(coupon);
+
                 // delete item in cart
                 foreach (var cartId in orderDto.ListCartIdSelect)
                 {
@@ -178,12 +190,11 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = "Đặt hàng thành công. Mã đơn hàng: " + newOrder.OrderId
                 };
                 await _notification.Add(newNotification);
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification, 
+                    .SendAsync(Common.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
@@ -194,7 +205,6 @@ namespace BE_TKDecor.Controllers
                     Notification notiForStaffOrAdmin = new()
                     {
                         UserId = staff.UserId,
-                        User = staff,
                         Message = $"{user.Email} đã đặt đơn hàng. Mã đơn hàng: {newOrder.OrderId}"
                     };
                     await _notification.Add(notiForStaffOrAdmin);
@@ -266,13 +276,12 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = $"Bạn đã {message} đơn hàng thành công. Mã đơn hàng: " + order.OrderId
                 };
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification, 
+                    .SendAsync(Common.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
@@ -283,7 +292,6 @@ namespace BE_TKDecor.Controllers
                     Notification notiForStaffOrAdmin = new()
                     {
                         UserId = staff.UserId,
-                        User = staff,
                         Message = $"{user.Email} đã {message} đơn hàng. Mã đơn hàng: {order.OrderId}"
                     };
                     await _notification.Add(notiForStaffOrAdmin);

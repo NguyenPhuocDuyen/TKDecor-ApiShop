@@ -74,18 +74,17 @@ namespace BE_TKDecor.Controllers
             {
                 await _user.Update(user);
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Cập nhật thông tin thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Cập nhật thông tin thành công"
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -129,7 +128,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = $"Bạn đã yêu cầu thay đổi mật khẩu"
                 };
                 await _notification.Add(newNotification);
@@ -207,7 +205,6 @@ namespace BE_TKDecor.Controllers
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    User = user,
                     Message = $"Đổi mật khẩu thành công"
                 };
                 await _notification.Add(newNotification);

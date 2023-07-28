@@ -86,18 +86,17 @@ namespace BE_TKDecor.Controllers
             {
                 await _userAddress.Update(address);
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Thay đổi địa chỉ mặc định thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Thay đổi địa chỉ mặc định thành công"
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -125,18 +124,17 @@ namespace BE_TKDecor.Controllers
                     await _userAddress.Update(listAddress[0]);
                 }
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Thêm địa chỉ mới thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Thêm địa chỉ mới thành công"
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -173,18 +171,17 @@ namespace BE_TKDecor.Controllers
             {
                 await _userAddress.Update(userAddressDb);
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Cập nhật địa chỉ thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Cập nhật địa chỉ thành công"
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -212,18 +209,17 @@ namespace BE_TKDecor.Controllers
             {
                 await _userAddress.Update(userAddress);
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Xoá địa chỉ thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Xoá địa chỉ thành công"
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
