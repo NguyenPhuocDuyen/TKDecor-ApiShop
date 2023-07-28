@@ -10,7 +10,7 @@ namespace BE_TKDecor.Core.Dtos.UserAddress
 
         public string Phone { get; set; } = null!;
 
-        public string Address { get; set; } = null!;
+        //public string Address { get; set; } = null!;
 
         public int CityCode { get; set; }
 

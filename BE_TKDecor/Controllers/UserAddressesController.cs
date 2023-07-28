@@ -157,7 +157,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             userAddressDb.FullName = userAddressDto.FullName;
-            userAddressDb.Address = userAddressDto.Address;
+            //userAddressDb.Address = userAddressDto.Address;
             userAddressDb.Phone = userAddressDto.Phone;
             userAddressDb.CityCode = userAddressDto.CityCode;
             userAddressDb.City = userAddressDto.City;

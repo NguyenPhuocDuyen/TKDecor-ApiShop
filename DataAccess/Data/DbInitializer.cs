@@ -284,14 +284,18 @@ namespace DataAccess.Data
             {
                 // Random một giá trị từ order status
                 OrderStatus randomStatus = (OrderStatus)orderStatusValues.GetValue(random.Next(orderStatusValues.Length));
+                var address = u.UserAddresses?.FirstOrDefault();
+
+                if (address == null) return;
+
                 Order order = new()
                 {
                     UserId = u.UserId,
                     User = u,
                     OrderStatus = randomStatus,
-                    FullName = u.UserAddresses?.FirstOrDefault()?.FullName ?? "",
-                    Phone = u.UserAddresses?.FirstOrDefault()?.Phone ?? "",
-                    Address = u.UserAddresses?.FirstOrDefault()?.Address ?? "",
+                    FullName = address.FullName,
+                    Phone = address.Phone,
+                    Address = $"{address.Street}, {address.District}, {address.Ward}, {address.Street}",
                     Note = "Note ne",
                     TotalPrice = 0,
                     OrderDetails = new List<OrderDetail>()
@@ -461,14 +465,14 @@ namespace DataAccess.Data
             userSetDefaults.RuleFor(a => a.AvatarUrl, "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg");
 
             var userAddressSetDefaults = new Faker<UserAddress>();
-            userAddressSetDefaults.RuleFor(x => x.Address, f => f.Lorem.Sentence());
+            //userAddressSetDefaults.RuleFor(x => x.Address, f => f.Lorem.Sentence());
             userAddressSetDefaults.RuleFor(x => x.CityCode, 1);
             userAddressSetDefaults.RuleFor(x => x.City, "Thành phố Hà Nội");
             userAddressSetDefaults.RuleFor(x => x.DistrictCode, 1);
             userAddressSetDefaults.RuleFor(x => x.District, "Quận Ba Đình");
             userAddressSetDefaults.RuleFor(x => x.WardCode, 1);
             userAddressSetDefaults.RuleFor(x => x.Ward, "Phường Phúc Xá");
-            userAddressSetDefaults.RuleFor(x => x.Street, "324 hẻm 6");
+            userAddressSetDefaults.RuleFor(x => x.Street, f => "324 hẻm 6 " + f.Lorem.Word());
 
             // Lấy danh sách các giá trị enum của OrderStatus
             Array genderValues = Enum.GetValues(typeof(Gender));

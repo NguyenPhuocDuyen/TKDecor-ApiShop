@@ -13,7 +13,7 @@ public partial class UserAddress : BaseEntity
 
     public string Phone { get; set; } = null!;
 
-    public string Address { get; set; } = null!;
+    //public string Address { get; set; } = null!;
 
     public int CityCode { get; set; }
 

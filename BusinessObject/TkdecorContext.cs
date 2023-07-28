@@ -705,7 +705,7 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.UserId, "IX_UserAddress_user_id");
 
             entity.Property(e => e.UserAddressId).HasColumnType("uniqueidentifier").HasColumnName("user_address_id");
-            entity.Property(e => e.Address).HasColumnName("address");
+            //entity.Property(e => e.Address).HasColumnName("address");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
