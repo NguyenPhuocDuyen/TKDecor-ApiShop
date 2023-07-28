@@ -4,6 +4,7 @@ using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    partial class TkdecorContextModelSnapshot : ModelSnapshot
+    [Migration("20230721055515_RemoveChatModel")]
+    partial class RemoveChatModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -812,6 +815,10 @@ namespace BusinessObject.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit")
                         .HasColumnName("is_delete");
+
+                    b.Property<bool>("IsSubscriber")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_subscriber");
 
                     b.Property<string>("Password")
                         .IsRequired()

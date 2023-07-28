@@ -24,9 +24,9 @@ namespace BE_TKDecor.Controllers
             MailContent mailContent = new()
             {
                 To = "DuyenNP7901@gmail.com",
-                Subject = "Mail to give comments about the website",
-                Body = $"<h4>Is sent from: ${mailSendDto.MailSender}. Customer name: {mailSendDto.Name}</h4>" +
-                $"<p>Content: {mailSendDto.Content}</p>"
+                Subject = "Mail để đưa ra nhận xét về trang web",
+                Body = $"<h4>Được góp ý bởi: ${mailSendDto.MailSender}. Tên khánh hàng: {mailSendDto.Name}</h4>" +
+                $"<p>Nội dung: {mailSendDto.Content}</p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);

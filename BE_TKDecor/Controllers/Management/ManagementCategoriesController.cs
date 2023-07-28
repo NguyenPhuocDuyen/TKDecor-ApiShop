@@ -42,13 +42,34 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Create(CategoryCreateDto categoryDto)
         {
             var categoryDb = await _category.FindByName(categoryDto.Name);
-            if (categoryDb != null)
-                return BadRequest(new ApiResponse { Message = "Category name already exists!" });
+            bool isAdd = true;
+            if (categoryDb == null)
+            {
+                categoryDb = _mapper.Map<Category>(categoryDto);
+            }
+            else
+            {
+                if (!categoryDb.IsDelete)
+                    return BadRequest(new ApiResponse { Message = "Tên danh mục đã tồn tại!" });
 
-            Category newCategory = _mapper.Map<Category>(categoryDto);
+                categoryDb.IsDelete = false;
+                isAdd = false;
+
+                categoryDb.Name = categoryDto.Name;
+                categoryDb.Thumbnail = categoryDto.Thumbnail;
+                categoryDb.UpdatedAt = DateTime.Now;
+            }
+
             try
             {
-                await _category.Add(newCategory);
+                if (isAdd)
+                {
+                    await _category.Add(categoryDb);
+                }
+                else
+                {
+                    await _category.Update(categoryDb);
+                }
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -67,7 +88,7 @@ namespace BE_TKDecor.Controllers.Management
 
             var categoryName = await _category.FindByName(categoryDto.Name);
             if (categoryName != null && categoryName.CategoryId != id)
-                return BadRequest(new ApiResponse { Message = "Category name already exists!" });
+                return BadRequest(new ApiResponse { Message = "Tên danh mục đã tồn tại!" });
 
             categoryDb.Name = categoryDto.Name;
             categoryDb.Thumbnail = categoryDto.Thumbnail;
@@ -89,7 +110,7 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
             if (categoryDb.Products.Count > 0)
-                return BadRequest(new ApiResponse { Message = "There are still products in the category that cannot be deleted" });
+                return BadRequest(new ApiResponse { Message = "Vẫn còn sản phẩm trong danh mục không thể xóa!" });
 
             categoryDb.IsDelete = true;
             categoryDb.UpdatedAt = DateTime.Now;

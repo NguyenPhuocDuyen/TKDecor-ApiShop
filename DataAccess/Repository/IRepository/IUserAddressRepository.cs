@@ -10,6 +10,5 @@ namespace DataAccess.Repository.IRepository
     public interface IUserAddressRepository : IRepository<UserAddress>
     {
         Task<List<UserAddress>> FindByUserId(Guid userId);
-        Task SetDefault(Guid userId, Guid? userAddressId);
     }
 }

@@ -9,33 +9,33 @@ namespace BE_TKDecor.Core.Response
     public class ErrorContent
     {
         //common
-        public static string Error = "An error occurred, try again later!";
+        //public static string Error = "Đã xảy ra lỗi, hãy thử lại sau!";
 
-        public static string Data = "Data conflict try again later!";
-        public static string NotMatchId = "Not match id!";
+        public static string Data = "Xung đột dữ liệu hãy thử lại sau!";
+        public static string NotMatchId = "ID không khớp!";
 
         //not found
-        public static string RoleNotFound = "Role not found!";
-        public static string UserNotFound = "User not found!";
-        public static string ProductNotFound = "Products not found!";
-        public static string ArticleNotFound = "Article not found!";
-        public static string AddressNotFound = "Address not found!";
-        public static string CategoryNotFound = "Category not found!";
-        public static string CouponNotFound = "Coupon not found!";
-        public static string CouponTypeNotFound = "Coupon type not found!";
-        public static string CartNotFound = "Cart not found!";
-        public static string OrderNotFound = "Order not found!";
-        public static string ProductReportNotFound = "Product Report not found!";
-        public static string ProductReviewNotFound = "Product review not found!";
-        public static string InteractionNotFound = "Interaction not found!";
-        public static string Model3DNotFound = "Model3D not found!";
-        public static string ReportProductReviewNotFound = "Report product review not found!";
-        public static string OrderStatusNotFound = "Order status not found!";
-        public static string ReportStatusNotFound = "Report status not found!";
+        public static string RoleNotFound = "Không tìm thấy vai trò!";
+        public static string UserNotFound = "Không tìm thấy người dùng!";
+        public static string ProductNotFound = "Không tìm thấy sản phẩm!";
+        public static string ArticleNotFound = "Không tìm thấy bài viết!";
+        public static string AddressNotFound = "Không tìm thấy địa chỉ!";
+        public static string CategoryNotFound = "Không tìm thấy danh mục!";
+        public static string CouponNotFound = "Không tìm thấy mã giảm giá!";
+        public static string CouponTypeNotFound = "Không tìm thấy loại mã giảm giá!";
+        public static string CartNotFound = "Không tìm thấy item trong giỏ hàng!";
+        public static string OrderNotFound = "Không tìm thấy đơn hàng!";
+        public static string ProductReportNotFound = "Không tìm thấy báo cáo sản phẩm!";
+        public static string ProductReviewNotFound = "Không tìm thấy đánh giá sản phẩm!";
+        public static string InteractionNotFound = "Không tìm thấy tương tác!";
+        public static string Model3DNotFound = "không tìm thấy model 3d!";
+        public static string ReportProductReviewNotFound = "Không tìm thấy báo cáo đánh giá sản phẩm!";
+        public static string OrderStatusNotFound = "Không tìm thấy trạng thái đơn hàng!";
+        public static string ReportStatusNotFound = "Không tìm thấy trạng thái báo cáo!";
         
-        public static string OrderStatusUnable = "Unable to update order status!";
-        public static string GenderNotFound = "Gender not found!";
+        public static string OrderStatusUnable = "Không thể cập nhật trạng thái đơn hàng!";
+        public static string GenderNotFound = "Không tìm thấy giới tính!";
 
-        public static string AccountIncorrect = "Email or password is incorrect!";
+        public static string AccountIncorrect = "Email hoặc mật khẩu không đúng!";
     }
 }

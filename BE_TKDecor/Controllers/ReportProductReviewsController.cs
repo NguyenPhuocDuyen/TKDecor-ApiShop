@@ -5,6 +5,10 @@ using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using Utility.SD;
 using Microsoft.AspNetCore.Authorization;
+using BE_TKDecor.Core.Dtos.Notification;
+using Microsoft.AspNetCore.SignalR;
+using AutoMapper;
+using BE_TKDecor.Hubs;
 
 namespace BE_TKDecor.Controllers
 {
@@ -16,14 +20,24 @@ namespace BE_TKDecor.Controllers
         private readonly IUserRepository _user;
         private readonly IProductReviewRepository _productReview;
         private readonly IReportProductReviewRepository _reportProductReview;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IMapper _mapper;
 
         public ReportProductReviewsController(IUserRepository user,
             IProductReviewRepository productReview,
-            IReportProductReviewRepository reportProductReview)
+            IReportProductReviewRepository reportProductReview,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub,
+            IMapper mapper
+            )
         {
             _user = user;
             _productReview = productReview;
             _reportProductReview = reportProductReview;
+            _notification = notification;
+            _hub = hub;
+            _mapper = mapper;
         }
 
         // POST: api/ReportProductReviews/MakeReport
@@ -41,34 +55,61 @@ namespace BE_TKDecor.Controllers
             var report = await _reportProductReview
                 .FindByUserIdAndProductReviewId(user.UserId, reportDto.ProductReviewReportedId);
 
-            bool isAdd = false;
-            // create a new report of that user for that product review
-            // if there is no report that product review is in the peding state
-            if (report == null)
-            {
-                isAdd = true;
-                report = new ReportProductReview()
-                {
-                    UserReportId = user.UserId,
-                    UserReport = user,
-                    ProductReviewReportedId = productReview.ProductReviewId,
-                    ProductReviewReported = productReview,
-                };
-            }
-            report.IsDelete = false;
-            report.UpdatedAt = DateTime.Now;
-            report.ReportStatus = ReportStatus.Pending;
-            report.Reason = reportDto.Reason;
+            bool isAdd = true;
+
+            if (report != null && report.ReportStatus == ReportStatus.Pending)
+                isAdd = false;
 
             try
             {
                 if (isAdd)
                 {
-                    await _reportProductReview.Add(report);
+                    ReportProductReview newReport = new()
+                    {
+                        UserReportId = user.UserId,
+                        ProductReviewReportedId = productReview.ProductReviewId,
+                        ReportStatus = ReportStatus.Pending,
+                        Reason = reportDto.Reason
+                    };
+                    await _reportProductReview.Add(newReport);
                 }
                 else
                 {
+                    report.IsDelete = false;
+                    report.Reason = reportDto.Reason;
+                    report.UpdatedAt = DateTime.Now;
                     await _reportProductReview.Update(report);
+                }
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Đã báo cáo đánh giá của {productReview.User.FullName} thành công"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
+                // add notification for staff and admin
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                foreach (var staff in listStaffOrAdmin)
+                {
+                    // add notification for user
+                    Notification notiForStaffOrAdmin = new()
+                    {
+                        UserId = staff.UserId,
+                        User = staff,
+                        Message = $"{user.Email} đã báo cáo đánh giá của {productReview.User.FullName}"
+                    };
+                    await _notification.Add(notiForStaffOrAdmin);
+                    // notification signalR
+                    await _hub.Clients.User(staff.UserId.ToString())
+                        .SendAsync(Common.NewNotification,
+                        _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
                 }
 
                 return Ok(new ApiResponse { Success = true });

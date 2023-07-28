@@ -9,6 +9,6 @@ namespace BE_TKDecor.Core.Dtos.Order
         [MaxLength(255)]
         public string? CodeCoupon { get; set; }
 
-        public string Note { get; set; } = null!;
+        public string? Note { get; set; }
     }
 }

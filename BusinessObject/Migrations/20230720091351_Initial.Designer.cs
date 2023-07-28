@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    [Migration("20230711102113_Initial")]
+    [Migration("20230720091351_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -162,12 +162,21 @@ namespace BusinessObject.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
-            modelBuilder.Entity("BusinessObject.Chat", b =>
+            modelBuilder.Entity("BusinessObject.ChatMessage", b =>
                 {
-                    b.Property<Guid>("ChatId")
+                    b.Property<Guid>("ChatMessageId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("chat_id");
+                        .HasColumnName("chat_message_id");
+
+                    b.Property<Guid>("ChatRoomId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("chat_room_id");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("content");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
@@ -181,15 +190,6 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_read");
 
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("message");
-
-                    b.Property<Guid>("ReceiverId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("receiver_id");
-
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("sender_id");
@@ -198,14 +198,55 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("ChatId")
-                        .HasName("PK__Chat__0BBF6EE6112EA443");
+                    b.HasKey("ChatMessageId")
+                        .HasName("PK__ChatMessage__59CF6536A836CD8D");
 
-                    b.HasIndex(new[] { "ReceiverId" }, "IX_Chat_receiver_id");
+                    b.HasIndex(new[] { "ChatRoomId" }, "IX_ChatMessage_chat_room_id");
 
-                    b.HasIndex(new[] { "SenderId" }, "IX_Chat_sender_id");
+                    b.HasIndex(new[] { "SenderId" }, "IX_ChatMessage_sender_id");
 
-                    b.ToTable("Chat", (string)null);
+                    b.ToTable("ChatMessage", (string)null);
+                });
+
+            modelBuilder.Entity("BusinessObject.ChatRoom", b =>
+                {
+                    b.Property<Guid>("ChatRoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("chat_room_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
+
+                    b.Property<bool>("IsClose")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_close");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_delete");
+
+                    b.Property<Guid>("StaffId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("staff_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("ChatRoomId")
+                        .HasName("PK__ChatRoom__58CF6536A836CD8D");
+
+                    b.HasIndex(new[] { "CustomerId" }, "IX_ChatRoom_customer_id");
+
+                    b.HasIndex(new[] { "StaffId" }, "IX_ChatRoom_staff_id");
+
+                    b.ToTable("ChatRoom", (string)null);
                 });
 
             modelBuilder.Entity("BusinessObject.Coupon", b =>
@@ -341,7 +382,6 @@ namespace BusinessObject.Migrations
                         .HasColumnName("is_delete");
 
                     b.Property<string>("Note")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("note");
 
@@ -473,8 +513,7 @@ namespace BusinessObject.Migrations
                     b.HasIndex(new[] { "CategoryId" }, "IX_Product_category_id");
 
                     b.HasIndex(new[] { "Slug" }, "IX_Product_slug")
-                        .IsUnique()
-                        .HasFilter("([slug] IS NOT NULL)");
+                        .IsUnique();
 
                     b.ToTable("Product", (string)null);
                 });
@@ -914,9 +953,27 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("address");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("city");
+
+                    b.Property<int>("CityCode")
+                        .HasColumnType("int")
+                        .HasColumnName("city_code");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("created_at");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("district");
+
+                    b.Property<int>("DistrictCode")
+                        .HasColumnType("int")
+                        .HasColumnName("district_code");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -937,6 +994,11 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(max)")
                         .HasColumnName("phone");
 
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("street");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at");
@@ -944,6 +1006,15 @@ namespace BusinessObject.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_id");
+
+                    b.Property<string>("Ward")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ward");
+
+                    b.Property<int>("WardCode")
+                        .HasColumnType("int")
+                        .HasColumnName("ward_code");
 
                     b.HasKey("UserAddressId")
                         .HasName("PK__UserAddr__FEC0352E4E3DC7B4");
@@ -983,23 +1054,39 @@ namespace BusinessObject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BusinessObject.Chat", b =>
+            modelBuilder.Entity("BusinessObject.ChatMessage", b =>
                 {
-                    b.HasOne("BusinessObject.User", "Receiver")
-                        .WithMany("ChatReceivers")
-                        .HasForeignKey("ReceiverId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Chat_User1");
+                    b.HasOne("BusinessObject.ChatRoom", "ChatRoom")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BusinessObject.User", "Sender")
-                        .WithMany("ChatSenders")
+                        .WithMany("ChatMessages")
                         .HasForeignKey("SenderId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Chat_User");
+                        .IsRequired();
 
-                    b.Navigation("Receiver");
+                    b.Navigation("ChatRoom");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("BusinessObject.ChatRoom", b =>
+                {
+                    b.HasOne("BusinessObject.User", "Customer")
+                        .WithMany("CustomerChatRooms")
+                        .HasForeignKey("CustomerId")
+                        .IsRequired();
+
+                    b.HasOne("BusinessObject.User", "Staff")
+                        .WithMany("StaffChatRooms")
+                        .HasForeignKey("StaffId")
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("BusinessObject.Notification", b =>
@@ -1200,6 +1287,11 @@ namespace BusinessObject.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("BusinessObject.ChatRoom", b =>
+                {
+                    b.Navigation("ChatMessages");
+                });
+
             modelBuilder.Entity("BusinessObject.Coupon", b =>
                 {
                     b.Navigation("Orders");
@@ -1243,9 +1335,9 @@ namespace BusinessObject.Migrations
 
                     b.Navigation("Carts");
 
-                    b.Navigation("ChatReceivers");
+                    b.Navigation("ChatMessages");
 
-                    b.Navigation("ChatSenders");
+                    b.Navigation("CustomerChatRooms");
 
                     b.Navigation("Notifications");
 
@@ -1262,6 +1354,8 @@ namespace BusinessObject.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("ReportProductReviews");
+
+                    b.Navigation("StaffChatRooms");
 
                     b.Navigation("UserAddresses");
                 });

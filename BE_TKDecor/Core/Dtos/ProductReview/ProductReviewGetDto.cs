@@ -15,8 +15,10 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
         public string Description { get; set; } = null!;
 
-        public int Like { get; set; }
+        public int TotalLike { get; set; }
 
-        public int DisLike { get; set; }
+        public int TotalDisLike { get; set; }
+
+        public string InteractionOfUser { get; set; } = Interaction.Normal.ToString();
     }
 }

@@ -14,5 +14,11 @@ namespace DataAccess.Repository
 
         public async Task Update(RefreshToken refreshToken)
             => await RefreshTokenDAO.Update(refreshToken);
+
+        public async Task Delete(RefreshToken refreshToken)
+            => await RefreshTokenDAO.Delete(refreshToken);
+
+        public async Task<List<RefreshToken>> FindByUserId(Guid userId)
+            => await RefreshTokenDAO.FindByUserId(userId);
     }
 }

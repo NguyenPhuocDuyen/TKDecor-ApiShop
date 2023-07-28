@@ -152,29 +152,28 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Chat",
+                name: "ChatRoom",
                 columns: table => new
                 {
-                    chat_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    sender_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    receiver_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    is_read = table.Column<bool>(type: "bit", nullable: false),
+                    chat_room_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    staff_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    customer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    is_close = table.Column<bool>(type: "bit", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     is_delete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Chat__0BBF6EE6112EA443", x => x.chat_id);
+                    table.PrimaryKey("PK__ChatRoom__58CF6536A836CD8D", x => x.chat_room_id);
                     table.ForeignKey(
-                        name: "FK_Chat_User",
-                        column: x => x.sender_id,
+                        name: "FK_ChatRoom_User_customer_id",
+                        column: x => x.customer_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                     table.ForeignKey(
-                        name: "FK_Chat_User1",
-                        column: x => x.receiver_id,
+                        name: "FK_ChatRoom_User_staff_id",
+                        column: x => x.staff_id,
                         principalTable: "User",
                         principalColumn: "user_id");
                 });
@@ -212,7 +211,7 @@ namespace BusinessObject.Migrations
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    note = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     total_price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -265,6 +264,13 @@ namespace BusinessObject.Migrations
                     full_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     phone = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    city_code = table.Column<int>(type: "int", nullable: false),
+                    city = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    district_code = table.Column<int>(type: "int", nullable: false),
+                    district = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ward_code = table.Column<int>(type: "int", nullable: false),
+                    ward = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    street = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     is_default = table.Column<bool>(type: "bit", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -410,6 +416,35 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMessage",
+                columns: table => new
+                {
+                    chat_message_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    chat_room_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    sender_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    is_read = table.Column<bool>(type: "bit", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
+                    is_delete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__ChatMessage__59CF6536A836CD8D", x => x.chat_message_id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatRoom_chat_room_id",
+                        column: x => x.chat_room_id,
+                        principalTable: "ChatRoom",
+                        principalColumn: "chat_room_id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_User_sender_id",
+                        column: x => x.sender_id,
+                        principalTable: "User",
+                        principalColumn: "user_id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderDetail",
                 columns: table => new
                 {
@@ -517,14 +552,24 @@ namespace BusinessObject.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chat_receiver_id",
-                table: "Chat",
-                column: "receiver_id");
+                name: "IX_ChatMessage_chat_room_id",
+                table: "ChatMessage",
+                column: "chat_room_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chat_sender_id",
-                table: "Chat",
+                name: "IX_ChatMessage_sender_id",
+                table: "ChatMessage",
                 column: "sender_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatRoom_customer_id",
+                table: "ChatRoom",
+                column: "customer_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatRoom_staff_id",
+                table: "ChatRoom",
+                column: "staff_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Coupon_code",
@@ -578,8 +623,7 @@ namespace BusinessObject.Migrations
                 name: "IX_Product_slug",
                 table: "Product",
                 column: "slug",
-                unique: true,
-                filter: "([slug] IS NOT NULL)");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductFavorite_ProductId",
@@ -657,7 +701,7 @@ namespace BusinessObject.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "Chat");
+                name: "ChatMessage");
 
             migrationBuilder.DropTable(
                 name: "Notification");
@@ -685,6 +729,9 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserAddress");
+
+            migrationBuilder.DropTable(
+                name: "ChatRoom");
 
             migrationBuilder.DropTable(
                 name: "Order");

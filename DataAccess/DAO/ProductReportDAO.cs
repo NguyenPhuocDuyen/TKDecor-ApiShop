@@ -47,7 +47,7 @@ namespace DataAccess.DAO
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReported)
                     .FirstOrDefaultAsync(x => x.UserReportId == userId
-                        && x.ProductReportId == productId);
+                        && x.ProductReportedId == productId);
                 return report;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

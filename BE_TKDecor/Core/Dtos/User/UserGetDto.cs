@@ -18,6 +18,6 @@ namespace BE_TKDecor.Core.Dtos.User
         
         public string AvatarUrl { get; set; } = null!;
 
-        public bool IsSubscriber { get; set; }
+        //public bool IsSubscriber { get; set; }
     }
 }

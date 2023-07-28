@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers
 
             var currentDay = DateTime.Now;
             if (currentDay < coupon.StartDate || currentDay > coupon.EndDate || !coupon.IsActive)
-                return BadRequest(new ApiResponse { Message = "Coupon is not available!" });
+                return BadRequest(new ApiResponse { Message = "Phiếu giảm giá không có sẵn!" });
 
             var result = _mapper.Map<CouponGetDto>(coupon);
             return Ok(new ApiResponse { Success = true, Data = result });

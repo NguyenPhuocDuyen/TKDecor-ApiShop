@@ -32,7 +32,9 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<CategoryCreateDto, Category>();
 
             // product
-            CreateMap<ProductCreateDto, Product>();
+            CreateMap<ProductCreateDto, Product>()
+                .ForMember(dest => dest.ProductImages, opt => opt.Ignore());
+
             CreateMap<Product, ProductGetDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
@@ -53,7 +55,6 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // coupon 
             CreateMap<CouponCreateDto, Coupon>();
-            CreateMap<CouponUpdateDto, Coupon>();
             CreateMap<Coupon, CouponGetDto>();
 
             // cart 
@@ -74,8 +75,8 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<ProductReview,  ProductReviewGetDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
-                .ForMember(dest => dest.Like, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.Like).Count()))
-                .ForMember(dest => dest.DisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
+                .ForMember(dest => dest.TotalLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.Like).Count()))
+                .ForMember(dest => dest.TotalDisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
 
             // product review interaction
             CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();

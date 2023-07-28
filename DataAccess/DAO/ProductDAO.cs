@@ -16,6 +16,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                    .Include(x => x.ProductFavorites)
                         //.ThenInclude(x => x.User)
                     .ToListAsync();
                 return list;
@@ -34,26 +35,9 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                    .Include(x => x.ProductFavorites)
                         //.ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.ProductId == id);
-                return product;
-            }
-            catch (Exception ex) { throw new Exception(ex.Message); }
-        }
-
-        internal static async Task<Product?> FindByName(string name)
-        {
-            try
-            {
-                using var context = new TkdecorContext();
-                var product = await context.Products
-                    .Include(x => x.Category)
-                    .Include(x => x.OrderDetails)
-                    .Include(x => x.Product3DModel)
-                    .Include(x => x.ProductImages)
-                    .Include(x => x.ProductReviews)
-                        //.ThenInclude(x => x.User)
-                    .FirstOrDefaultAsync(x => x.Name == name);
                 return product;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
@@ -70,6 +54,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
                     .Include(x => x.ProductReviews)
+                    .Include(x => x.ProductFavorites)
                         //.ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.Slug == slug);
                 return product;

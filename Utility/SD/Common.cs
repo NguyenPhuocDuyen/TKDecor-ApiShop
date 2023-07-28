@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Utility.SD
 {
-    public enum Role
+    public class Common
     {
-        Admin,
-        Staff,
-        Customer,
+        public const string NewNotification = "NewNotification";
     }
 }

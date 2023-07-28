@@ -21,6 +21,6 @@ namespace DataAccess.Repository
             => await Product3DModelDAO.GetAll();
 
         public async Task Update(Product3DModel model)
-            => await Update(model);
+            => await Product3DModelDAO.Update(model);
     }
 }

@@ -8,7 +8,7 @@ namespace DataAccess.Data
 {
     public class DbInitializer : IDbInitializer
     {
-        private Random random = new();
+        private readonly Random random = new();
 
         private readonly TkdecorContext _db = new();
 
@@ -23,12 +23,12 @@ namespace DataAccess.Data
             }
             catch (Exception) { }
 
+            AddModel3D();
             await AddUser();
             await AddArticles();
             AddCategories();
             await AddCoupons();
             await AddNotifications();
-            await AddMessages();
             await AddProducts();
             await AddProductImages();
             await AddCarts();
@@ -38,6 +38,25 @@ namespace DataAccess.Data
             await AddOrders();
             await AddProductReview();
             await AddReportProductReview();
+        }
+
+        private void AddModel3D()
+        {
+            if (_db.Product3Dmodels.Any()) return;
+
+            var mode3dDefault = new Faker<Product3DModel>();
+            mode3dDefault.RuleFor(x => x.ModelName, f => f.Lorem.Word());
+            mode3dDefault.RuleFor(x => x.VideoUrl, f => "");
+            mode3dDefault.RuleFor(x => x.ModelUrl, "https://cdn-luma.com/e13d5b281b9c97e6fbc3defda9a2812bcca09f323705dff6b77646f0d5655dc9.glb");
+            mode3dDefault.RuleFor(x => x.ThumbnailUrl, "https://fronty.com/static/uploads/01.22-02.22/pexels-uzunov-rostislav-5011647.jpg");
+
+            for (var i = 0; i < 4; i++)
+            {
+                Product3DModel newModel = mode3dDefault.Generate();
+                newModel.ModelName += i;
+                _db.Product3Dmodels.Add(newModel);
+            }
+            _db.SaveChanges();
         }
 
         private async Task AddProductImages()
@@ -321,27 +340,6 @@ namespace DataAccess.Data
             _db.SaveChanges();
         }
 
-        private async Task AddMessages()
-        {
-            if (_db.Chats.Any()) return;
-
-            var messageSetDefaults = new Faker<Chat>();
-            messageSetDefaults.RuleFor(x => x.Message, f => f.Lorem.Sentence());
-
-            var users = await _db.Users.ToListAsync();
-            foreach (var sender in users)
-            {
-                foreach (var receiver in users)
-                {
-                    Chat message = messageSetDefaults.Generate();
-                    message.Sender = sender;
-                    message.Receiver = receiver;
-                    _db.Chats.Add(message);
-                }
-            }
-            _db.SaveChanges();
-        }
-
         private async Task AddCoupons()
         {
             if (_db.Coupons.Any()) return;
@@ -404,7 +402,7 @@ namespace DataAccess.Data
             var categorySetDefaults = new Faker<Category>();
             categorySetDefaults.RuleFor(x => x.Name, f => f.Lorem.Word());
             categorySetDefaults.RuleFor(x => x.Thumbnail, "https://takepsd.com/wp-content/uploads/2020/11/116020272.jpg");
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 8; i++)
             {
                 Category category = categorySetDefaults.Generate();
                 category.Name = $"Category {i}: {category.Name}";
@@ -464,13 +462,20 @@ namespace DataAccess.Data
 
             var userAddressSetDefaults = new Faker<UserAddress>();
             userAddressSetDefaults.RuleFor(x => x.Address, f => f.Lorem.Sentence());
+            userAddressSetDefaults.RuleFor(x => x.CityCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.City, "Thành phố Hà Nội");
+            userAddressSetDefaults.RuleFor(x => x.DistrictCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.District, "Quận Ba Đình");
+            userAddressSetDefaults.RuleFor(x => x.WardCode, 1);
+            userAddressSetDefaults.RuleFor(x => x.Ward, "Phường Phúc Xá");
+            userAddressSetDefaults.RuleFor(x => x.Street, "324 hẻm 6");
 
             // Lấy danh sách các giá trị enum của OrderStatus
             Array genderValues = Enum.GetValues(typeof(Gender));
 
             // add customer and seller
             //Role? roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == Role.Customer);
-            List<Role> roles = new() { Role.Seller, Role.Customer };
+            List<Role> roles = new() { Role.Staff, Role.Customer };
             foreach (var role in roles)
             {
                 for (int i = 0; i < 10; i++)

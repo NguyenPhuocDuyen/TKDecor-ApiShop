@@ -8,6 +8,8 @@ namespace BE_TKDecor.Core.Dtos.Product
     {
         public Guid ProductId { get; set; }
 
+        public Guid CategoryId { get; set; }
+
         public string CategoryName { get; set; } = null!;
 
         public string Name { get; set; } = null!;
@@ -23,6 +25,8 @@ namespace BE_TKDecor.Core.Dtos.Product
         public float AverageRate { get; set; }
 
         public int CountRate { get; set; }
+
+        public bool IsFavorite { get; set; } = false;
 
         public List<string> ProductImages { get; set; } = new List<string>();
 

@@ -9,7 +9,7 @@ namespace Utility.SD
     public class RoleContent
     {
         public const string Admin = "Admin";
-        public const string Seller = "Seller";
+        public const string Staff = "Staff";
         public const string Customer = "Customer";
     }
 }

@@ -79,6 +79,7 @@ namespace BE_TKDecor.Controllers
             }
             else
             {
+                cartDb.UpdatedAt = DateTime.Now;
                 if (cartDb.IsDelete == true)
                 {
                     cartDb.IsDelete = false;
@@ -110,7 +111,7 @@ namespace BE_TKDecor.Controllers
                 }
 
                 if (!quanlityIsValid)
-                    return BadRequest(new ApiResponse { Message = "Exceeding the number, still plus max" });
+                    return BadRequest(new ApiResponse { Message = "Vượt quá số lượng trong kho nhưng vẫn cộng tối đa!" });
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -127,12 +128,13 @@ namespace BE_TKDecor.Controllers
 
             var cartDb = await _cart.FindById(id);
             if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
-                return NotFound(new ApiResponse { Message = "Cart not found!" });
+                return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
 
             // Variable check number of valid products
             bool quanlityIsValid = true;
 
             cartDb.Quantity = cartDto.Quantity;
+            cartDb.UpdatedAt = DateTime.Now;
 
             if (cartDb.Quantity > cartDb.Product.Quantity)
             {
@@ -145,11 +147,11 @@ namespace BE_TKDecor.Controllers
                 await _cart.Update(cartDb);
 
                 if (!quanlityIsValid)
-                    return Ok(new ApiResponse { Success = true, Message = "Exceeding the number, still plus max!" });
+                    return Ok(new ApiResponse { Success = true, Message = "Vượt quá số lượng trong kho nhưng vẫn cộng tối đa!" });
 
                 return Ok(new ApiResponse { Success = true });
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Error }); }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data}); }
         }
 
         // DELETE api/Carts/Delete/5
@@ -163,7 +165,7 @@ namespace BE_TKDecor.Controllers
             // Find and delete cart
             var cartDb = await _cart.FindById(id);
             if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
-                return NotFound(new ApiResponse { Message = "Cart not found!" });
+                return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
 
             cartDb.IsDelete = true;
             cartDb.UpdatedAt = DateTime.Now;

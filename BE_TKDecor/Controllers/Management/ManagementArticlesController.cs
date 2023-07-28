@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
+using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Hubs;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Utility;
 using Utility.SD;
 
@@ -15,18 +18,23 @@ namespace BE_TKDecor.Controllers.Management
     //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
     public class ManagementArticlesController : ControllerBase
     {
-
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IArticleRepository _article;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public ManagementArticlesController(IMapper mapper,
             IUserRepository user,
-            IArticleRepository article)
+            IArticleRepository article,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub)
         {
             _mapper = mapper;
             _user = user;
             _article = article;
+            _notification = notification;
+            _hub = hub;
         }
 
         // GET: api/ManagementArticles/GetAll
@@ -51,23 +59,59 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null || user.IsDelete)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var articleDb = await _article.FindByTitle(articleDto.Title);
-            if (articleDb != null)
-                return BadRequest(new ApiResponse { Message = "Article already exist!" });
-
             var newSlug = Slug.GenerateSlug(articleDto.Title);
-            articleDb = await _article.FindBySlug(newSlug);
-            if (articleDb != null)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+            var articleDb = await _article.FindBySlug(newSlug);
 
+            //bool isAdd = true;
+
+            if (articleDb == null)
+                newSlug += Guid.NewGuid();
+            //{
             // create new article info
-            Article newArticle = _mapper.Map<Article>(articleDto);
-            newArticle.UserId = user.UserId;
-            newArticle.Slug = Slug.GenerateSlug(newArticle.Title);
-            newArticle.IsPublish = false;
+            articleDb = new Article();
+            articleDb = _mapper.Map<Article>(articleDto);
+            articleDb.Slug = newSlug;
+            articleDb.UserId = user.UserId;
+            //}
+            //else
+            //{
+            //    // if article exits and not delete 
+            //    if (!articleDb.IsDelete)
+            //        return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+
+            //    articleDb.IsDelete = false;
+            //    isAdd = false;
+
+            //    articleDb.Title = articleDto.Title;
+            //    articleDb.Content = articleDto.Content;
+            //    articleDb.Thumbnail = articleDto.Thumbnail;
+            //    articleDb.IsPublish = articleDto.IsPublish;
+            //    articleDb.UpdatedAt = DateTime.Now;
+            //}
+
             try
             {
-                await _article.Add(newArticle);
+                //if (isAdd)
+                //{
+                    await _article.Add(articleDb);
+                //}
+                //else
+                //{
+                //    await _article.Update(articleDb);
+                //}
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    User = user,
+                //    Message = $"Thêm bài viết mới thành công. Tiêu đề: " + articleDb.Title
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -88,7 +132,7 @@ namespace BE_TKDecor.Controllers.Management
             var newSlug = Slug.GenerateSlug(articleDto.Title);
             var articleSlug = await _article.FindBySlug(newSlug);
             if (articleSlug != null && articleSlug.ArticleId != id)
-                return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
+                return BadRequest(new ApiResponse { Message = "Vui lòng đổi tên do dữ liệu trùng lặp!" });
 
             // update info article
             articleDb.Title = articleDto.Title;
@@ -98,6 +142,20 @@ namespace BE_TKDecor.Controllers.Management
             try
             {
                 await _article.Update(articleDb);
+
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    User = user,
+                //    Message = $"Cập nhật bài viết mới thành công. Tiêu đề: " + articleDb.Title
+                //};
+                //await _notification.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(Common.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
