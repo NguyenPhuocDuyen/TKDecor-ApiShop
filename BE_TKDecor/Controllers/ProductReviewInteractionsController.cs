@@ -30,9 +30,9 @@ namespace BE_TKDecor.Controllers
             _interaction = interaction;
         }
 
-        // GET: api/ProductReviews/GetInteraction
+        // GET: api/ProductReviews/GetInteractionOfUser
         [HttpGet("GetInteractionOfUser")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetInteractionOfUser()
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)
@@ -62,7 +62,7 @@ namespace BE_TKDecor.Controllers
             var interactionReview = await _interaction
                 .FindByUserIdAndProductReviewId(user.UserId, interactionDto.ProductReviewId);
 
-            if (!Enum.TryParse<Interaction>(interactionDto.Interaction, out Interaction status))
+            if (!Enum.TryParse(interactionDto.Interaction, out Interaction status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
 
             bool isAdd = false;

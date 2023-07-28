@@ -6,10 +6,15 @@ namespace BE_TKDecor.Hubs
     [Authorize]
     public class NotificationHub : Hub
     {
-        //// Phương thức này được gọi khi có thông báo mới
-        //public async Task SendNotificationToUser(string userId, string notificationMessage)
+        //public async Task JoinGroup(Guid userId)
         //{
-        //    await Clients.User(userId).SendAsync("ReceiveNotification", notificationMessage);
+        //    await Groups.AddToGroupAsync(Context.ConnectionId, userId.ToString());
+        //}
+
+        //public async Task LeaveRoom(Guid userId)
+        //{
+        //    // Rời khỏi group tương ứng với userId
+        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId.ToString());
         //}
     }
 }

@@ -5,6 +5,10 @@ using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using BE_TKDecor.Core.Dtos.Notification;
+using Microsoft.AspNetCore.SignalR;
+using BE_TKDecor.Hubs;
+using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -18,18 +22,25 @@ namespace BE_TKDecor.Controllers
         private readonly IProductRepository _product;
         private readonly IProductReviewRepository _productReview;
         private readonly IOrderDetailRepository _orderDetail;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public ProductReviewsController(IMapper mapper,
             IUserRepository user,
             IProductRepository product,
             IProductReviewRepository productReview,
-            IOrderDetailRepository orderDetail)
+            IOrderDetailRepository orderDetail,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub
+            )
         {
             _mapper = mapper;
             _user = user;
             _product = product;
             _productReview = productReview;
             _orderDetail = orderDetail;
+            _notification = notification;
+            _hub = hub;
         }
 
         // POST: api/ProductReviews/Review
@@ -81,6 +92,20 @@ namespace BE_TKDecor.Controllers
                 {
                     await _productReview.Update(productReview);
                 }
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Đã đánh giá sản phẩm {product.Name} thành công"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

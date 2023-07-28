@@ -96,7 +96,7 @@ namespace BE_TKDecor.Controllers.Management
                 {
                     await _coupon.Update(couponCode);
                 }
-                return Ok(new ApiResponse { Success = true });
+                return Ok(new ApiResponse { Success = true , Data = couponCode });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

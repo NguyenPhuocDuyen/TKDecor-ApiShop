@@ -8,6 +8,9 @@ using AutoMapper;
 using Utility;
 using Utility.Mail;
 using Utility.SD;
+using BE_TKDecor.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using BE_TKDecor.Core.Dtos.Notification;
 
 namespace BE_TKDecor.Controllers
 {
@@ -19,14 +22,21 @@ namespace BE_TKDecor.Controllers
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly ISendMailService _sendMailService;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public UsersController(IMapper mapper,
             IUserRepository user,
-            ISendMailService sendMailService)
+            ISendMailService sendMailService,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub
+            )
         {
             _mapper = mapper;
             _user = user;
             _sendMailService = sendMailService;
+            _notification = notification;
+            _hub = hub;
         }
 
         // GET: api/Users/GetUserInfo
@@ -63,6 +73,20 @@ namespace BE_TKDecor.Controllers
             try
             {
                 await _user.Update(user);
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Cập nhật thông tin thành công"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -100,6 +124,19 @@ namespace BE_TKDecor.Controllers
                 };
                 // send mail
                 await _sendMailService.SendMail(mailContent);
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Bạn đã yêu cầu thay đổi mật khẩu"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -165,6 +202,20 @@ namespace BE_TKDecor.Controllers
                     await _sendMailService.SendMail(mailContent);
                     return BadRequest(new ApiResponse { Message = "Hết thời gian mã xác nhận đổi mật khẩu. Vui lòng kiểm tra lại mail để xem mã mới!" });
                 }
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Đổi mật khẩu thành công"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

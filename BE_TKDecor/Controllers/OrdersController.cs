@@ -6,6 +6,9 @@ using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.Order;
 using Utility.SD;
+using BE_TKDecor.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using BE_TKDecor.Core.Dtos.Notification;
 
 namespace BE_TKDecor.Controllers
 {
@@ -20,13 +23,17 @@ namespace BE_TKDecor.Controllers
         private readonly ICouponRepository _coupon;
         private readonly IOrderRepository _order;
         private readonly ICartRepository _cart;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public OrdersController(IMapper mapper,
             IUserRepository user,
             IUserAddressRepository userAddress,
             ICouponRepository coupon,
             IOrderRepository order,
-            ICartRepository cart)
+            ICartRepository cart,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub)
         {
             _mapper = mapper;
             _user = user;
@@ -34,6 +41,8 @@ namespace BE_TKDecor.Controllers
             _coupon = coupon;
             _order = order;
             _cart = cart;
+            _notification = notification;
+            _hub = hub;
         }
 
         // GET: api/Orders/GetAllOfUser
@@ -165,6 +174,36 @@ namespace BE_TKDecor.Controllers
                         await _cart.Update(cart);
                     }
                 }
+
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = "Đặt hàng thành công. Mã đơn hàng: " + newOrder.OrderId
+                };
+                await _notification.Add(newNotification);
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification, 
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
+                // add notification for staff and admin
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                foreach (var staff in listStaffOrAdmin)
+                {
+                    // add notification for user
+                    Notification notiForStaffOrAdmin = new()
+                    {
+                        UserId = staff.UserId,
+                        User = staff,
+                        Message = $"{user.Email} đã đặt đơn hàng. Mã đơn hàng: {newOrder.OrderId}"
+                    };
+                    await _notification.Add(notiForStaffOrAdmin);
+                    // notification signalR
+                    await _hub.Clients.User(staff.UserId.ToString())
+                        .SendAsync(Common.NewNotification,
+                        _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
+                }
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -176,7 +215,7 @@ namespace BE_TKDecor.Controllers
         {
             if (id != orderUpdateStatusDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-            
+
             var user = await GetUser();
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
@@ -186,7 +225,7 @@ namespace BE_TKDecor.Controllers
             if (order == null || order.UserId != user.UserId || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (!Enum.TryParse<OrderStatus>(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
+            if (!Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
 
             // update order status
@@ -209,11 +248,51 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
+            var message = "";
+            if (status == OrderStatus.Canceled)
+                message = "huỷ";
+            else if (status == OrderStatus.Received)
+                message = "nhận";
+            else if (status == OrderStatus.Refund)
+                message = "hoàn trả";
+
             order.OrderStatus = status;
             order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Bạn đã {message} đơn hàng thành công. Mã đơn hàng: " + order.OrderId
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification, 
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
+                // add notification for staff and admin
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                foreach (var staff in listStaffOrAdmin)
+                {
+                    // add notification for user
+                    Notification notiForStaffOrAdmin = new()
+                    {
+                        UserId = staff.UserId,
+                        User = staff,
+                        Message = $"{user.Email} đã {message} đơn hàng. Mã đơn hàng: {order.OrderId}"
+                    };
+                    await _notification.Add(notiForStaffOrAdmin);
+                    // notification signalR
+                    await _hub.Clients.User(staff.UserId.ToString())
+                        .SendAsync(Common.NewNotification,
+                        _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
+                }
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

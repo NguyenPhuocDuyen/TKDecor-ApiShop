@@ -5,6 +5,10 @@ using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using Utility.SD;
+using Microsoft.AspNetCore.SignalR;
+using BE_TKDecor.Hubs;
+using AutoMapper;
+using BE_TKDecor.Core.Dtos.Notification;
 
 namespace BE_TKDecor.Controllers
 {
@@ -16,15 +20,24 @@ namespace BE_TKDecor.Controllers
         private readonly IUserRepository _user;
         private readonly IProductRepository _product;
         private readonly IProductReportRepository _productReport;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IMapper _mapper;
 
         public ProductReportsController(IUserRepository user,
             IProductRepository product,
-            IProductReportRepository productReport
+            IProductReportRepository productReport,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub,
+            IMapper mapper
             )
         {
             _user = user;
             _product = product;
             _productReport = productReport;
+            _notification = notification;
+            _hub = hub;
+            _mapper = mapper;
         }
 
         // POST: api/ProductReports/MakeProductReport
@@ -69,6 +82,37 @@ namespace BE_TKDecor.Controllers
                 else
                 {
                     await _productReport.Update(report);
+                }
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = $"Báo cáo sản phẩm {product.Name} thành công"
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
+                // add notification for staff and admin
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                foreach (var staff in listStaffOrAdmin)
+                {
+                    // add notification for user
+                    Notification notiForStaffOrAdmin = new()
+                    {
+                        UserId = staff.UserId,
+                        User = staff,
+                        Message = $"{user.Email} đã cáo sản phẩm {product.Name}"
+                    };
+                    await _notification.Add(notiForStaffOrAdmin);
+                    // notification signalR
+                    await _hub.Clients.User(staff.UserId.ToString())
+                        .SendAsync(Common.NewNotification,
+                        _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
                 }
 
                 return Ok(new ApiResponse { Success = true });

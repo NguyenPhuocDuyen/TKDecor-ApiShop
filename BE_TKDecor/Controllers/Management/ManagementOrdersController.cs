@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Hubs;
+using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
@@ -15,12 +19,18 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IOrderRepository _order;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
 
         public ManagementOrdersController(IMapper mapper,
-            IOrderRepository order)
+            IOrderRepository order,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub)
         {
             _mapper = mapper;
             _order = order;
+            _notification = notification;
+            _hub = hub;
         }
 
         // POST: api/ManagementOrders/GetOrder
@@ -61,7 +71,7 @@ namespace BE_TKDecor.Controllers.Management
 
             if (!Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-            
+
             // update order status
             // customer can cancel, refund, receive the order
             // Admin or seller can confirm the order for delivery
@@ -76,11 +86,30 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
+            var message = "";
+            if (status == OrderStatus.Delivering)
+                message = "được xác nhận";
+            else if (status == OrderStatus.Canceled)
+                message = "bị huỷ";
+
             order.OrderStatus = status;
             order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = order.UserId,
+                    Message = $"Đơn hàng của bạn đã {message}. Mã đơn hàng: " + order.OrderId
+                };
+                await _notification.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(order.UserId.ToString())
+                    .SendAsync(Common.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

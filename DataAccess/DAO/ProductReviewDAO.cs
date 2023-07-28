@@ -11,6 +11,7 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var productReview = await context.ProductReviews
+                    .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
                 return productReview;
             }
@@ -23,6 +24,7 @@ namespace DataAccess.DAO
             {
                 using var context = new TkdecorContext();
                 var productReview = await context.ProductReviews
+                    .Include(x => x.User)
                     .FirstOrDefaultAsync(x => x.ProductReviewId == id);
                 return productReview;
             }

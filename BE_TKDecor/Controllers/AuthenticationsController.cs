@@ -14,6 +14,9 @@ using AutoMapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.Extensions.Options;
 using Utility.SD;
+using BE_TKDecor.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using BE_TKDecor.Core.Dtos.Notification;
 
 namespace BE_TKDecor.Controllers
 {
@@ -25,17 +28,25 @@ namespace BE_TKDecor.Controllers
         private readonly ISendMailService _sendMailService;
         private readonly IUserRepository _user;
         private readonly IRefreshTokenRepository _refreshToken;
+        private readonly INotificationRepository _notification;
+        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IMapper _mapper;
 
         public AuthenticationsController(ISendMailService sendMailService,
             IOptions<JwtSettings> options,
-            IMapper mapper,
             IUserRepository user,
-            IRefreshTokenRepository refreshToken)
+            IRefreshTokenRepository refreshToken,
+            INotificationRepository notification,
+            IHubContext<NotificationHub> hub,
+            IMapper mapper)
         {
             _sendMailService = sendMailService;
+            _jwtSettings = options.Value;
             _user = user;
             _refreshToken = refreshToken;
-            _jwtSettings = options.Value;
+            _notification = notification;
+            _hub = hub;
+            _mapper = mapper;
         }
 
         // POST: api/Authentications/Register
@@ -158,6 +169,14 @@ namespace BE_TKDecor.Controllers
                 {
                     return BadRequest(new ApiResponse { Message = "Mã xác nhận đã hết hạn sử dụng. Vui lòng kiểm tra lại mã xác nhận mới trong email của bạn!" });
                 }
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = "Chào mừng bạn tới web TKDecor của chúng tôi"
+                };
+                await _notification.Add(newNotification);
+                
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -285,6 +304,15 @@ namespace BE_TKDecor.Controllers
             {
                 //update user/
                 await _user.Update(user);
+
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = "Bạn đã yêu cầu quên mật khẩu"
+                };
+                await _notification.Add(newNotification);
+                await _hub.Clients.User(user.UserId.ToString()).SendAsync(Common.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -324,6 +352,16 @@ namespace BE_TKDecor.Controllers
             {
                 //update to database and return info user
                 await _user.Update(user);
+
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    Message = "Xác nhận mật khẩu mới thành công"
+                };
+                await _notification.Add(newNotification);
+                await _hub.Clients.User(user.UserId.ToString()).SendAsync(Common.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -426,6 +464,7 @@ namespace BE_TKDecor.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim("UserId", user.UserId.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.FullName),
                     new Claim(ClaimTypes.Role, roleString),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
