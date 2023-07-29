@@ -58,14 +58,14 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Articles/GetBySlug/abc-def
         [HttpGet("GetBySlug/{slug}")]
-        public async Task<IActionResult> GetBySlug(string slug)
+        public async Task<ApiResponse> GetBySlug(string slug)
         {
             var article = await _article.FindBySlug(slug);
             if (article == null || article.IsDelete || !article.IsPublish)
-                return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
+                return new ApiResponse { Message = ErrorContent.ArticleNotFound };
 
             var result = _mapper.Map<ArticleGetDto>(article);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            return new ApiResponse { Success = true, Data = result };
         }
     }
 }

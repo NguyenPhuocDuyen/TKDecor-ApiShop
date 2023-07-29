@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers
                 };
             }
 
-            if (!Enum.TryParse<Gender>(userDto.Gender, out Gender gender))
+            if (!Enum.TryParse(userDto.Gender, out Gender gender))
                 return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
 
             // get random code
