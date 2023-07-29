@@ -80,11 +80,25 @@ namespace BE_TKDecor.Controllers
             if (address == null || address.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
-            address.IsDefault = true;
-            address.UpdatedAt = DateTime.Now;
+            var listAddress = await _userAddress.FindByUserId(user.UserId);
+            //address.IsDefault = true;
+            //address.UpdatedAt = DateTime.Now;
             try
             {
-                await _userAddress.Update(address);
+                foreach (var ad in listAddress)
+                {
+                    if (ad.UserAddressId == dto.UserAddressId)
+                    {
+                        ad.IsDefault = true;
+                        ad.UpdatedAt = DateTime.Now;
+                    }
+                    else if (ad.IsDefault)
+                    {
+                        ad.IsDefault = false;
+                        ad.UpdatedAt = DateTime.Now;
+                    }
+                    await _userAddress.Update(ad);
+                }
 
                 //// add notification for user
                 //Notification newNotification = new()
