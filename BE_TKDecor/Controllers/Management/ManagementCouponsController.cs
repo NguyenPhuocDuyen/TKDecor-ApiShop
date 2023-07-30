@@ -37,23 +37,23 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // POST: api/ManagementCoupons/SetActive
-        [HttpPost("SetActive")]
-        public async Task<IActionResult> SetActive(CouponSetActiveDto dto)
-        {
-            var coupon = await _coupon.FindById(dto.CouponId);
-            if (coupon == null || coupon.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
+        //// POST: api/ManagementCoupons/SetActive
+        //[HttpPost("SetActive")]
+        //public async Task<IActionResult> SetActive(CouponSetActiveDto dto)
+        //{
+        //    var coupon = await _coupon.FindById(dto.CouponId);
+        //    if (coupon == null || coupon.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-            coupon.IsActive = !coupon.IsActive;
-            coupon.UpdatedAt = DateTime.Now;
-            try
-            {
-                await _coupon.Update(coupon);
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        }
+        //    coupon.IsActive = !coupon.IsActive;
+        //    coupon.UpdatedAt = DateTime.Now;
+        //    try
+        //    {
+        //        await _coupon.Update(coupon);
+        //        return Ok(new ApiResponse { Success = true });
+        //    }
+        //    catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        //}
 
         // POST: api/ManagementCoupons/Create
         [HttpPost("Create")]
@@ -77,6 +77,7 @@ namespace BE_TKDecor.Controllers.Management
                 couponCode.IsDelete = false;
                 isAdd = false;
 
+                couponCode.IsActive = couponDto.IsActive;
                 couponCode.Value = couponDto.Value;
                 couponCode.MaxValue = couponDto.MaxValue;
                 couponCode.RemainingUsageCount = couponDto.RemainingUsageCount;
@@ -116,6 +117,7 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
 
             couponDb.CouponType = couponType;
+            couponDb.IsActive = couponDto.IsActive;
             couponDb.Value = couponDto.Value;
             couponDb.MaxValue = couponDto.MaxValue;
             couponDb.RemainingUsageCount = couponDto.RemainingUsageCount;

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Dtos.Favorite;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Response;
@@ -6,6 +7,8 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Printing;
+using Utility;
 using Utility.SD;
 
 namespace BE_TKDecor.Controllers
@@ -33,7 +36,7 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Favorites/GetFavoriteOfUser
         [HttpGet("GetFavoriteOfUser")]
-        public async Task<IActionResult> GetFavoriteOfUser()
+        public async Task<IActionResult> GetFavoriteOfUser(int pageIndex = 1, int pageSize = 20)
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)
@@ -44,7 +47,7 @@ namespace BE_TKDecor.Controllers
                     .OrderByDescending(x => x.CreatedAt)
                     .ToList();
 
-            var result = new List<ProductGetDto>();
+            var listProductFavorite = new List<ProductGetDto>();
             foreach (var product in list)
             {
                 var productDto = _mapper.Map<ProductGetDto>(product);
@@ -52,9 +55,21 @@ namespace BE_TKDecor.Controllers
                 // Check if the user has liked the product or not
                 productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
 
-                result.Add(productDto);
+                listProductFavorite.Add(productDto);
             }
-            result = result.Where(x => x.IsFavorite).ToList();
+            listProductFavorite = listProductFavorite.Where(x => x.IsFavorite).ToList();
+
+
+            PaginatedList<ProductGetDto> pagingFavorites = PaginatedList<ProductGetDto>.CreateAsync(
+                listProductFavorite, pageIndex, pageSize);
+
+            var result = new
+            {
+                favorites = pagingFavorites,
+                pagingFavorites.PageIndex,
+                pagingFavorites.TotalPages,
+                pagingFavorites.TotalItem
+            };
 
             return Ok(new ApiResponse { Success = true, Data = result });
         }

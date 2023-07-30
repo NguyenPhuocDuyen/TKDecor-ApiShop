@@ -148,7 +148,7 @@ namespace BE_TKDecor.Controllers
             // check coupon discount
             if (coupon != null)
             {
-                coupon.RemainingUsageCount -= 1;
+                coupon.RemainingUsageCount--;
                 newOrder.CouponId = coupon.CouponId;
                 if (coupon.CouponType == CouponType.ByPercent)
                 {

@@ -20,6 +20,8 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [Range(1, int.MaxValue)]
         public int RemainingUsageCount { get; set; }
 
+        public bool IsActive { get; set; }
+
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
