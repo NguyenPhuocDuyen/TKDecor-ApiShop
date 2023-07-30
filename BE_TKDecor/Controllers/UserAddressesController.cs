@@ -46,8 +46,8 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var list = (await _userAddress.FindByUserId(user.UserId))
-                .Where(x => !x.IsDelete);
-                //.OrderByDescending(x => x.UpdatedAt);
+                .Where(x => !x.IsDelete)
+                .OrderByDescending(x => x.CreatedAt);
             var result = _mapper.Map<List<UserAddressGetDto>>(list);
 
             return Ok(new ApiResponse { Success = true, Data = result });

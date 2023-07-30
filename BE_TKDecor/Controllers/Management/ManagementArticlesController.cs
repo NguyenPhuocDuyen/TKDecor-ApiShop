@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
-using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Hubs;
 using BusinessObject;
@@ -15,7 +14,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Seller},{RoleContent.Admin}")]
+    [Authorize(Roles = RoleContent.Admin)]
     public class ManagementArticlesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -44,7 +43,7 @@ namespace BE_TKDecor.Controllers.Management
             var list = await _article.GetAll();
             list = list
                 .Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<ArticleGetDto>>(list);

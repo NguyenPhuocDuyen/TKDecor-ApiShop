@@ -30,22 +30,22 @@ namespace BE_TKDecor.Controllers
             _interaction = interaction;
         }
 
-        // GET: api/ProductReviews/GetInteractionOfUser
-        [HttpGet("GetInteractionOfUser")]
-        public async Task<IActionResult> GetInteractionOfUser()
-        {
-            var user = await GetUser();
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+        //// GET: api/ProductReviews/GetInteractionOfUser
+        //[HttpGet("GetInteractionOfUser")]
+        //public async Task<IActionResult> GetInteractionOfUser()
+        //{
+        //    var user = await GetUser();
+        //    if (user == null || user.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
-            productReviewInteraction = productReviewInteraction
-                .Where(x => !x.IsDelete)
-                .ToList();
+        //    var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
+        //    productReviewInteraction = productReviewInteraction
+        //        .Where(x => !x.IsDelete)
+        //        .ToList();
 
-            var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
+        //    var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
+        //    return Ok(new ApiResponse { Success = true, Data = result });
+        //}
 
         // POST: api/ProductReviews/Interaction
         [HttpPost("Interaction")]

@@ -41,7 +41,6 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _product.GetAll();
             list = list.Where(x => !x.IsDelete && x.Quantity > 0)
-                    .OrderByDescending(x => x.UpdatedAt)
                     .ToList();
 
             var user = await GetUser();
@@ -79,7 +78,7 @@ namespace BE_TKDecor.Controllers
                 "price-high-to-low" => listProductGet.OrderByDescending(x => x.Price).ToList(),
                 "price-low-to-high" => listProductGet.OrderBy(x => x.Price).ToList(),
                 "average-rate" => listProductGet.OrderByDescending(x => x.AverageRate).ToList(),
-                _ => listProductGet.OrderByDescending(x => x.UpdatedAt).ToList(),
+                _ => listProductGet.OrderByDescending(x => x.CreatedAt).ToList(),
             };
 
             PaginatedList<ProductGetDto> pagingProduct = PaginatedList<ProductGetDto>.CreateAsync(

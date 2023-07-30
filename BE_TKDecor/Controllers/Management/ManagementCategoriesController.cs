@@ -11,7 +11,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = RoleContent.Admin)]
     public class ManagementCategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers.Management
         {
             var list = await _category.GetAll();
             list = list.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<CategoryGetDto>>(list);

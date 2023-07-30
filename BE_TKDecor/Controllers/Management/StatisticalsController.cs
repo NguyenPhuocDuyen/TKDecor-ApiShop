@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Order;
 using BE_TKDecor.Core.Response;
-using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = RoleContent.Admin)]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;

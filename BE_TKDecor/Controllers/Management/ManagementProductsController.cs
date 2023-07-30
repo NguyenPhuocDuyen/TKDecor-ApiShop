@@ -14,7 +14,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = RoleContent.Admin)]
     public class ManagementProductsController : ControllerBase
     {
         private readonly IHubContext<NotificationHub> _notificationHub;
@@ -48,7 +48,7 @@ namespace BE_TKDecor.Controllers.Management
         {
             var products = await _product.GetAll();
             products = products.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<ProductGetDto>>(products);

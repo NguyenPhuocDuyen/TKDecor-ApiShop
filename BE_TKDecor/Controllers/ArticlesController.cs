@@ -31,15 +31,14 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _article.GetAll();
             list = list.Where(x => !x.IsDelete && x.IsPublish)
-                .OrderByDescending(x => x.UpdatedAt)
                 .ToList();
 
             var listArticleGet = _mapper.Map<List<ArticleGetDto>>(list);
             // filter sort
             listArticleGet = sort switch
             {
-                "date-new" => listArticleGet.OrderByDescending(x => x.UpdatedAt).ToList(),
-                _ => listArticleGet.OrderBy(x => x.UpdatedAt).ToList(),
+                "date-old" => listArticleGet.OrderBy(x => x.CreatedAt).ToList(),
+                _ => listArticleGet.OrderByDescending(x => x.CreatedAt).ToList(),
             };
 
             PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
@@ -47,7 +46,7 @@ namespace BE_TKDecor.Controllers
 
             var result = new
             {
-                products = pagingArticle,
+                articles = pagingArticle,
                 pagingArticle.PageIndex,
                 pagingArticle.TotalPages,
                 pagingArticle.TotalItem

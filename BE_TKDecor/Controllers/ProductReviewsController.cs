@@ -111,26 +111,26 @@ namespace BE_TKDecor.Controllers
         }
 
         // DELETE: api/ProductReviews/5
-        [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteProductReview(Guid id)
-        {
-            var user = await GetUser();
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+        //[HttpDelete("Delete/{id}")]
+        //public async Task<IActionResult> DeleteProductReview(Guid id)
+        //{
+        //    var user = await GetUser();
+        //    if (user == null || user.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var productReview = await _productReview.FindById(id);
-            if (productReview == null || productReview.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
+        //    var productReview = await _productReview.FindById(id);
+        //    if (productReview == null || productReview.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
 
-            productReview.IsDelete = true;
-            productReview.UpdatedAt = DateTime.Now;
-            try
-            {
-                await _productReview.Update(productReview);
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        }
+        //    productReview.IsDelete = true;
+        //    productReview.UpdatedAt = DateTime.Now;
+        //    try
+        //    {
+        //        await _productReview.Update(productReview);
+        //        return Ok(new ApiResponse { Success = true });
+        //    }
+        //    catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+        //}
 
         private async Task<User?> GetUser()
         {

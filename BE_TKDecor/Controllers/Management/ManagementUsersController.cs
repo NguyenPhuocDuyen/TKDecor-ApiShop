@@ -8,14 +8,13 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System.Composition;
 using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = RoleContent.Admin)]
     public class ManagementUsersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -47,7 +46,7 @@ namespace BE_TKDecor.Controllers.Management
 
             var users = await _user.GetAll();
             users = users.Where(x => !x.IsDelete && x.UserId != user.UserId)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<UserGetDto>>(users);

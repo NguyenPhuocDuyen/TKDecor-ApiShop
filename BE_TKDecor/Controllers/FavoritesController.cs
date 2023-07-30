@@ -41,7 +41,7 @@ namespace BE_TKDecor.Controllers
 
             var list = await _product.GetAll();
             list = list.Where(x => !x.IsDelete && x.Quantity > 0)
-                    .OrderByDescending(x => x.UpdatedAt)
+                    .OrderByDescending(x => x.CreatedAt)
                     .ToList();
 
             var result = new List<ProductGetDto>();

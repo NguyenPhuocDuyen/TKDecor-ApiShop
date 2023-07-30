@@ -55,7 +55,7 @@ namespace BE_TKDecor.Controllers
 
             var orders = await _order.FindByUserId(user.UserId);
             orders = orders.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<OrderGetDto>>(orders);

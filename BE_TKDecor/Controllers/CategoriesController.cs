@@ -26,7 +26,7 @@ namespace BE_TKDecor.Controllers
         {
             var list = await _category.GetAll();
             list = list.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var result = _mapper.Map<List<CategoryGetDto>>(list);

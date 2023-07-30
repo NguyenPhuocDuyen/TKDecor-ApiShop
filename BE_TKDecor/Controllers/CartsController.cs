@@ -40,7 +40,7 @@ namespace BE_TKDecor.Controllers
 
             var carts = (await _cart.FindCartsByUserId(user.UserId))
                     .Where(x => !x.IsDelete)
-                    .OrderByDescending(x => x.UpdatedAt)
+                    .OrderByDescending(x => x.CreatedAt)
                     .ToList();
 
             var result = _mapper.Map<List<CartGetDto>>(carts);
