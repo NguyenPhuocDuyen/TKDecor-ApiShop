@@ -6,6 +6,7 @@ using AutoMapper;
 using BE_TKDecor.Core.Dtos.ProductReview;
 using BusinessObject;
 using Utility;
+using System.Collections.Generic;
 
 namespace BE_TKDecor.Controllers
 {
@@ -135,7 +136,7 @@ namespace BE_TKDecor.Controllers
 
             var revews = await _productReview.FindByProductId(product.ProductId);
             revews = revews.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
             var user = await GetUser();
@@ -160,7 +161,7 @@ namespace BE_TKDecor.Controllers
                 "rate-high-to-low" => listReviewGetDto.OrderByDescending(x => x.Rate).ToList(),
                 "rate-low-to-high" => listReviewGetDto.OrderBy(x => x.Rate).ToList(),
                 "rate-most-like" => listReviewGetDto.OrderByDescending(x => x.TotalLike).ToList(),
-                _ => listReviewGetDto.OrderByDescending(x => x.UpdatedAt).ToList(),
+                _ => listReviewGetDto.OrderByDescending(x => x.CreatedAt).ToList(),
             };
 
             PaginatedList<ProductReviewGetDto> pagingReviews = PaginatedList<ProductReviewGetDto>.CreateAsync(
@@ -177,21 +178,37 @@ namespace BE_TKDecor.Controllers
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        //// GET: api/Products/GetById/5
-        //[HttpGet("GetById/{id}")]
-        //public async Task<IActionResult> GetById(Guid id)
-        //{
-        //    var product = await _product.FindById(id);
+        // GET: api/Products/RelatedProducts/slug
+        [HttpGet("RelatedProducts/{slug}")]
+        public async Task<IActionResult> RelatedProducts(string slug)
+        {
+            var p = await _product.FindBySlug(slug);
 
-        //    if (product == null || product.IsDelete)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+            if (p == null || p.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
-        //    var result = _mapper.Map<ProductGetDto>(product);
-        //    var user = await GetUser();
-        //    result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.User.UserId == user?.UserId);
+            var productList = await _product.GetAll();
 
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
+            productList = productList.Where(x => x.ProductId != p.ProductId
+                && x.CategoryId == p.CategoryId)
+                .Take(5)
+                .ToList();
+
+            var user = await GetUser();
+            // map dto
+            var listProductGet = new List<ProductGetDto>();
+            foreach (var product in productList)
+            {
+                var productDto = _mapper.Map<ProductGetDto>(product);
+
+                // Check if the user has liked the product or not
+                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
+
+                listProductGet.Add(productDto);
+            }
+
+            return Ok(new ApiResponse { Success = true, Data = listProductGet });
+        }
 
         // GET: api/Products/GetBySlug/5
         [HttpGet("GetBySlug/{slug}")]
