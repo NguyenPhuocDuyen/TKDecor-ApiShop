@@ -11,6 +11,6 @@ namespace BE_TKDecor.Core.Dtos.Article
 
         public string Thumbnail { get; set; } = null!;
 
-        public bool IsPublish { get; set; }
+        public bool IsPublish { get; set; } = false;
     }
 }

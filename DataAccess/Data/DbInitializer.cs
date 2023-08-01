@@ -214,15 +214,12 @@ namespace DataAccess.Data
                 .ToListAsync();
             foreach (var u in users)
             {
-                for (int i = 0; i < 10; i++)
+                Notification notification = new()
                 {
-                    Notification notification = new()
-                    {
-                        Message = "Chào mừng bạn tới web TKDecor",
-                        UserId = u.UserId,
-                    };
-                    _db.Notifications.Add(notification);
-                }
+                    Message = "Chào mừng bạn tới web TKDecor",
+                    UserId = u.UserId,
+                };
+                _db.Notifications.Add(notification);
             }
             _db.SaveChanges();
         }

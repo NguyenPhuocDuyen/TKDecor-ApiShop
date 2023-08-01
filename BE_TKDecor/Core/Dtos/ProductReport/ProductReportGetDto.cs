@@ -11,6 +11,8 @@ namespace BE_TKDecor.Core.Dtos.ProductReport
 
         public string UserReportEmail { get; set; } = null!;
 
+        public string UserReportName { get; set; } = null!;
+
         public string ReportStatus { get; set; } = null!;
 
         public string Reason { get; set; } = null!;
