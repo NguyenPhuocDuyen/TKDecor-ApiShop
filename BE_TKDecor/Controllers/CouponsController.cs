@@ -24,7 +24,7 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetByCode/{code}")]
         public async Task<IActionResult> GetCoupon(string code)
         {
-            var coupon = await _coupon.FindByCode(code);
+            var coupon = await _coupon.FindByCode(code.ToLower());
             if (coupon == null || coupon.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 

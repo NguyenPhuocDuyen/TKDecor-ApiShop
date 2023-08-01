@@ -116,7 +116,7 @@ namespace BE_TKDecor.Controllers
                 OrderStatus = OrderStatus.Ordered,
                 FullName = address.FullName,
                 Phone = address.Phone,
-                Address = $"{address.Street}, {address.District}, {address.Ward}, {address.Street}",
+                Address = $"{address.Street}, {address.Ward}, {address.District}, {address.City}",
                 Note = orderDto.Note,
                 OrderDetails = new List<OrderDetail>(),
                 //TotalPrice

@@ -68,6 +68,7 @@ namespace BE_TKDecor.Controllers.Management
             if (couponCode == null)
             {
                 couponCode = _mapper.Map<Coupon>(couponDto);
+                couponCode.Code = couponDto.Code.ToLower();
             }
             else
             {
@@ -97,7 +98,7 @@ namespace BE_TKDecor.Controllers.Management
                 {
                     await _coupon.Update(couponCode);
                 }
-                return Ok(new ApiResponse { Success = true , Data = couponCode });
+                return Ok(new ApiResponse { Success = true, Data = couponCode });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }

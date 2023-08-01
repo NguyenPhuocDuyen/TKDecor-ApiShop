@@ -122,15 +122,15 @@ namespace BE_TKDecor.Controllers
         }
 
         // GET: api/Products/GetReview/2
-        [HttpGet("GetReview/{id}")]
+        [HttpGet("GetReview/{slug}")]
         public async Task<IActionResult> GetReview(
-            Guid id,
+            string slug,
             string sort = "Default",
             int pageIndex = 1,
             int pageSize = 20
             )
         {
-            var product = await _product.FindById(id);
+            var product = await _product.FindBySlug(slug);
             if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
