@@ -13,7 +13,6 @@ using Utility;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
 using Microsoft.Extensions.Options;
-using Utility.SD;
 using BE_TKDecor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Core.Dtos.Notification;
@@ -76,13 +75,10 @@ namespace BE_TKDecor.Controllers
                 {
                     Email = userDto.Email,
                     AvatarUrl = "",
-                    Role = Role.Customer,
+                    Role = SD.RoleCustomer,
                     EmailConfirmed = false
                 };
             }
-
-            if (!Enum.TryParse(userDto.Gender, out Gender gender))
-                return BadRequest(new ApiResponse { Message = ErrorContent.GenderNotFound });
 
             // get random code
             string code = RandomCode.GenerateRandomCode();
@@ -90,7 +86,7 @@ namespace BE_TKDecor.Controllers
 
             user.FullName = userDto.FullName;
             user.BirthDay = userDto.BirthDay;
-            user.Gender = gender;
+            user.Gender = userDto.Gender;
 
             user.EmailConfirmationCode = code;
             user.EmailConfirmationSentAt = DateTime.Now;
@@ -252,11 +248,11 @@ namespace BE_TKDecor.Controllers
 
             //convert token to string
             var token = await GenerateToken(u);
-            string roleString = Enum.GetName(typeof(Role), u.Role);
+            //string roleString = Enum.GetName(typeof(Role), u.Role);
 
             var data = new
             {
-                role = roleString,
+                u.Role,
                 u.Email,
                 u.FullName,
                 u.AvatarUrl,
@@ -310,7 +306,7 @@ namespace BE_TKDecor.Controllers
                     Message = "Bạn đã yêu cầu quên mật khẩu"
                 };
                 await _notification.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(Common.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
@@ -357,7 +353,7 @@ namespace BE_TKDecor.Controllers
                     Message = "Xác nhận mật khẩu mới thành công"
                 };
                 await _notification.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(Common.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -454,7 +450,7 @@ namespace BE_TKDecor.Controllers
             //encoding key in json
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
             //set description for token
-            string roleString = Enum.GetName(typeof(Role), user.Role);
+            //string roleString = Enum.GetName(typeof(Role), user.Role);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -463,7 +459,7 @@ namespace BE_TKDecor.Controllers
                     new Claim("UserId", user.UserId.ToString()),
                     new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.FullName),
-                    new Claim(ClaimTypes.Role, roleString),
+                    new Claim(ClaimTypes.Role, user.Role),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

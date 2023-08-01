@@ -5,16 +5,16 @@ using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.Order;
-using Utility.SD;
 using BE_TKDecor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Core.Dtos.Notification;
+using Utility;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Customer)]
+    [Authorize(Roles = SD.RoleCustomer)]
     public class OrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -113,7 +113,7 @@ namespace BE_TKDecor.Controllers
             Order newOrder = new()
             {
                 UserId = user.UserId,
-                OrderStatus = OrderStatus.Ordered,
+                OrderStatus = SD.OrderOrdered,
                 FullName = address.FullName,
                 Phone = address.Phone,
                 Address = $"{address.Street}, {address.Ward}, {address.District}, {address.City}",
@@ -150,7 +150,7 @@ namespace BE_TKDecor.Controllers
             {
                 coupon.RemainingUsageCount--;
                 newOrder.CouponId = coupon.CouponId;
-                if (coupon.CouponType == CouponType.ByPercent)
+                if (coupon.CouponType == SD.CouponByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)
                     newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value;
@@ -194,11 +194,11 @@ namespace BE_TKDecor.Controllers
                 };
                 await _notification.Add(newNotification);
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
-                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != SD.RoleCustomer);
                 foreach (var staff in listStaffOrAdmin)
                 {
                     // add notification for user
@@ -210,7 +210,7 @@ namespace BE_TKDecor.Controllers
                     await _notification.Add(notiForStaffOrAdmin);
                     // notification signalR
                     await _hub.Clients.User(staff.UserId.ToString())
-                        .SendAsync(Common.NewNotification,
+                        .SendAsync(SD.NewNotification,
                         _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
                 }
 
@@ -221,9 +221,9 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Orders/UpdateStatusOrder
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
         {
-            if (id != orderUpdateStatusDto.OrderId)
+            if (id != orderDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var user = await GetUser();
@@ -235,22 +235,18 @@ namespace BE_TKDecor.Controllers
             if (order == null || order.UserId != user.UserId || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (!Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
-                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-
             // update order status
             // customer can cancel, refund, receive the order
-            if (order.OrderStatus == OrderStatus.Ordered)
+            if (order.OrderStatus == SD.OrderOrdered)
             {
                 // Cancellation of orders only when the order is in the Ordered status
-                if (status != OrderStatus.Canceled)
+                if (orderDto.OrderStatus != SD.OrderCanceled)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
-            else if (order.OrderStatus == OrderStatus.Delivering)
+            else if (order.OrderStatus == SD.OrderDelivering)
             {
                 // Orders can only be accepted or refunded when the order is in the Delivering status
-                if (status != OrderStatus.Received
-                    && status != OrderStatus.Refund)
+                if (orderDto.OrderStatus != SD.OrderReceived)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
             else
@@ -259,14 +255,12 @@ namespace BE_TKDecor.Controllers
             }
 
             var message = "";
-            if (status == OrderStatus.Canceled)
+            if (orderDto.OrderStatus == SD.OrderCanceled)
                 message = "huỷ";
-            else if (status == OrderStatus.Received)
+            else if (orderDto.OrderStatus == SD.OrderReceived)
                 message = "nhận";
-            else if (status == OrderStatus.Refund)
-                message = "hoàn trả";
 
-            order.OrderStatus = status;
+            order.OrderStatus = orderDto.OrderStatus;
             order.UpdatedAt = DateTime.Now;
             try
             {
@@ -281,11 +275,11 @@ namespace BE_TKDecor.Controllers
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
-                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != SD.RoleCustomer);
                 foreach (var staff in listStaffOrAdmin)
                 {
                     // add notification for user
@@ -297,7 +291,7 @@ namespace BE_TKDecor.Controllers
                     await _notification.Add(notiForStaffOrAdmin);
                     // notification signalR
                     await _hub.Clients.User(staff.UserId.ToString())
-                        .SendAsync(Common.NewNotification,
+                        .SendAsync(SD.NewNotification,
                         _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
                 }
 

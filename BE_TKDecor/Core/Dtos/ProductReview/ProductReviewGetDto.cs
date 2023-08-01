@@ -1,5 +1,5 @@
 ﻿using BusinessObject;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.ProductReview
 {
@@ -19,6 +19,6 @@ namespace BE_TKDecor.Core.Dtos.ProductReview
 
         public int TotalDisLike { get; set; }
 
-        public string InteractionOfUser { get; set; } = Interaction.Normal.ToString();
+        public string InteractionOfUser { get; set; } = SD.InteractionNormal;
     }
 }

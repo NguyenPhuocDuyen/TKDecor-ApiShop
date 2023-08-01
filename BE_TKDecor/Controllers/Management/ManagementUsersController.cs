@@ -8,13 +8,13 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementUsersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -64,10 +64,7 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            if (!Enum.TryParse(userDto.Role, out Role role))
-                return NotFound(new ApiResponse { Message = ErrorContent.RoleNotFound });
-
-            user.Role = role;
+            user.Role = userDto.Role;
             user.UpdatedAt = DateTime.Now;
             try
             {
@@ -87,7 +84,7 @@ namespace BE_TKDecor.Controllers.Management
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });

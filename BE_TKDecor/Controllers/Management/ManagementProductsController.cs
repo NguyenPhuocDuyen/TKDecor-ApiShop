@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Utility;
-using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProductsController : ControllerBase
     {
         private readonly IHubContext<NotificationHub> _notificationHub;
@@ -262,13 +261,13 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             product.IsDelete = true;
+            product.UpdatedAt = DateTime.Now;
             foreach (var item in product.Carts)
             {
                 item.IsDelete = true;
                 item.UpdatedAt = DateTime.Now;
                 await _cart.Update(item);
             }
-            product.UpdatedAt = DateTime.Now;
             try
             {
                 await _product.Update(product);

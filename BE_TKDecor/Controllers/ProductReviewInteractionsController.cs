@@ -5,13 +5,13 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Customer)]
+    [Authorize(Roles = SD.RoleCustomer)]
     public class ProductReviewInteractionsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -62,9 +62,6 @@ namespace BE_TKDecor.Controllers
             var interactionReview = await _interaction
                 .FindByUserIdAndProductReviewId(user.UserId, interactionDto.ProductReviewId);
 
-            if (!Enum.TryParse(interactionDto.Interaction, out Interaction status))
-                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-
             bool isAdd = false;
 
             if (interactionReview == null)
@@ -76,12 +73,12 @@ namespace BE_TKDecor.Controllers
             if (isAdd)
             {
                 interactionReview.UserId = user.UserId;
-                interactionReview.User = user;
+                //interactionReview.User = user;
                 interactionReview.ProductReviewId = productReview.ProductReviewId;
-                interactionReview.ProductReview = productReview;
+                //interactionReview.ProductReview = productReview;
             }
             interactionReview.UpdatedAt = DateTime.Now;
-            interactionReview.Interaction = status;
+            interactionReview.Interaction = interactionDto.Interaction;
 
             try
             {

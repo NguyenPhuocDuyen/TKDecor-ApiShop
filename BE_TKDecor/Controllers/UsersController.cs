@@ -7,7 +7,6 @@ using BE_TKDecor.Core.Response;
 using AutoMapper;
 using Utility;
 using Utility.Mail;
-using Utility.SD;
 using BE_TKDecor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Core.Dtos.Notification;
@@ -62,13 +61,10 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            if (!Enum.TryParse(userDto.Gender, out Gender gender))
-                return NotFound(new ApiResponse { Message = ErrorContent.GenderNotFound });
-
             user.FullName = userDto.FullName;
             user.AvatarUrl = userDto.AvatarUrl;
             user.BirthDay = userDto.BirthDay;
-            user.Gender = gender;
+            user.Gender = userDto.Gender;
             user.UpdatedAt = DateTime.Now;
             try
             {
@@ -133,7 +129,7 @@ namespace BE_TKDecor.Controllers
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
@@ -210,7 +206,7 @@ namespace BE_TKDecor.Controllers
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });

@@ -5,10 +5,6 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Core.Dtos.Notification;
-using Microsoft.AspNetCore.SignalR;
-using BE_TKDecor.Hubs;
-using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
@@ -20,21 +16,15 @@ namespace BE_TKDecor.Controllers
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IUserAddressRepository _userAddress;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
 
         public UserAddressesController(IMapper mapper,
             IUserRepository user,
-            IUserAddressRepository userAddress,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub
+            IUserAddressRepository userAddress
             )
         {
             _mapper = mapper;
             _user = user;
             _userAddress = userAddress;
-            _notification = notification;
-            _hub = hub;
         }
 
         // GET: api/UserAddresses/GetUserAddresses

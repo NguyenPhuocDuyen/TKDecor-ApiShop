@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.User
 {
@@ -12,7 +13,7 @@ namespace BE_TKDecor.Core.Dtos.User
 
         public DateTime BirthDay { get; set; }
 
-        [RegularExpression($"^(Male|Female|Other)$")]
+        [RegularExpression($"^({SD.GenderMale}|{SD.GenderFemale}|{SD.GenderOther})$")]
         public string Gender { get; set; } = null!;
     }
 }

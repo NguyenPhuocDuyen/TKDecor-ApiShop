@@ -8,7 +8,7 @@ using AutoMapper;
 using BE_TKDecor.Core.Dtos.Notification;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Hubs;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers
 {
@@ -56,7 +56,7 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
 
             var orderDetail = await _orderDetail.FindByUserIdAndProductId(user.UserId, product.ProductId);
-            if (orderDetail == null)
+            if (orderDetail == null || orderDetail.Order.OrderStatus != SD.OrderReceived)
                 return BadRequest(new ApiResponse { Message = "Bạn không được phép đánh giá nếu chưa mua sản phẩm!" });
 
             var productReview = await _productReview.FindByUserIdAndProductId(user.UserId, product.ProductId);
@@ -102,35 +102,13 @@ namespace BE_TKDecor.Controllers
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
-
-        // DELETE: api/ProductReviews/5
-        //[HttpDelete("Delete/{id}")]
-        //public async Task<IActionResult> DeleteProductReview(Guid id)
-        //{
-        //    var user = await GetUser();
-        //    if (user == null || user.IsDelete)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-        //    var productReview = await _productReview.FindById(id);
-        //    if (productReview == null || productReview.IsDelete)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
-
-        //    productReview.IsDelete = true;
-        //    productReview.UpdatedAt = DateTime.Now;
-        //    try
-        //    {
-        //        await _productReview.Update(productReview);
-        //        return Ok(new ApiResponse { Success = true });
-        //    }
-        //    catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-        //}
 
         private async Task<User?> GetUser()
         {

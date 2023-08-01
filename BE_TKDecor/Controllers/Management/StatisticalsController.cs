@@ -4,13 +4,13 @@ using BE_TKDecor.Core.Response;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class StatisticalsController : ControllerBase
     {
         private readonly IUserRepository _user;
@@ -32,7 +32,7 @@ namespace BE_TKDecor.Controllers.Management
         {
             var currentDate = DateTime.Now;
             var users = await _user.GetAll();
-            users = users.Where(x => !x.IsDelete).ToList();
+            users = users.Where(x => !x.IsDelete && x.Role == SD.RoleCustomer).ToList();
 
             // Current month's total users
             int totalUsersCurrentMonth = users.Count(x => x.CreatedAt.Month == currentDate.Month && x.CreatedAt.Year == currentDate.Year);
@@ -63,7 +63,7 @@ namespace BE_TKDecor.Controllers.Management
         {
             var currentDate = DateTime.Now;
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus == OrderStatus.Received && !x.IsDelete)
+            orders = orders.Where(x => x.OrderStatus == SD.OrderReceived && !x.IsDelete)
                            .ToList();
 
             // Calculate current month's total revenue
@@ -138,35 +138,35 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        [HttpGet("GetTotalReturns")]
-        public async Task<IActionResult> GetTotalReturns()
-        {
-            var currentDate = DateTime.Now;
-            var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus == OrderStatus.Refund && !x.IsDelete).ToList();
+        //[HttpGet("GetTotalReturns")]
+        //public async Task<IActionResult> GetTotalReturns()
+        //{
+        //    var currentDate = DateTime.Now;
+        //    var orders = await _order.GetAll();
+        //    orders = orders.Where(x => x.OrderStatus == SD.OrderRefund && !x.IsDelete).ToList();
 
-            // Total return orders for the current month
-            int totalReturnsCurrentMonth = orders.Count(x => x.CreatedAt.Month == currentDate.Month && x.CreatedAt.Year == currentDate.Year);
+        //    // Total return orders for the current month
+        //    int totalReturnsCurrentMonth = orders.Count(x => x.CreatedAt.Month == currentDate.Month && x.CreatedAt.Year == currentDate.Year);
 
-            // Total orders returned last month
-            DateTime lastMonthDate = currentDate.AddMonths(-1);
-            int totalReturnsPreviousMonth = orders.Count(x => x.CreatedAt.Month == lastMonthDate.Month && x.CreatedAt.Year == lastMonthDate.Year);
+        //    // Total orders returned last month
+        //    DateTime lastMonthDate = currentDate.AddMonths(-1);
+        //    int totalReturnsPreviousMonth = orders.Count(x => x.CreatedAt.Month == lastMonthDate.Month && x.CreatedAt.Year == lastMonthDate.Year);
 
-            // Calculate the ratio of the difference between the total order returns between the current month and the previous month
-            double percentageChange = 0;
-            if (totalReturnsPreviousMonth != 0)
-            {
-                percentageChange = (double)(totalReturnsCurrentMonth - totalReturnsPreviousMonth) / totalReturnsPreviousMonth;
-            }
+        //    // Calculate the ratio of the difference between the total order returns between the current month and the previous month
+        //    double percentageChange = 0;
+        //    if (totalReturnsPreviousMonth != 0)
+        //    {
+        //        percentageChange = (double)(totalReturnsCurrentMonth - totalReturnsPreviousMonth) / totalReturnsPreviousMonth;
+        //    }
 
-            var result = new
-            {
-                TotalOrderReturn = orders.Count,
-                PercentageChange = Math.Round(percentageChange, 3)
-            };
+        //    var result = new
+        //    {
+        //        TotalOrderReturn = orders.Count,
+        //        PercentageChange = Math.Round(percentageChange, 3)
+        //    };
 
-            return Ok(new ApiResponse { Success = true, Data = result });
-        }
+        //    return Ok(new ApiResponse { Success = true, Data = result });
+        //}
 
         // GET: api/Statisticals/GetTopProductSale
         [HttpGet("GetTopProductSale")]
@@ -210,7 +210,7 @@ namespace BE_TKDecor.Controllers.Management
                 year = DateTime.Now.Year;
 
             var orders = await _order.GetAll();
-            orders = orders.Where(x => x.OrderStatus == OrderStatus.Received && !x.IsDelete).ToList();
+            orders = orders.Where(x => x.OrderStatus == SD.OrderReceived && !x.IsDelete).ToList();
             // Filter orders by the specified year
             orders = orders.Where(x => x.CreatedAt.Year == year).ToList();
 

@@ -5,13 +5,13 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementCouponsController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -59,9 +59,6 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(CouponCreateDto couponDto)
         {
-            if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
-                return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
-
             bool isAdd = true;
 
             var couponCode = await _coupon.FindByCode(couponDto.Code);
@@ -86,7 +83,7 @@ namespace BE_TKDecor.Controllers.Management
                 couponCode.EndDate = couponDto.EndDate;
                 couponCode.UpdatedAt = DateTime.Now;
             }
-            couponCode.CouponType = couponType;
+            couponCode.CouponType = couponDto.CouponType;
 
             try
             {
@@ -114,10 +111,7 @@ namespace BE_TKDecor.Controllers.Management
             if (couponDb == null || couponDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
 
-            if (!Enum.TryParse(couponDto.CouponType, out CouponType couponType))
-                return BadRequest(new ApiResponse { Message = ErrorContent.CouponTypeNotFound });
-
-            couponDb.CouponType = couponType;
+            couponDb.CouponType = couponDto.CouponType;
             couponDb.IsActive = couponDto.IsActive;
             couponDb.Value = couponDto.Value;
             couponDb.MaxValue = couponDto.MaxValue;

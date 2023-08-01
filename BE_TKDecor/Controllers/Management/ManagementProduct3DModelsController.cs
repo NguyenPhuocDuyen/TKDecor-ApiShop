@@ -5,13 +5,13 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProduct3DModelsController : ControllerBase
     {
         private readonly IMapper _mapper;

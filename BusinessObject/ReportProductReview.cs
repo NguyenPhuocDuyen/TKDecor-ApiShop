@@ -1,6 +1,4 @@
-﻿using Utility.SD;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class ReportProductReview : BaseEntity
 {
@@ -10,7 +8,7 @@ public partial class ReportProductReview : BaseEntity
 
     public Guid ProductReviewReportedId { get; set; }
 
-    public ReportStatus ReportStatus { get; set; }
+    public string ReportStatus { get; set; } = null!;
 
     public string Reason { get; set; } = null!;
 

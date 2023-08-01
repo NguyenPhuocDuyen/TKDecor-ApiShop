@@ -3,7 +3,7 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
-using Utility.SD;
+using Utility;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.Notification;
 using Microsoft.AspNetCore.SignalR;
@@ -57,7 +57,7 @@ namespace BE_TKDecor.Controllers
 
             bool isAdd = true;
 
-            if (report != null && report.ReportStatus == ReportStatus.Pending)
+            if (report != null && report.ReportStatus == SD.ReportPending)
                 isAdd = false;
 
             try
@@ -68,7 +68,7 @@ namespace BE_TKDecor.Controllers
                     {
                         UserReportId = user.UserId,
                         ProductReviewReportedId = productReview.ProductReviewId,
-                        ReportStatus = ReportStatus.Pending,
+                        ReportStatus = SD.ReportPending,
                         Reason = reportDto.Reason
                     };
                     await _reportProductReview.Add(newReport);
@@ -90,11 +90,11 @@ namespace BE_TKDecor.Controllers
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
-                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != Role.Customer);
+                var listStaffOrAdmin = (await _user.GetAll()).Where(x => x.Role != SD.RoleCustomer);
                 foreach (var staff in listStaffOrAdmin)
                 {
                     // add notification for user
@@ -106,7 +106,7 @@ namespace BE_TKDecor.Controllers
                     await _notification.Add(notiForStaffOrAdmin);
                     // notification signalR
                     await _hub.Clients.User(staff.UserId.ToString())
-                        .SendAsync(Common.NewNotification,
+                        .SendAsync(SD.NewNotification,
                         _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
                 }
 

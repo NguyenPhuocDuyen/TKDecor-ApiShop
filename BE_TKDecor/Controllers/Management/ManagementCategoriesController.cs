@@ -5,13 +5,13 @@ using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementCategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -109,8 +109,10 @@ namespace BE_TKDecor.Controllers.Management
             if (categoryDb == null || categoryDb.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.CategoryNotFound });
 
+            categoryDb.Products = categoryDb.Products.Where(x => !x.IsDelete).ToList();
+
             if (categoryDb.Products.Count > 0)
-                return BadRequest(new ApiResponse { Message = "Vẫn còn sản phẩm trong danh mục không thể xóa!" });
+                return BadRequest(new ApiResponse { Message = "Vẫn còn sản phẩm trong danh mục nên không thể xóa!" });
 
             categoryDb.IsDelete = true;
             categoryDb.UpdatedAt = DateTime.Now;

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Utility.SD;
 
 namespace BusinessObject;
 
@@ -232,9 +231,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.Code)
                 .IsUnicode(false)
                 .HasColumnName("code");
-            entity.Property(e => e.CouponType).HasColumnName("coupon_type")
-                .HasConversion(type => type.ToString(),
-                       typeString => (CouponType)Enum.Parse(typeof(CouponType), typeString)); ;
+            entity.Property(e => e.CouponType).HasColumnName("coupon_type");
+                //.HasConversion(type => type.ToString(),
+                //       typeString => (CouponType)Enum.Parse(typeof(CouponType), typeString)); ;
             entity.Property(e => e.EndDate)
                 .HasColumnType("datetime")
                 .HasColumnName("end_date");
@@ -300,9 +299,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.FullName)
                 .HasColumnName("full_name");
             entity.Property(e => e.OrderStatus)
-                .HasColumnName("order_status")
-                .HasConversion(status => status.ToString(),
-                      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus), statusString));
+                .HasColumnName("order_status");
+                //.HasConversion(status => status.ToString(),
+                //      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus), statusString));
             entity.Property(e => e.Phone)
                 .IsUnicode(false)
                 .HasColumnName("phone");
@@ -484,9 +483,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.ProductReviewInteractionId).HasColumnType("uniqueidentifier").HasColumnName("product_review_interaction_id");
             entity.Property(e => e.ProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("product_review_id");
             entity.Property(e => e.Interaction)
-                .HasColumnName("interaction")
-                .HasConversion(interaction => interaction.ToString(),
-                       interactionString => (Interaction)Enum.Parse(typeof(Interaction), interactionString)); ;
+                .HasColumnName("interaction");
+                //.HasConversion(interaction => interaction.ToString(),
+                //       interactionString => (Interaction)Enum.Parse(typeof(Interaction), interactionString)); ;
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -524,9 +523,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.ProductReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_reported_id");
             entity.Property(e => e.Reason).HasColumnName("reason");
             entity.Property(e => e.ReportStatus)
-                .HasColumnName("report_status")
-                .HasConversion(status => status.ToString(),
-                       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString));
+                .HasColumnName("report_status");
+                //.HasConversion(status => status.ToString(),
+                //       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString));
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -622,9 +621,9 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.ProductReviewReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_review_reported_id");
             entity.Property(e => e.Reason).HasColumnName("reason");
             entity.Property(e => e.ReportStatus)
-                .HasColumnName("report_status")
-                .HasConversion(status => status.ToString(),
-                       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString)); ;
+                .HasColumnName("report_status");
+                //.HasConversion(status => status.ToString(),
+                //       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString)); ;
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -659,9 +658,9 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("birth_day");
             entity.Property(e => e.Gender)
-                .HasColumnName("gender")
-                .HasConversion(gender => gender.ToString(),
-                       genderString => (Gender)Enum.Parse(typeof(Gender), genderString));
+                .HasColumnName("gender");
+                //.HasConversion(gender => gender.ToString(),
+                //       genderString => (Gender)Enum.Parse(typeof(Gender), genderString));
             entity.Property(e => e.Email)
                 .IsUnicode(false)
                 .HasColumnName("email");
@@ -688,10 +687,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("reset_password_sent_at");
 
             entity.Property(e => e.Role)
-                .HasColumnName("role")
+                .HasColumnName("role");
                 //.HasColumnType("datetime")
-                .HasConversion(role => role.ToString(),
-                       roleString => (Role)Enum.Parse(typeof(Role), roleString));
+                //.HasConversion(role => role.ToString(),
+                //       roleString => (Role)Enum.Parse(typeof(Role), roleString));
 
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")

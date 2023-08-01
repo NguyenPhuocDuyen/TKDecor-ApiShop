@@ -1,12 +1,12 @@
 ﻿using BusinessObject;
 using System.ComponentModel.DataAnnotations;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.Coupon
 {
     public class CouponCreateDto
     {
-        [RegularExpression($"^(ByPercent|ByValue)$")]
+        [RegularExpression($"^({SD.CouponByPercent}|{SD.CouponByValue})$")]
         public string CouponType { get; set; } = null!;
 
         [MaxLength(255)]

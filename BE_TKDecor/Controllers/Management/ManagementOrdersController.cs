@@ -8,13 +8,13 @@ using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementOrdersController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -60,25 +60,22 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementOrders/UpdateStatusOrder
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderUpdateStatusDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
         {
-            if (id != orderUpdateStatusDto.OrderId)
+            if (id != orderDto.OrderId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
 
             var order = await _order.FindById(id);
             if (order == null || order.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.OrderNotFound });
 
-            if (!Enum.TryParse(orderUpdateStatusDto.OrderStatus, out OrderStatus status))
-                return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusNotFound });
-
             // update order status
             // customer can cancel, refund, receive the order
             // Admin or seller can confirm the order for delivery
-            if (order.OrderStatus == OrderStatus.Ordered)
+            if (order.OrderStatus == SD.OrderOrdered)
             {
-                if (status != OrderStatus.Delivering
-                    && status != OrderStatus.Canceled)
+                if (orderDto.OrderStatus != SD.OrderDelivering
+                    && orderDto.OrderStatus != SD.OrderCanceled)
                     return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
             else
@@ -87,12 +84,12 @@ namespace BE_TKDecor.Controllers.Management
             }
 
             var message = "";
-            if (status == OrderStatus.Delivering)
+            if (orderDto.OrderStatus == SD.OrderDelivering)
                 message = "được xác nhận";
-            else if (status == OrderStatus.Canceled)
+            else if (orderDto.OrderStatus == SD.OrderCanceled)
                 message = "bị huỷ";
 
-            order.OrderStatus = status;
+            order.OrderStatus = orderDto.OrderStatus;
             order.UpdatedAt = DateTime.Now;
             try
             {
@@ -107,7 +104,7 @@ namespace BE_TKDecor.Controllers.Management
                 await _notification.Add(newNotification);
                 // notification signalR
                 await _hub.Clients.User(order.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
+                    .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 return Ok(new ApiResponse { Success = true });

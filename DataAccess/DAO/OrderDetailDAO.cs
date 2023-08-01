@@ -1,6 +1,5 @@
 ﻿using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using Utility.SD;
 
 namespace DataAccess.DAO
 {
@@ -15,8 +14,7 @@ namespace DataAccess.DAO
                     .Include(x => x.Order)
                     .FirstOrDefaultAsync(x =>
                         x.ProductId == productId
-                        && x.Order.UserId == userId
-                        && x.Order.OrderStatus == OrderStatus.Received);
+                        && x.Order.UserId == userId);
                 return orderDetail;
             }
             catch (Exception ex) { throw new Exception(ex.Message); }

@@ -9,13 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Printing;
 using Utility;
-using Utility.SD;
 
 namespace BE_TKDecor.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Customer)]
+    [Authorize(Roles = SD.RoleCustomer)]
     public class FavoritesController : Controller
     {
         private readonly IMapper _mapper;

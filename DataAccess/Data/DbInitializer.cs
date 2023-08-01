@@ -2,7 +2,6 @@
 using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Utility;
-using Utility.SD;
 
 namespace DataAccess.Data
 {
@@ -60,19 +59,24 @@ namespace DataAccess.Data
 
             //get one user
             var user = await _db.Users
-                .FirstOrDefaultAsync(x => x.Role != Role.Admin);
+                .FirstOrDefaultAsync(x => x.Role == SD.RoleCustomer);
 
             var reviews = await _db.ProductReviews
                 .Include(x => x.Product)
                 .ToListAsync();
 
-            Array reportStatusValues = Enum.GetValues(typeof(ReportStatus));
+            List<string> reportStatusValues = new()
+            {
+                SD.ReportPending,
+                SD.ReportAccept,
+                SD.ReportReject,
+            };
 
             if (user != null)
             {
                 foreach (var review in reviews)
                 {
-                    ReportStatus randomStatus = (ReportStatus)reportStatusValues.GetValue(random.Next(reportStatusValues.Length));
+                    string randomStatus = reportStatusValues[random.Next(reportStatusValues.Count)];
 
                     ReportProductReview reportProductReview = new()
                     {
@@ -125,17 +129,22 @@ namespace DataAccess.Data
             //productReportSetDefaults.RuleFor(x => x.Reason, f => f.Lorem.Paragraph());
 
             var users = await _db.Users
-                .Where(x => x.Role == Role.Customer)
+                .Where(x => x.Role == SD.RoleCustomer)
                 .ToListAsync();
             var products = await _db.Products.ToListAsync();
 
-            Array reportStatusValues = Enum.GetValues(typeof(ReportStatus));
+            List<string> reportStatusValues = new()
+            {
+                SD.ReportPending,
+                SD.ReportAccept,
+                SD.ReportReject,
+            };
 
             foreach (var u in users)
             {
                 foreach (var p in products)
                 {
-                    ReportStatus randomStatus = (ReportStatus)reportStatusValues.GetValue(random.Next(reportStatusValues.Length));
+                    string randomStatus = reportStatusValues[random.Next(reportStatusValues.Count)];
 
                     ProductReport productReport = new()
                     {
@@ -156,17 +165,23 @@ namespace DataAccess.Data
 
             var users = await _db.Users
                 .Include(x => x.UserAddresses.Where(ud => ud.IsDefault == true))
-                .Where(x => x.Role == Role.Customer)
+                .Where(x => x.Role == SD.RoleCustomer)
                 .ToListAsync();
             var products = await _db.Products.Take(4).ToListAsync();
 
             // Lấy danh sách các giá trị enum của OrderStatus
-            Array orderStatusValues = Enum.GetValues(typeof(OrderStatus));
+            List<string> orderStatusValues = new()
+            {
+                SD.OrderOrdered,
+                SD.OrderDelivering,
+                SD.OrderReceived,
+                SD.OrderCanceled
+            };
 
             foreach (var u in users)
             {
                 // Random một giá trị từ order status
-                OrderStatus randomStatus = (OrderStatus)orderStatusValues.GetValue(random.Next(orderStatusValues.Length));
+                string randomStatus = orderStatusValues[random.Next(orderStatusValues.Count)];
                 var address = u.UserAddresses?.FirstOrDefault();
 
                 if (address == null) continue;
@@ -210,7 +225,7 @@ namespace DataAccess.Data
             if (_db.Notifications.Any()) return;
 
             var users = await _db.Users
-                .Where(x => x.Role == Role.Customer)
+                .Where(x => x.Role == SD.RoleCustomer)
                 .ToListAsync();
             foreach (var u in users)
             {
@@ -235,7 +250,7 @@ namespace DataAccess.Data
             for (int i = 1; i < 6; i++)
             {
                 Coupon coupon = couponSetDefault.Generate();
-                coupon.CouponType = CouponType.ByPercent;
+                coupon.CouponType = SD.CouponByPercent;
                 coupon.Code = ("CodePercent" + i).ToLower();
                 coupon.Value = i * 10;
                 coupon.MaxValue = 100000;
@@ -245,7 +260,7 @@ namespace DataAccess.Data
             for (int i = 1; i < 6; i++)
             {
                 Coupon coupon = couponSetDefault.Generate();
-                coupon.CouponType = CouponType.ByValue;
+                coupon.CouponType = SD.CouponByValue;
                 coupon.Code = ("CodeValue" + i).ToLower();
                 coupon.Value = i * 10000;
                 coupon.MaxValue = coupon.Value;
@@ -673,9 +688,9 @@ namespace DataAccess.Data
                 Email = "admin@gmail.com",
                 Password = Password.HashPassword("Default@123"),
                 FullName = "admin",
-                Role = Role.Admin,
+                Role = SD.RoleAdmin,
                 BirthDay = DateTime.Now,
-                Gender = Gender.Male,
+                Gender = SD.GenderMale,
                 EmailConfirmed = true,
                 AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
             };
@@ -699,15 +714,20 @@ namespace DataAccess.Data
             userAddressSetDefaults.RuleFor(x => x.Street, f => "324 hẻm 6 " + f.Lorem.Sentence());
 
             // Lấy danh sách các giá trị enum của OrderStatus
-            Array genderValues = Enum.GetValues(typeof(Gender));
+            List<string> genderValues = new()
+            {
+                SD.GenderMale,
+                SD.GenderFemale,
+                SD.GenderOther,
+            };
 
             // add customer and seller
             //Role? roleCustomer = await _db.Roles.FirstOrDefaultAsync(r => r.Name == Role.Customer);
             for (int i = 0; i < 15; i++)
             {
-                Gender randomStatus = (Gender)genderValues.GetValue(random.Next(genderValues.Length));
+                string randomStatus = genderValues[random.Next(genderValues.Count)];
                 User u = userSetDefaults.Generate();
-                u.Role = Role.Customer;
+                u.Role = SD.RoleCustomer;
                 u.Email = $"Customer{i}{u.Email}".ToLower();
                 u.FullName = $"Customer {i} {u.FullName}";
                 u.UserAddresses = new List<UserAddress>();

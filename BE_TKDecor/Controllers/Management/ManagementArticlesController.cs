@@ -1,39 +1,30 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Utility;
-using Utility.SD;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = RoleContent.Admin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementArticlesController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IUserRepository _user;
         private readonly IArticleRepository _article;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
 
         public ManagementArticlesController(IMapper mapper,
             IUserRepository user,
-            IArticleRepository article,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub)
+            IArticleRepository article)
         {
             _mapper = mapper;
             _user = user;
             _article = article;
-            _notification = notification;
-            _hub = hub;
         }
 
         // GET: api/ManagementArticles/GetAll
