@@ -41,6 +41,18 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
+        // GET: api/Articles/GetBySlug/abc-def
+        [HttpGet("GetBySlug/{slug}")]
+        public async Task<ApiResponse> GetBySlug(string slug)
+        {
+            var article = await _article.FindBySlug(slug);
+            if (article == null || article.IsDelete)
+                return new ApiResponse { Message = ErrorContent.ArticleNotFound };
+
+            var result = _mapper.Map<ArticleGetDto>(article);
+            return new ApiResponse { Success = true, Data = result };
+        }
+
         // POST: api/ManagementArticles/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(ArticleCreateDto articleDto)

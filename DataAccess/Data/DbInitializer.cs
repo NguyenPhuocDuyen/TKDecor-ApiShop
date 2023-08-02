@@ -30,8 +30,8 @@ namespace DataAccess.Data
             await AddNotifications();
             await AddProductReports();
             await AddOrders();
-            //await AddProductReview();
-            //await AddReportProductReview();
+            await AddProductReview();
+            await AddReportProductReview();
         }
 
         //private void AddModel3D()
