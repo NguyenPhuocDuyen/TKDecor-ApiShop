@@ -61,24 +61,21 @@ namespace BE_TKDecor.Controllers
 
             var productReview = await _productReview.FindByUserIdAndProductId(user.UserId, product.ProductId);
 
-            bool isAdd = true;
+            bool isAdd = false;
 
             if (productReview == null)
             {
+                isAdd = true;
                 productReview = new ProductReview()
                 {
                     UserId = user.UserId,
-                    User = user,
+                    //User = user,
                     ProductId = product.ProductId,
-                    Product = product,
+                    //Product = product,
                 };
             }
-            else
-            {
-                isAdd = false;
-                productReview.IsDelete = false;
-                productReview.UpdatedAt = DateTime.Now;
-            }
+            productReview.IsDelete = false;
+            productReview.UpdatedAt = DateTime.Now;
             productReview.Rate = productReviewDto.Rate;
             productReview.Description = productReviewDto.Description;
 

@@ -77,6 +77,7 @@ namespace BE_TKDecor.Controllers
                 {
                     report.IsDelete = false;
                     report.Reason = reportDto.Reason;
+                    report.ReportStatus = SD.ReportPending;
                     report.UpdatedAt = DateTime.Now;
                     await _reportProductReview.Update(report);
                 }

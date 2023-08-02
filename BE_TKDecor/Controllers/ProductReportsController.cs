@@ -63,9 +63,9 @@ namespace BE_TKDecor.Controllers
                 report = new ProductReport()
                 {
                     UserReportId = user.UserId,
-                    UserReport = user,
+                    //UserReport = user,
                     ProductReportedId = product.ProductId,
-                    ProductReported = product,
+                    //ProductReported = product,
                 };
             }
             report.IsDelete = false;
