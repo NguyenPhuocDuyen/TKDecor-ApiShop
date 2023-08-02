@@ -21,6 +21,8 @@ namespace BE_TKDecor.Core.Dtos.User
 
         public DateTime BirthDay { get; set; }
 
+        public string Phone { get; set; } = null!;
+
         [RegularExpression($"^({SD.GenderMale}|{SD.GenderFemale}|{SD.GenderOther})$")]
         public string Gender { get; set; } = null!;
     }

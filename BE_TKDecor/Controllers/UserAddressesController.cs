@@ -53,6 +53,8 @@ namespace BE_TKDecor.Controllers
 
             var address = (await _userAddress.FindByUserId(user.UserId))
                 .FirstOrDefault(x => !x.IsDelete && x.IsDefault);
+            if (address == null || address.IsDelete)
+                return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
 
             var result = _mapper.Map<UserAddressGetDto>(address);
             return Ok(new ApiResponse { Success = true, Data = result });

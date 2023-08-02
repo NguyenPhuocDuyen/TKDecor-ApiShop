@@ -15,5 +15,7 @@ namespace BE_TKDecor.Core.Dtos.User
 
         [RegularExpression($"^({SD.GenderMale}|{SD.GenderFemale}|{SD.GenderOther})$")]
         public string Gender { get; set; } = null!;
+
+        public string Phone { get; set; } = null!;
     }
 }

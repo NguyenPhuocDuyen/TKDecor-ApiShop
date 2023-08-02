@@ -41,7 +41,7 @@ namespace BE_TKDecor.Controllers.Management
             return Ok(new ApiResponse { Success = true, Data = result });
         }
 
-        // GET: api/Articles/GetBySlug/abc-def
+        // GET: api/ManagementArticles/GetBySlug/abc-def
         [HttpGet("GetBySlug/{slug}")]
         public async Task<ApiResponse> GetBySlug(string slug)
         {

@@ -15,9 +15,9 @@ namespace BE_TKDecor.Core.Dtos.User
         public DateTime BirthDay { get; set; }
 
         public string Gender { get; set; } = null!;
+
+        public string Phone { get; set; } = null!;
         
         public string AvatarUrl { get; set; } = null!;
-
-        //public bool IsSubscriber { get; set; }
     }
 }

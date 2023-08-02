@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using BusinessObject;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 using Utility;
 
 namespace DataAccess.Data
@@ -691,6 +692,7 @@ namespace DataAccess.Data
                 Role = SD.RoleAdmin,
                 BirthDay = DateTime.Now,
                 Gender = SD.GenderMale,
+                Phone = GenerateRandomPhoneNumber(),
                 EmailConfirmed = true,
                 AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
             };
@@ -733,6 +735,7 @@ namespace DataAccess.Data
                 u.UserAddresses = new List<UserAddress>();
                 u.BirthDay = DateTime.Now;
                 u.Gender = randomStatus;
+                u.Phone = GenerateRandomPhoneNumber();
 
                 for (int j = 0; j < 2; j++)
                 {

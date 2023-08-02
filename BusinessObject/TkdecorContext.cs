@@ -659,8 +659,8 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("birth_day");
             entity.Property(e => e.Gender)
                 .HasColumnName("gender");
-                //.HasConversion(gender => gender.ToString(),
-                //       genderString => (Gender)Enum.Parse(typeof(Gender), genderString));
+            entity.Property(e => e.Phone)
+                .HasColumnName("phone");
             entity.Property(e => e.Email)
                 .IsUnicode(false)
                 .HasColumnName("email");

@@ -65,6 +65,7 @@ namespace BE_TKDecor.Controllers
             user.AvatarUrl = userDto.AvatarUrl;
             user.BirthDay = userDto.BirthDay;
             user.Gender = userDto.Gender;
+            user.Phone = userDto.Phone;
             user.UpdatedAt = DateTime.Now;
             try
             {
