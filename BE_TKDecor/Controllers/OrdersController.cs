@@ -23,6 +23,7 @@ namespace BE_TKDecor.Controllers
         private readonly ICouponRepository _coupon;
         private readonly IOrderRepository _order;
         private readonly ICartRepository _cart;
+        private readonly IProductRepository _product;
         private readonly INotificationRepository _notification;
         private readonly IHubContext<NotificationHub> _hub;
 
@@ -32,6 +33,7 @@ namespace BE_TKDecor.Controllers
             ICouponRepository coupon,
             IOrderRepository order,
             ICartRepository cart,
+            IProductRepository product,
             INotificationRepository notification,
             IHubContext<NotificationHub> hub)
         {
@@ -41,6 +43,7 @@ namespace BE_TKDecor.Controllers
             _coupon = coupon;
             _order = order;
             _cart = cart;
+            _product = product;
             _notification = notification;
             _hub = hub;
         }
@@ -133,6 +136,9 @@ namespace BE_TKDecor.Controllers
                 if (cart == null || cart.IsDelete || cart.UserId != user.UserId)
                     return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
 
+                if (cart.Quantity > cart.Product.Quantity)
+                    return BadRequest(new ApiResponse { Message = "Số lượng trong kho không đủ để đặt hàng" });
+
                 OrderDetail orderDetail = new()
                 {
                     Order = newOrder,
@@ -182,6 +188,8 @@ namespace BE_TKDecor.Controllers
                     var cart = cartsDb.FirstOrDefault(x => x.CartId == cartId);
                     if (cart != null)
                     {
+                        // update quantity product in store
+                        cart.Product.Quantity -= cart.Quantity;
                         cart.IsDelete = true;
                         await _cart.Update(cart);
                     }
@@ -254,18 +262,26 @@ namespace BE_TKDecor.Controllers
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
-            var message = "";
-            if (orderDto.OrderStatus == SD.OrderCanceled)
-                message = "huỷ";
-            else if (orderDto.OrderStatus == SD.OrderReceived)
-                message = "nhận";
-
             order.OrderStatus = orderDto.OrderStatus;
             order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);
 
+                var message = "";
+                if (orderDto.OrderStatus == SD.OrderCanceled)
+                {
+                    // add quantity of product in store
+                    foreach (var orDetail in order.OrderDetails)
+                    {
+                        orDetail.Product.Quantity += orDetail.Quantity;
+                        orDetail.Product.UpdatedAt = DateTime.Now;
+                        await _product.Update(orDetail.Product);
+                    }
+                    message = "huỷ";
+                }
+                else if (orderDto.OrderStatus == SD.OrderReceived)
+                    message = "nhận";
                 // add notification for user
                 Notification newNotification = new()
                 {

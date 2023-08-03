@@ -43,8 +43,29 @@ namespace BE_TKDecor.Controllers
                     .OrderByDescending(x => x.CreatedAt)
                     .ToList();
 
-            var result = _mapper.Map<List<CartGetDto>>(carts);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            try
+            {
+                foreach (var cartItem in carts)
+                {
+                    if (cartItem.Quantity > cartItem.Product.Quantity)
+                    {
+                        if (cartItem.Product.Quantity == 0)
+                        {
+                            cartItem.IsDelete = true;
+                        }
+                        else
+                        {
+                            cartItem.Quantity = cartItem.Product.Quantity;
+                        }
+                        cartItem.UpdatedAt = DateTime.Now;
+                        await _cart.Update(cartItem);
+                    }
+                }
+
+                var result = _mapper.Map<List<CartGetDto>>(carts);
+                return Ok(new ApiResponse { Success = true, Data = result });
+            }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // POST: api/Carts/AddProductToCart
@@ -59,6 +80,9 @@ namespace BE_TKDecor.Controllers
             var product = await _product.FindById(cartDto.ProductId);
             if (product == null || product.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
+
+            if (product.Quantity == 0)
+                return BadRequest(new ApiResponse { Message = "Sản phẩm đã hết số lượng trong kho." });
 
             // get product information in cart
             var cartDb = await _cart.FindByUserIdAndProductId(user.UserId, product.ProductId);
@@ -111,7 +135,7 @@ namespace BE_TKDecor.Controllers
                 }
 
                 if (!quanlityIsValid)
-                    return BadRequest(new ApiResponse { Message = "Vượt quá số lượng trong kho nhưng vẫn cộng tối đa!" });
+                    return BadRequest(new ApiResponse { Message = "Vượt quá số lượng trong kho nhưng vẫn thêm tối đa!" });
 
                 return Ok(new ApiResponse { Success = true });
             }
@@ -151,7 +175,7 @@ namespace BE_TKDecor.Controllers
 
                 return Ok(new ApiResponse { Success = true });
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data}); }
+            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
         }
 
         // DELETE api/Carts/Delete/5
