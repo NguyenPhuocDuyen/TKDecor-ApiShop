@@ -19,16 +19,19 @@ namespace BE_TKDecor.Controllers.Management
     {
         private readonly IMapper _mapper;
         private readonly IOrderRepository _order;
+        private readonly IProductRepository _product;
         private readonly INotificationRepository _notification;
         private readonly IHubContext<NotificationHub> _hub;
 
         public ManagementOrdersController(IMapper mapper,
             IOrderRepository order,
+            IProductRepository product,
             INotificationRepository notification,
             IHubContext<NotificationHub> hub)
         {
             _mapper = mapper;
             _order = order;
+            _product = product;
             _notification = notification;
             _hub = hub;
         }
@@ -83,17 +86,28 @@ namespace BE_TKDecor.Controllers.Management
                 return BadRequest(new ApiResponse { Message = ErrorContent.OrderStatusUnable });
             }
 
-            var message = "";
-            if (orderDto.OrderStatus == SD.OrderDelivering)
-                message = "được xác nhận";
-            else if (orderDto.OrderStatus == SD.OrderCanceled)
-                message = "bị huỷ";
 
             order.OrderStatus = orderDto.OrderStatus;
             order.UpdatedAt = DateTime.Now;
             try
             {
                 await _order.Update(order);
+
+                var message = "";
+                if (orderDto.OrderStatus == SD.OrderDelivering)
+                    message = "được xác nhận";
+                else if (orderDto.OrderStatus == SD.OrderCanceled)
+                {
+                    message = "bị huỷ";
+                    // add quantity of product in store
+                    foreach (var orDetail in order.OrderDetails)
+                    {
+                        orDetail.Product.Quantity += orDetail.Quantity;
+                        orDetail.Product.UpdatedAt = DateTime.Now;
+                        await _product.Update(orDetail.Product);
+                    }
+                    message = "huỷ";
+                }
 
                 // add notification for user
                 Notification newNotification = new()
