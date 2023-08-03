@@ -85,9 +85,9 @@ namespace BE_TKDecor.Controllers
             user.Password = Password.HashPassword(userDto.Password);
 
             user.FullName = userDto.FullName;
-            user.BirthDay = userDto.BirthDay;
-            user.Gender = userDto.Gender;
-            user.Phone = userDto.Phone;
+            //user.BirthDay = userDto.BirthDay;
+            //user.Gender = userDto.Gender;
+            //user.Phone = userDto.Phone;
 
             user.EmailConfirmationCode = code;
             user.EmailConfirmationSentAt = DateTime.Now;
