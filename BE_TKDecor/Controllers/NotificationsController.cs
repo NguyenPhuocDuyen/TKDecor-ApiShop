@@ -44,8 +44,8 @@ namespace BE_TKDecor.Controllers
         }
 
         // POST: api/Notifications/Read
-        [HttpPost("Read")]
-        public async Task<IActionResult> Read(Guid? notificationId)
+        [HttpGet("ReadAll")]
+        public async Task<IActionResult> ReadAll()
         {
             var user = await GetUser();
             if (user == null)
@@ -54,23 +54,11 @@ namespace BE_TKDecor.Controllers
             var notifications = await _notification.FindByUserId(user.UserId);
             notifications = notifications.Where(x => !x.IsRead).ToList();
 
-            if (notificationId != null)
+            foreach (var item in notifications)
             {
-                var noti = notifications.FirstOrDefault(x => x.NotificationId == notificationId);
-                if (noti == null)
-                    return NotFound(new ApiResponse { Message = "Không tìm thấy thông báo!" });
-                noti.IsRead = true;
-                noti.UpdatedAt = DateTime.Now;
-                await _notification.Update(noti);
-            }
-            else
-            {
-                foreach (var item in notifications)
-                {
-                    item.IsRead = true;
-                    item.UpdatedAt = DateTime.Now;
-                    await _notification.Update(item);
-                }
+                item.IsRead = true;
+                item.UpdatedAt = DateTime.Now;
+                await _notification.Update(item);
             }
             return Ok(new ApiResponse { Success = true });
         }

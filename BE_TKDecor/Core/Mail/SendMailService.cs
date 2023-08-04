@@ -1,14 +1,8 @@
 ﻿using MailKit.Security;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Utility.Mail
+namespace BE_TKDecor.Core.Mail
 {
     public class SendMailService : ISendMailService
     {

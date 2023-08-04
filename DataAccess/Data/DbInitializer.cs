@@ -232,7 +232,7 @@ namespace DataAccess.Data
             {
                 Notification notification = new()
                 {
-                    Message = "Chào mừng bạn tới web TKDecor",
+                    Message = "Chào mừng bạn tới web TKDecor: ",
                     UserId = u.UserId,
                 };
                 _db.Notifications.Add(notification);

@@ -1,5 +1,6 @@
 ﻿using BE_TKDecor.Core.Config.Automapper;
 using BE_TKDecor.Core.Config.JWT;
+using BE_TKDecor.Core.Mail;
 using BE_TKDecor.Hubs;
 using DataAccess.Data;
 using DataAccess.Repository;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Utility.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 

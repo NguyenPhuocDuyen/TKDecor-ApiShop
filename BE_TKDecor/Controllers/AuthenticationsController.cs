@@ -8,7 +8,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Utility.Mail;
 using Utility;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Options;
 using BE_TKDecor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Core.Dtos.Notification;
+using BE_TKDecor.Core.Mail;
 
 namespace BE_TKDecor.Controllers
 {

@@ -6,10 +6,10 @@ using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using AutoMapper;
 using Utility;
-using Utility.Mail;
 using BE_TKDecor.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using BE_TKDecor.Core.Dtos.Notification;
+using BE_TKDecor.Core.Mail;
 
 namespace BE_TKDecor.Controllers
 {
