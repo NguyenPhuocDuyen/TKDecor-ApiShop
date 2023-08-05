@@ -759,8 +759,8 @@ public partial class TkdecorContext : DbContext
         //    new Category { CategoryId = Guid.NewGuid(), Name = "Trang trí", Thumbnail = "https://icons.veryicon.com/png/o/object/niche/ornament-13.png" });
         //    //new Category { CategoryId = Guid.NewGuid(), Name = "", Thumbnail = "" },
 
-        OnModelCreatingPartial(modelBuilder);
+        //OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    //partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

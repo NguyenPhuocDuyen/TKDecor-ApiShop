@@ -45,7 +45,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/ProductReviews/Review
         [HttpPost("Review")]
-        public async Task<ActionResult<ProductReview>> ReviewProductReview(ProductReviewCreateDto productReviewDto)
+        public async Task<IActionResult> ReviewProductReview(ProductReviewCreateDto productReviewDto)
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)

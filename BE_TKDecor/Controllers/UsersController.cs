@@ -71,18 +71,6 @@ namespace BE_TKDecor.Controllers
             {
                 await _user.Update(user);
 
-                //// add notification for user
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    Message = $"Cập nhật thông tin thành công"
-                //};
-                //await _notification.Add(newNotification);
-                //// notification signalR
-                //await _hub.Clients.User(user.UserId.ToString())
-                //    .SendAsync(Common.NewNotification,
-                //    _mapper.Map<NotificationGetDto>(newNotification));
-
                 return Ok(new ApiResponse { Success = true });
             }
             catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }

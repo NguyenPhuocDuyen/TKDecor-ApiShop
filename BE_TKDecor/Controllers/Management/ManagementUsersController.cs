@@ -38,7 +38,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementUsers/GetAllUser
         [HttpGet("GetAllUser")]
-        public async Task<IActionResult> GetUserInfo()
+        public async Task<IActionResult> GetAllUser()
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)
@@ -55,7 +55,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementUsers/SetRole
         [HttpPut("SetRole/{userId}")]
-        public async Task<IActionResult> GetUserInfo(Guid userId, UserSetRoleDto userDto)
+        public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto userDto)
         {
             if (userId != userDto.UserId)
                 return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
@@ -93,7 +93,7 @@ namespace BE_TKDecor.Controllers.Management
         }
 
         [HttpDelete("Delete/{userId}")]
-        public async Task<IActionResult> GetUserInfo(Guid userId)
+        public async Task<IActionResult> Delete(Guid userId)
         {
             var user = await _user.FindById(userId);
             if (user == null || user.IsDelete)
