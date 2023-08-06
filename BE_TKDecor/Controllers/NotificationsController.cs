@@ -31,7 +31,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetNotifications()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var notifications = await _notification.FindByUserId(user.UserId);

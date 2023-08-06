@@ -2,12 +2,17 @@
 using BE_TKDecor.Core.Config.JWT;
 using BE_TKDecor.Core.Mail;
 using BE_TKDecor.Hubs;
+using BE_TKDecor.Service;
+using BE_TKDecor.Service.IService;
+using BusinessObject;
 using DataAccess.Data;
 using DataAccess.Repository;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +90,17 @@ builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInt
 builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
+// Add services to the container.
+builder.Services.AddDbContext<TkdecorContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddScoped<IAuthenService, AuthenService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
 // config json no loop data
 builder.Services.AddControllersWithViews()
         .AddNewtonsoftJson(options =>
@@ -122,13 +138,21 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000")
+        //builder =>
+        //{
+        //    builder.WithOrigins("http://localhost:3000")
+        //           .AllowAnyHeader()
+        //           .AllowAnyMethod()
+        //           .SetIsOriginAllowedToAllowWildcardSubdomains()
+        //           .AllowCredentials();
+        //}
+        builder => builder
+                    .WithOrigins("http://localhost:3000/", "https://tkdecor-tkd-ecor.vercel.app/")
                     .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials();
-        });
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetIsOriginAllowed(hostName => true)
+        );
 });
 
 builder.Services.AddControllers();

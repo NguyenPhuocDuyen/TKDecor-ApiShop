@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Article;
+﻿using BE_TKDecor.Core.Dtos.Article;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Service.IService;
 using BusinessObject;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
@@ -14,43 +13,38 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementArticlesController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly IArticleRepository _article;
+        private readonly IArticleService _article;
+        private readonly IUserService _user;
 
-        public ManagementArticlesController(IMapper mapper,
-            IUserRepository user,
-            IArticleRepository article)
+        public ManagementArticlesController(IArticleService article,
+            IUserService user)
         {
-            _mapper = mapper;
-            _user = user;
             _article = article;
+            _user = user;
         }
 
         // GET: api/ManagementArticles/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _article.GetAll();
-            list = list
-                .Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<ArticleGetDto>>(list);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _article.GetAll();
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
-        // GET: api/ManagementArticles/GetBySlug/abc-def
-        [HttpGet("GetBySlug/{slug}")]
-        public async Task<ApiResponse> GetBySlug(string slug)
+        // GET: api/ManagementArticles/GetById/abc-def
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetById(Guid id)
         {
-            var article = await _article.FindBySlug(slug);
-            if (article == null || article.IsDelete)
-                return new ApiResponse { Message = ErrorContent.ArticleNotFound };
-
-            var result = _mapper.Map<ArticleGetDto>(article);
-            return new ApiResponse { Success = true, Data = result };
+            var res = await _article.GetById(id);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // POST: api/ManagementArticles/Create
@@ -61,142 +55,48 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null || user.IsDelete)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var newSlug = Slug.GenerateSlug(articleDto.Title);
-            var articleDb = await _article.FindBySlug(newSlug);
-
-            //bool isAdd = true;
-
-            if (articleDb == null)
-                newSlug += Guid.NewGuid();
-            //{
-            // create new article info
-            articleDb = new Article();
-            articleDb = _mapper.Map<Article>(articleDto);
-            articleDb.Slug = newSlug;
-            articleDb.UserId = user.UserId;
-            //}
-            //else
-            //{
-            //    // if article exits and not delete 
-            //    if (!articleDb.IsDelete)
-            //        return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
-
-            //    articleDb.IsDelete = false;
-            //    isAdd = false;
-
-            //    articleDb.Title = articleDto.Title;
-            //    articleDb.Content = articleDto.Content;
-            //    articleDb.Thumbnail = articleDto.Thumbnail;
-            //    articleDb.IsPublish = articleDto.IsPublish;
-            //    articleDb.UpdatedAt = DateTime.Now;
-            //}
-
-            try
+            var res = await _article.Create(articleDto, user.UserId);
+            if (res.Success)
             {
-                //if (isAdd)
-                //{
-                    await _article.Add(articleDb);
-                //}
-                //else
-                //{
-                //    await _article.Update(articleDb);
-                //}
-                //// add notification for user
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    User = user,
-                //    Message = $"Thêm bài viết mới thành công. Tiêu đề: " + articleDb.Title
-                //};
-                //await _notification.Add(newNotification);
-                //// notification signalR
-                //await _hub.Clients.User(user.UserId.ToString())
-                //    .SendAsync(Common.NewNotification,
-                //    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-
+            return BadRequest(res);
         }
 
         // PUT: api/ManagementArticles/Update/5
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(Guid id, ArticleUpdateDto articleDto)
         {
-            if (id != articleDto.ArticleId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-
-            var articleDb = await _article.FindById(id);
-            if (articleDb == null || articleDb.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
-
-            var newSlug = Slug.GenerateSlug(articleDto.Title);
-            var articleSlug = await _article.FindBySlug(newSlug);
-            if (articleSlug != null && articleSlug.ArticleId != id)
-                return BadRequest(new ApiResponse { Message = "Vui lòng đổi tên do dữ liệu trùng lặp!" });
-
-            // update info article
-            articleDb.Title = articleDto.Title;
-            articleDb.Content = articleDto.Content;
-            articleDb.Thumbnail = articleDto.Thumbnail;
-            articleDb.UpdatedAt = DateTime.Now;
-            try
+            var res = await _article.Update(id, articleDto);
+            if (res.Success)
             {
-                await _article.Update(articleDb);
-
-                //// add notification for user
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    User = user,
-                //    Message = $"Cập nhật bài viết mới thành công. Tiêu đề: " + articleDb.Title
-                //};
-                //await _notification.Add(newNotification);
-                //// notification signalR
-                //await _hub.Clients.User(user.UserId.ToString())
-                //    .SendAsync(Common.NewNotification,
-                //    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // DELETE: api/ManagementArticles/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> DeleteArticle(Guid id)
         {
-            var article = await _article.FindById(id);
-            if (article == null || article.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
-
-            article.IsDelete = true;
-            article.UpdatedAt = DateTime.Now;
-            try
+            var res = await _article.Delete(id);
+            if (res.Success)
             {
-                await _article.Update(article);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // api/ManagementArticles/SetPublish
         [HttpPost("SetPublish")]
         public async Task<IActionResult> SetPublish(ArticleSetPublishDto articleDto)
         {
-            var article = await _article.FindById(articleDto.ArticleId);
-            if (article == null || article.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
-
-            article.IsPublish = articleDto.Published;
-            article.UpdatedAt = DateTime.Now;
-            try
+            var res = await _article.SetPublish(articleDto);
+            if (res.Success)
             {
-                await _article.Update(article);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -207,7 +107,7 @@ namespace BE_TKDecor.Controllers.Management
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }

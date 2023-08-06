@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using BE_TKDecor.Core.Dtos.Product;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Utility;
 
 namespace BE_TKDecor.Controllers.Management
@@ -16,7 +14,6 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProductsController : ControllerBase
     {
-        private readonly IHubContext<NotificationHub> _notificationHub;
         private readonly IMapper _mapper;
         private readonly IProductRepository _product;
         private readonly IProductImageRepository _productImage;
@@ -24,15 +21,13 @@ namespace BE_TKDecor.Controllers.Management
         private readonly ICategoryRepository _category;
         private readonly ICartRepository _cart;
 
-        public ManagementProductsController(IHubContext<NotificationHub> notificationHub,
-            IMapper mapper,
+        public ManagementProductsController(IMapper mapper,
             IProductRepository product,
             IProductImageRepository productImage,
             IProduct3DModelRepository product3DModel,
             ICategoryRepository category,
             ICartRepository cart)
         {
-            _notificationHub = notificationHub;
             _mapper = mapper;
             _product = product;
             _productImage = productImage;
@@ -81,66 +76,6 @@ namespace BE_TKDecor.Controllers.Management
             productDb = _mapper.Map<Product>(productDto);
             productDb.Slug = newSlug;
             productDb.ProductImages = new List<ProductImage>();
-            //}
-            //else
-            //{
-            //    if (!productDb.IsDelete)
-            //        return BadRequest(new ApiResponse { Message = "Please change the name due to duplicate data!" });
-
-            //    isAdd = false;
-            //    productDb.IsDelete = false;
-            //    productDb.CategoryId = category.CategoryId;
-            //    productDb.Category = category;
-            //    productDb.Product3DModelId = productDto.Product3DModelId;
-            //    productDb.Name = productDto.Name;
-            //    productDb.Description = productDto.Description;
-            //    productDb.Quantity = productDto.Quantity;
-            //    productDb.Price = productDto.Price;
-            //}
-
-            //List<string> listImageUrlOld = productDb.ProductImages.Select(x => x.ImageUrl).ToList();
-            //try
-            //{
-            //    // delete the old photo if it's not in the new photo list
-            //    foreach (var imageUrlOld in listImageUrlOld)
-            //    {
-            //        if (!productDto.ProductImages.Contains(imageUrlOld))
-            //        {
-            //            var imageOld = productDb.ProductImages.FirstOrDefault(x => x.ImageUrl == imageUrlOld);
-            //            if (imageOld != null)
-            //            {
-            //                productDb.ProductImages.Remove(imageOld);
-            //                await _productImage.Delete(imageOld);
-            //            }
-            //        }
-            //    }
-
-            //    // add a new photo if it's not in the list of photos
-            //    foreach (var imageUrlNew in productDto.ProductImages)
-            //    {
-            //        if (!listImageUrlOld.Contains(imageUrlNew))
-            //        {
-            //            ProductImage imageNew = new()
-            //            {
-            //                ProductId = productDb.ProductId,
-            //                Product = productDb,
-            //                ImageUrl = imageUrlNew
-            //            };
-            //            productDb.ProductImages.Add(imageNew);
-            //        }
-            //    }
-            //    if (isAdd)
-            //    {
-            //        await _product.Add(productDb);
-            //    }
-            //    else
-            //    {
-            //        await _product.Update(productDb);
-            //    }
-            //    return Ok(new ApiResponse { Success = true });
-            //}
-            //catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
-            //catch (Exception ex) { }
 
             //set image for product
             foreach (var urlImage in productDto.ProductImages)
@@ -194,16 +129,6 @@ namespace BE_TKDecor.Controllers.Management
                 productDb.Product3DModel = null;
             }
 
-            //if (model != null)
-            //{
-            //    productDb.Product3DModelId = model.Product3DModelId;
-            //    productDb.Product3DModel = model;
-            //}
-            //else
-            //{
-            //    productDb.Product3DModel = null;
-            //    productDb.Product3DModelId = null;
-            //}
             productDb.CategoryId = productDto.CategoryId;
             productDb.Name = productDto.Name;
             productDb.Description = productDto.Description;
