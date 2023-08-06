@@ -1,16 +1,20 @@
 ﻿using Bogus;
 using BusinessObject;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
 using Utility;
 
-namespace DataAccess.Data
+namespace BE_TKDecor.Data
 {
     public class DbInitializer : IDbInitializer
     {
-        private readonly Random random = new();
+        private readonly TkdecorContext _db;
+        private readonly Random random;
 
-        private readonly TkdecorContext _db = new();
+        public DbInitializer(TkdecorContext db)
+        {
+            _db = db;
+            random = new Random();
+        }
 
         public async Task Initialize()
         {

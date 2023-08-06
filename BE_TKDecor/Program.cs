@@ -1,18 +1,15 @@
 ﻿using BE_TKDecor.Core.Config.Automapper;
 using BE_TKDecor.Core.Config.JWT;
 using BE_TKDecor.Core.Mail;
+using BE_TKDecor.Data;
 using BE_TKDecor.Hubs;
 using BE_TKDecor.Service;
 using BE_TKDecor.Service.IService;
 using BusinessObject;
-using DataAccess.Data;
-using DataAccess.Repository;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,32 +67,32 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // service Database
-builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
-builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
-builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
-builder.Services.AddScoped<ICouponRepository, CouponRepository>();
-builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
-builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
-builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
-builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+//builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+//builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+//builder.Services.AddScoped<IUserRepository, UserRepository>();
+//builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
+//builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
+//builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
+//builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
+//builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+//builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
+//builder.Services.AddScoped<ICartRepository, CartRepository>();
+//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+//builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
+//builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
+//builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+//builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
+//builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
+//builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
 // Add services to the container.
 builder.Services.AddDbContext<TkdecorContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IAuthenService, AuthenService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IUserService, UserService>();
