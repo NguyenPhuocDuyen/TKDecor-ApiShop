@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using BE_TKDecor.Core.Config.JWT;
 using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.User;
@@ -161,6 +160,7 @@ namespace BE_TKDecor.Service
                 {
                     _context.Users.Update(user);
                 }
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -217,11 +217,7 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Users.Update(user);
-                if (codeOutOfDate)
-                {
-                    _response.Message = "Mã xác nhận đã hết hạn sử dụng. Vui lòng kiểm tra lại mã xác nhận mới trong email của bạn!";
-                    return _response;
-                }
+
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
@@ -229,6 +225,13 @@ namespace BE_TKDecor.Service
                 };
                 _context.Notifications.Add(newNotification);
 
+                await _context.SaveChangesAsync();
+
+                if (codeOutOfDate)
+                {
+                    _response.Message = "Mã xác nhận đã hết hạn sử dụng. Vui lòng kiểm tra lại mã xác nhận mới trong email của bạn!";
+                    return _response;
+                }
                 _response.Success = true;
             }
             catch
@@ -277,6 +280,7 @@ namespace BE_TKDecor.Service
             {
                 // add user
                 _context.Users.Update(user);
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -330,6 +334,7 @@ namespace BE_TKDecor.Service
                 _context.Notifications.Add(newNotification);
                 await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -386,6 +391,7 @@ namespace BE_TKDecor.Service
                 _context.Notifications.Add(newNotification);
                 await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -473,6 +479,7 @@ namespace BE_TKDecor.Service
                 storedToken.IsRevoked = true;
                 storedToken.IsUsed = true;
                 _context.RefreshTokens.Update(storedToken);
+                await _context.SaveChangesAsync();
 
                 //create new token
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == storedToken.UserId);
@@ -532,7 +539,7 @@ namespace BE_TKDecor.Service
                 ExpiredAt = DateTime.Now.AddMonths(1)
             };
             _context.RefreshTokens.Add(refreshTokenEntity);
-            //await _refreshToken.Add(refreshTokenEntity);
+            await _context.SaveChangesAsync();
 
             return new TokenModel
             {

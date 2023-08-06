@@ -2,12 +2,10 @@
 using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
+using BE_TKDecor.Service.IService;
 using BusinessObject;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Utility;
 
 namespace BE_TKDecor.Controllers.Management
@@ -17,23 +15,11 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementUsersController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly IRefreshTokenRepository _refreshToken;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IUserService _user;
 
-        public ManagementUsersController(IMapper mapper,
-            IUserRepository user,
-            IRefreshTokenRepository refreshToken,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub)
+        public ManagementUsersController(IUserService user)
         {
-            _mapper = mapper;
             _user = user;
-            _refreshToken = refreshToken;
-            _notification = notification;
-            _hub = hub;
         }
 
         // GET: api/ManagementUsers/GetAllUser
@@ -44,69 +30,35 @@ namespace BE_TKDecor.Controllers.Management
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var users = await _user.GetAll();
-            users = users.Where(x => !x.IsDelete && x.UserId != user.UserId)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<UserGetDto>>(users);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _user.GetAllUser(user.UserId);
+            return Ok(res);
         }
 
         // PUT: api/ManagementUsers/SetRole
         [HttpPut("SetRole/{userId}")]
         public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto userDto)
         {
-            if (userId != userDto.UserId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-
-            var user = await _user.FindById(userId);
+            var user = await GetUser();
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            user.Role = userDto.Role;
-            user.UpdatedAt = DateTime.Now;
-            try
+            var res = await _user.SetRole(userId, userDto);
+            if (res.Success)
             {
-                var refreshTokenOfUser = await _refreshToken.FindByUserId(userId);
-                foreach (var refresh in refreshTokenOfUser)
-                {
-                    await _refreshToken.Delete(refresh);
-                }
-                await _user.Update(user);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = $"Vai trò của bạn được quản trị thay đổi thành {userDto.Role}"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(SD.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         [HttpDelete("Delete/{userId}")]
         public async Task<IActionResult> Delete(Guid userId)
         {
-            var user = await _user.FindById(userId);
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            user.IsDelete = true;
-            user.UpdatedAt = DateTime.Now;
-            try
+            var res = await _user.Delete(userId);
+            if (res.Success)
             {
-                await _user.Update(user);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -117,7 +69,7 @@ namespace BE_TKDecor.Controllers.Management
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }

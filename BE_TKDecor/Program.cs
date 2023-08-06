@@ -99,7 +99,14 @@ builder.Services.AddDbContext<TkdecorContext>(option =>
 builder.Services.AddScoped<IAuthenService, AuthenService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IUserService, UserService>();
-
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IProduct3DModelService, Product3DModelService>();
+builder.Services.AddScoped<IProductReportService, ProductReportService>();
+builder.Services.AddScoped<IReportProductReviewService, ReportProductReviewService>();
+builder.Services.AddScoped<IStatisticalService, StatisticalService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()
@@ -138,14 +145,6 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-        //builder =>
-        //{
-        //    builder.WithOrigins("http://localhost:3000")
-        //           .AllowAnyHeader()
-        //           .AllowAnyMethod()
-        //           .SetIsOriginAllowedToAllowWildcardSubdomains()
-        //           .AllowCredentials();
-        //}
         builder => builder
                     .WithOrigins("http://localhost:3000/", "https://tkdecor-tkd-ecor.vercel.app/")
                     .AllowAnyHeader()
@@ -156,7 +155,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();

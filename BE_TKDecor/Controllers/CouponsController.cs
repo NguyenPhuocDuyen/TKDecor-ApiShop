@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using DataAccess.Repository.IRepository;
-using BE_TKDecor.Core.Dtos.Coupon;
-using BE_TKDecor.Core.Response;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -10,33 +9,23 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class CouponsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly ICouponRepository _coupon;
+        private readonly ICouponService _coupon;
 
-        public CouponsController(IMapper mapper,
-            ICouponRepository coupon)
+        public CouponsController(ICouponService coupon)
         {
-            _mapper = mapper;
             _coupon = coupon;
         }
 
         // GET: api/Coupons/GetByCode/5
         [HttpGet("GetByCode/{code}")]
-        public async Task<IActionResult> GetCoupon(string code)
+        public async Task<IActionResult> GetByCode(string code)
         {
-            var coupon = await _coupon.FindByCode(code.ToLower());
-            if (coupon == null || coupon.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.CouponNotFound });
-
-            var currentDay = DateTime.Now;
-            if (currentDay < coupon.StartDate || currentDay > coupon.EndDate || !coupon.IsActive)
-                return BadRequest(new ApiResponse { Message = "Mã giảm giá không có hiệu lực" });
-
-            if (coupon.RemainingUsageCount == 0)
-                return BadRequest(new ApiResponse { Message = "Mã giảm giá hết lượt sử dụng" });
-
-            var result = _mapper.Map<CouponGetDto>(coupon);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _coupon.GetByCode(code);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
     }
 }

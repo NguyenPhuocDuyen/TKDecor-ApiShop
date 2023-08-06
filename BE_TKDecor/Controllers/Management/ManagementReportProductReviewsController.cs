@@ -3,6 +3,7 @@ using BE_TKDecor.Core.Dtos.Notification;
 using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Hubs;
+using BE_TKDecor.Service.IService;
 using BusinessObject;
 using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -17,90 +18,31 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementReportProductReviewsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IReportProductReviewRepository _reportProductReview;
-        private readonly IProductReviewRepository _productReview;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IReportProductReviewService _reportProductReview;
 
-        public ManagementReportProductReviewsController(IMapper mapper,
-            IReportProductReviewRepository reportProductReview,
-            IProductReviewRepository productReview,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub)
+        public ManagementReportProductReviewsController(IReportProductReviewService reportProductReview)
         {
-            _mapper = mapper;
             _reportProductReview = reportProductReview;
-            _productReview = productReview;
-            _notification = notification;
-            _hub = hub;
         }
 
         // GET: api/ManagementReportProductReviews/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var reports = await _reportProductReview.GetAll();
-            reports = reports.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<ReportProductReviewGetDto>>(reports);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _reportProductReview.GetAll();
+            return Ok(res);
         }
 
         // PUT: api/ManagementReportProductReviews/UpdateStatusReport
         [HttpPut("UpdateStatusReport/{id}")]
         public async Task<IActionResult> UpdateStatusReport(Guid id, ReportProductReviewUpdateDto reportDto)
         {
-            if (id != reportDto.ReportProductReviewId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-
-            var report = await _reportProductReview.FindById(id);
-            if (report == null || report.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ReportProductReviewNotFound });
-
-            if (report.ReportStatus != SD.ReportPending)
-                return BadRequest(new ApiResponse { Message = "Báo cáo đánh giá sản phẩm đã được xử lý!" });
-
-            report.ReportStatus = reportDto.ReportStatus;
-            report.ProductReviewReported.IsDelete = true;
-            report.UpdatedAt = DateTime.Now;
-
-            var message = "";
-            if (reportDto.ReportStatus == SD.ReportAccept)
-                message = "được chấp nhận";
-            else if (reportDto.ReportStatus == SD.ReportReject)
-                message = "bị từ chối";
-
-            try
+            var res = await _reportProductReview.Update(id, reportDto);
+            if (res.Success)
             {
-                await _reportProductReview.Update(report);
-
-                // update product review to delete
-                var productReview = await _productReview.FindById(report.ProductReviewReportedId);
-                if (productReview != null)
-                {
-                    productReview.UpdatedAt = DateTime.Now;
-                    productReview.IsDelete = true;
-                    await _productReview.Update(productReview);
-                }
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = report.UserReportId,
-                    Message = $"Báo cáo đánh giá sản phẩm của {report.UserReport.FullName} đã {message}."
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(report.UserReportId.ToString())
-                    .SendAsync(SD.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
     }
 }

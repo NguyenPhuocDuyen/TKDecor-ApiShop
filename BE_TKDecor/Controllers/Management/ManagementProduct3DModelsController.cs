@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Product3DModel;
-using BE_TKDecor.Core.Response;
-using BusinessObject;
-using DataAccess.Repository.IRepository;
+﻿using BE_TKDecor.Core.Dtos.Product3DModel;
+using BE_TKDecor.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
@@ -14,88 +11,59 @@ namespace BE_TKDecor.Controllers.Management
     [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProduct3DModelsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IProduct3DModelRepository _product3DModel;
-        private readonly IProductRepository _product;
+        private readonly IProduct3DModelService _product3DModel;
 
-        public ManagementProduct3DModelsController(IMapper mapper,
-            IProduct3DModelRepository product3DModel,
-            IProductRepository product)
+        public ManagementProduct3DModelsController(IProduct3DModelService product3DModel)
         {
-            _mapper = mapper;
             _product3DModel = product3DModel;
-            _product = product;
         }
 
         // GET: api/ManagementProduct3DModels/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var models = await _product3DModel.GetAll();
-            models = models.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<Product3DModelGetDto>>(models);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _product3DModel.GetAll();
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/ManagementProduct3DModels/GetAllByProductId
         [HttpGet("GetAllByProductId/{id}")]
         public async Task<IActionResult> GetAllByProductId(Guid id)
         {
-            var models = await _product3DModel.GetAll();
-            models = models.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ToList();
-
-            var product = await _product.FindById(id);
-            if (product != null && product.Product3DModelId != null)
+            var res = await _product3DModel.GetAllByProductId(id);
+            if (res.Success)
             {
-                models = models.Where(x => x.Product == null 
-                            || x.Product3DModelId == product.Product3DModelId)
-                    .ToList();
-            } else
-            {
-                models = models.Where(x => x.Product == null).ToList();
+                return Ok(res);
             }
-
-            var result = _mapper.Map<List<Product3DModelGetDto>>(models);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            return BadRequest(res);
         }
 
         // POST: api/ManagementProduct3DModels/Create
         [HttpPost("Create")]
         public async Task<IActionResult> Create(Product3DModelCreateDto modelDto)
         {
-            var model = _mapper.Map<Product3DModel>(modelDto);
-            try
+            var res = await _product3DModel.Create(modelDto);
+            if (res.Success)
             {
-                await _product3DModel.Add(model);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // POST: api/ManagementProduct3DModels/Delete
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var model = await _product3DModel.FindById(id);
-            if (model == null || model.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.Model3DNotFound });
-
-            if (model.Product != null)
-                return BadRequest(new ApiResponse { Message = "Model3D đang được sản phẩm sử dụng bởi " + model.Product.Name });
-
-            model.IsDelete = true;
-            model.UpdatedAt = DateTime.Now;
-            try
+            var res = await _product3DModel.Delete(id);
+            if (res.Success)
             {
-                await _product3DModel.Update(model);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
     }
 }

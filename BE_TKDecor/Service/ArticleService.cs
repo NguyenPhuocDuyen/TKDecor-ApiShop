@@ -39,6 +39,7 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Articles.Add(articleDb);
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -62,6 +63,7 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Articles.Update(article);
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -73,7 +75,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> GetAll()
         {
-            var list = await _context.Articles.ToListAsync();
+            var list = await _context.Articles.Include(x => x.User).ToListAsync();
             list = list
                 .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.CreatedAt)
@@ -87,7 +89,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> GetAll(string sort = "default", int pageIndex = 1, int pageSize = 20)
         {
-            var list = await _context.Articles.ToListAsync();
+            var list = await _context.Articles.Include(x => x.User).ToListAsync();
             list = list.Where(x => !x.IsDelete && x.IsPublish)
                 .ToList();
 
@@ -116,7 +118,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> GetById(Guid id)
         {
-            var article = await _context.Articles.FirstOrDefaultAsync(x => x.ArticleId == id);
+            var article = await _context.Articles.Include(x => x.User).FirstOrDefaultAsync(x => x.ArticleId == id);
             if (article == null || article.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
@@ -131,7 +133,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> GetBySlug(string slug)
         {
-            var article = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == slug);
+            var article = await _context.Articles.Include(x => x.User).FirstOrDefaultAsync(x => x.Slug == slug);
 
             if (article == null || article.IsDelete || !article.IsPublish)
             {
@@ -159,6 +161,7 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Articles.Update(article);
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
@@ -199,6 +202,7 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Articles.Update(articleDb);
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch
