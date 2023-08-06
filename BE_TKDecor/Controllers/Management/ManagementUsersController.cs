@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Notification;
-using BE_TKDecor.Core.Dtos.User;
+﻿using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Service.IService;
 using BusinessObject;
@@ -38,10 +36,6 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPut("SetRole/{userId}")]
         public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto userDto)
         {
-            var user = await GetUser();
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
             var res = await _user.SetRole(userId, userDto);
             if (res.Success)
             {

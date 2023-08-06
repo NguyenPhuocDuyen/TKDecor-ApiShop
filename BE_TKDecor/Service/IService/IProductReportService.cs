@@ -7,5 +7,6 @@ namespace BE_TKDecor.Service.IService
     {
         Task<ApiResponse> GetAll();
         Task<ApiResponse> Update(Guid id, ProductReportUpdateDto dto);
+        Task<ApiResponse> MakeProductReport(Guid userId, ProductReportCreateDto reportDto);
     }
 }

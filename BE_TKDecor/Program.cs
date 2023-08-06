@@ -107,6 +107,12 @@ builder.Services.AddScoped<IReportProductReviewService, ReportProductReviewServi
 builder.Services.AddScoped<IStatisticalService, StatisticalService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IProductFavoriteService, ProductFavoriteService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IProductReviewInteractionService, ProductReviewInteractionService>();
+builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
+builder.Services.AddScoped<IUserAddressService, UserAddressService>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

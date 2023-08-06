@@ -1,14 +1,7 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Notification;
-using BE_TKDecor.Core.Dtos.ReportProductReview;
-using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
+﻿using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Service.IService;
-using BusinessObject;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Utility;
 
 namespace BE_TKDecor.Controllers.Management

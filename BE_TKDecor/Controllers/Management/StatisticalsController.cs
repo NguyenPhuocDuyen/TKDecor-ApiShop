@@ -1,8 +1,4 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Order;
-using BE_TKDecor.Core.Response;
-using BE_TKDecor.Service.IService;
-using DataAccess.Repository.IRepository;
+﻿using BE_TKDecor.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;

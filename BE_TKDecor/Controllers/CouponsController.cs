@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using DataAccess.Repository.IRepository;
 using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers

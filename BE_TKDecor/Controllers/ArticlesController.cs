@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using DataAccess.Repository.IRepository;
-using BE_TKDecor.Core.Dtos.Article;
-using BE_TKDecor.Core.Response;
-using Utility;
 using BE_TKDecor.Service.IService;
-using System.Drawing.Printing;
 
 namespace BE_TKDecor.Controllers
 {

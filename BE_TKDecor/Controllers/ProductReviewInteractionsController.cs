@@ -1,8 +1,7 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
+﻿using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Service.IService;
 using BusinessObject;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
@@ -14,38 +13,15 @@ namespace BE_TKDecor.Controllers
     [Authorize(Roles = SD.RoleCustomer)]
     public class ProductReviewInteractionsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly IProductReviewRepository _productReview;
-        private readonly IProductReviewInteractionRepository _interaction;
+        private readonly IProductReviewInteractionService _interaction;
+        private readonly IUserService _user;
 
-        public ProductReviewInteractionsController(IMapper mapper,
-            IUserRepository user,
-            IProductReviewRepository productReview,
-            IProductReviewInteractionRepository interaction)
+        public ProductReviewInteractionsController(IProductReviewInteractionService interaction,
+            IUserService user)
         {
-            _mapper = mapper;
-            _user = user;
-            _productReview = productReview;
             _interaction = interaction;
+            _user = user;
         }
-
-        //// GET: api/ProductReviews/GetInteractionOfUser
-        //[HttpGet("GetInteractionOfUser")]
-        //public async Task<IActionResult> GetInteractionOfUser()
-        //{
-        //    var user = await GetUser();
-        //    if (user == null || user.IsDelete)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-        //    var productReviewInteraction = await _interaction.FindByUserId(user.UserId);
-        //    productReviewInteraction = productReviewInteraction
-        //        .Where(x => !x.IsDelete)
-        //        .ToList();
-
-        //    var result = _mapper.Map<List<ProductReviewInteractionGetDto>>(productReviewInteraction);
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
 
         // POST: api/ProductReviews/Interaction
         [HttpPost("Interaction")]
@@ -55,44 +31,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var productReview = await _productReview.FindById(interactionDto.ProductReviewId);
-            if (productReview == null || productReview.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductReviewNotFound });
-
-            var interactionReview = await _interaction
-                .FindByUserIdAndProductReviewId(user.UserId, interactionDto.ProductReviewId);
-
-            bool isAdd = false;
-
-            if (interactionReview == null)
+            var res = await _interaction.Interaction(user.UserId, interactionDto);
+            if (res.Success)
             {
-                isAdd = true;
-                interactionReview = new ProductReviewInteraction();
+                return Ok(res);
             }
-
-            if (isAdd)
-            {
-                interactionReview.UserId = user.UserId;
-                //interactionReview.User = user;
-                interactionReview.ProductReviewId = productReview.ProductReviewId;
-                //interactionReview.ProductReview = productReview;
-            }
-            interactionReview.UpdatedAt = DateTime.Now;
-            interactionReview.Interaction = interactionDto.Interaction;
-
-            try
-            {
-                if (isAdd)
-                {
-                    await _interaction.Add(interactionReview);
-                }
-                else
-                {
-                    await _interaction.Update(interactionReview);
-                }
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -103,7 +47,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }

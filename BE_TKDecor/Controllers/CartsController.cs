@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
-using AutoMapper;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
 using Utility;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -14,20 +13,14 @@ namespace BE_TKDecor.Controllers
     [Authorize(Roles = SD.RoleCustomer)]
     public class CartsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly ICartRepository _cart;
-        private readonly IProductRepository _product;
+        private readonly ICartService _cart;
+        private readonly IUserService _user;
 
-        public CartsController(IMapper mapper,
-            IUserRepository user,
-            ICartRepository cart,
-            IProductRepository product)
+        public CartsController(ICartService cart,
+            IUserService user)
         {
-            _mapper = mapper;
-            _user = user;
             _cart = cart;
-            _product = product;
+            _user = user;
         }
 
         // GET: api/Carts/GetAll
@@ -38,34 +31,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var carts = (await _cart.FindCartsByUserId(user.UserId))
-                    .Where(x => !x.IsDelete)
-                    .OrderByDescending(x => x.CreatedAt)
-                    .ToList();
-
-            try
+            var res = await _cart.GetCartsForUser(user.UserId);
+            if (res.Success)
             {
-                foreach (var cartItem in carts)
-                {
-                    if (cartItem.Quantity > cartItem.Product.Quantity)
-                    {
-                        if (cartItem.Product.Quantity == 0)
-                        {
-                            cartItem.IsDelete = true;
-                        }
-                        else
-                        {
-                            cartItem.Quantity = cartItem.Product.Quantity;
-                        }
-                        cartItem.UpdatedAt = DateTime.Now;
-                        await _cart.Update(cartItem);
-                    }
-                }
-
-                var result = _mapper.Map<List<CartGetDto>>(carts);
-                return Ok(new ApiResponse { Success = true, Data = result });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // POST: api/Carts/AddProductToCart
@@ -76,70 +47,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            // get current product info
-            var product = await _product.FindById(cartDto.ProductId);
-            if (product == null || product.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-            if (product.Quantity == 0)
-                return BadRequest(new ApiResponse { Message = "Sản phẩm đã hết số lượng trong kho." });
-
-            // get product information in cart
-            var cartDb = await _cart.FindByUserIdAndProductId(user.UserId, product.ProductId);
-
-            // Variable check number of valid products
-            bool quanlityIsValid = true;
-
-            // Variable check add or update product
-            bool isAdd = false;
-
-            // If not, create a new one, if yes, add the quantity
-            if (cartDb == null)
+            var res = await _cart.AddProductToCart(user.UserId, cartDto);
+            if (res.Success)
             {
-                isAdd = true;
-                cartDb = _mapper.Map<Cart>(cartDto);
-                cartDb.IsDelete = false;
-                cartDb.UserId = user.UserId;
+                return Ok(res);
             }
-            else
-            {
-                cartDb.UpdatedAt = DateTime.Now;
-                if (cartDb.IsDelete == true)
-                {
-                    cartDb.IsDelete = false;
-                    cartDb.Quantity = cartDto.Quantity;
-                }
-                else
-                {
-                    // Existing old cart plus quantity
-                    cartDb.Quantity += cartDto.Quantity;
-                }
-            }
-
-            // Exceeded the number of existing products added
-            if (cartDb.Quantity > product.Quantity)
-            {
-                quanlityIsValid = false;
-                cartDb.Quantity = product.Quantity;
-            }
-
-            try
-            {
-                if (isAdd)
-                {
-                    await _cart.Add(cartDb);
-                }
-                else
-                {
-                    await _cart.Update(cartDb);
-                }
-
-                if (!quanlityIsValid)
-                    return BadRequest(new ApiResponse { Message = "Vượt quá số lượng trong kho nhưng vẫn thêm tối đa!" });
-
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // POST: api/Carts/UpdateQuantity/201
@@ -150,32 +63,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var cartDb = await _cart.FindById(id);
-            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
-
-            // Variable check number of valid products
-            bool quanlityIsValid = true;
-
-            cartDb.Quantity = cartDto.Quantity;
-            cartDb.UpdatedAt = DateTime.Now;
-
-            if (cartDb.Quantity > cartDb.Product.Quantity)
+            var res = await _cart.UpdateQuantity(user.UserId, id, cartDto);
+            if (res.Success)
             {
-                cartDb.Quantity = cartDb.Product.Quantity;
-                quanlityIsValid = false;
+                return Ok(res);
             }
-
-            try
-            {
-                await _cart.Update(cartDb);
-
-                if (!quanlityIsValid)
-                    return Ok(new ApiResponse { Success = true, Message = "Vượt quá số lượng trong kho nhưng vẫn cộng tối đa!" });
-
-                return Ok(new ApiResponse { Success = true });
-            }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // DELETE api/Carts/Delete/5
@@ -186,19 +79,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            // Find and delete cart
-            var cartDb = await _cart.FindById(id);
-            if (cartDb == null || cartDb.UserId != user.UserId || cartDb.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.CartNotFound });
-
-            cartDb.IsDelete = true;
-            cartDb.UpdatedAt = DateTime.Now;
-            try
+            var res = await _cart.Delete(user.UserId, id);
+            if (res.Success)
             {
-                await _cart.Update(cartDb);
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -209,7 +95,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }
