@@ -176,7 +176,7 @@ namespace BE_TKDecor.Service
             }
 
             var cartDb = await _context.Carts.Include(x => x.Product)
-                    .FirstOrDefaultAsync(x => x.ProductId == id);
+                    .FirstOrDefaultAsync(x => x.CartId == id);
 
             if (cartDb == null || cartDb.UserId != userId || cartDb.IsDelete)
             {

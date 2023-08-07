@@ -97,7 +97,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> GetUserAddressesForUser(Guid userId)
         {
             var list = await _context.UserAddresses
-                .Where(x => !x.IsDelete)
+                .Where(x => !x.IsDelete && x.UserId == userId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
@@ -110,7 +110,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> SetDefault(Guid userId, UserAddressSetDefaultDto dto)
         {
             var address = await _context.UserAddresses.FindAsync(dto.UserAddressId);
-            if (address == null || address.IsDelete)
+            if (address == null || address.IsDelete || address.UserId != userId)
             {
                 _response.Message = ErrorContent.AddressNotFound;
                 return _response;
@@ -122,7 +122,7 @@ namespace BE_TKDecor.Service
             {
                 foreach (var ad in listAddress)
                 {
-                    if (ad.UserAddressId == dto.UserAddressId)
+                    if (ad.UserAddressId == address.UserAddressId)
                     {
                         ad.IsDefault = true;
                         ad.UpdatedAt = DateTime.Now;

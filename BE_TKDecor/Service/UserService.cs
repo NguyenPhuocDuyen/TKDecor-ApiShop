@@ -55,7 +55,7 @@ namespace BE_TKDecor.Service
             }
 
             bool codeOutOfDate = false;
-            if (user.ResetPasswordSentAt > DateTime.Now.AddMinutes(-5))
+            if (user.ResetPasswordSentAt < DateTime.Now.AddMinutes(-5))
             {
                 codeOutOfDate = true;
             }

@@ -659,29 +659,29 @@ namespace BE_TKDecor.Data
             _db.SaveChanges();
         }
 
-        //private async Task AddArticles()
-        //{
-        //    if (_db.Articles.Any()) return;
+        private async Task AddArticles()
+        {
+            if (_db.Articles.Any()) return;
 
-        //    var user = await _db.Users.FirstOrDefaultAsync(x => x.Role == Role.Admin);
-        //    if (user != null)
-        //    {
-        //        var articleSetDefaults = new Faker<Article>();
-        //        articleSetDefaults.RuleFor(x => x.User, user);
-        //        articleSetDefaults.RuleFor(x => x.Title, f => f.Lorem.Sentence());
-        //        articleSetDefaults.RuleFor(x => x.Content, f => f.Lorem.Paragraphs());
-        //        articleSetDefaults.RuleFor(x => x.Thumbnail, "https://kinsta.com/wp-content/uploads/2020/08/tiger-jpg.jpg");
-        //        articleSetDefaults.RuleFor(x => x.IsPublish, true);
-        //        for (var i = 0; i < 20; i++)
-        //        {
-        //            Article article = articleSetDefaults.Generate();
-        //            article.Title = "Article 1: " + article.Title;
-        //            article.Slug = Slug.GenerateSlug(article.Title);
-        //            _db.Articles.Add(article);
-        //        }
-        //        _db.SaveChanges();
-        //    }
-        //}
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.Role == SD.RoleAdmin);
+            if (user != null)
+            {
+                var articleSetDefaults = new Faker<Article>();
+                articleSetDefaults.RuleFor(x => x.User, user);
+                articleSetDefaults.RuleFor(x => x.Title, f => f.Lorem.Sentence());
+                articleSetDefaults.RuleFor(x => x.Content, f => f.Lorem.Paragraphs());
+                articleSetDefaults.RuleFor(x => x.Thumbnail, "https://kinsta.com/wp-content/uploads/2020/08/tiger-jpg.jpg");
+                articleSetDefaults.RuleFor(x => x.IsPublish, true);
+                for (var i = 0; i < 2; i++)
+                {
+                    Article article = articleSetDefaults.Generate();
+                    article.Title = "Article 1: " + article.Title;
+                    article.Slug = Slug.GenerateSlug(article.Title);
+                    _db.Articles.Add(article);
+                }
+                _db.SaveChanges();
+            }
+        }
 
         private void AddUser()
         {

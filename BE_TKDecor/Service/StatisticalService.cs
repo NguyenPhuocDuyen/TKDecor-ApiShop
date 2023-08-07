@@ -68,6 +68,7 @@ namespace BE_TKDecor.Service
 
             var orders = await _context.Orders
                 .Include(x => x.OrderDetails)
+                .ThenInclude(x => x.Product)
                 .Where(x => !x.IsDelete && x.CreatedAt >= startDate && x.CreatedAt <= endDate)
                 .ToListAsync();
 
@@ -195,6 +196,10 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> RecentOrders()
         {
             var orders = await _context.Orders.Where(x => !x.IsDelete)
+                    .Include(x => x.User)
+                    //.Include(x => x.OrderDetails)
+                    //    .ThenInclude(x => x.Product)
+                    //        .ThenInclude(x => x.ProductImages)
                     .OrderByDescending(x => x.CreatedAt)
                     .Take(10)
                     .ToListAsync();

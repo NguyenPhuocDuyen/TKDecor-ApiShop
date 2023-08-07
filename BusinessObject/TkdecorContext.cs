@@ -5,10 +5,6 @@ namespace BusinessObject;
 
 public partial class TkdecorContext : DbContext
 {
-    public TkdecorContext()
-    {
-    }
-
     public TkdecorContext(DbContextOptions<TkdecorContext> options)
         : base(options)
     {

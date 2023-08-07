@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("FindById/{id}")]
         public async Task<IActionResult> FindById(Guid id)
         {
-            var res = await _order.GetAll();
+            var res = await _order.GetById(id);
             if (res.Success)
             {
                 return Ok(res);

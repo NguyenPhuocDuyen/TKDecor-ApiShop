@@ -227,8 +227,9 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var revews = await _context.ProductReviews.Where(x => x.ProductId == product.ProductId)
-                .Where(x => !x.IsDelete)
+            var revews = await _context.ProductReviews.Include(x => x.User)
+                .Include(x => x.ProductReviewInteractions)
+                .Where(x => x.ProductId == product.ProductId && !x.IsDelete)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
@@ -275,16 +276,9 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> RelatedProducts(Guid? userId, string slug)
         {
-            var p = await _context.Products
-                    .Include(x => x.Category)
-                    .Include(x => x.OrderDetails)
-                    .Include(x => x.Product3DModel)
-                    .Include(x => x.ProductImages)
-                    .Include(x => x.ProductReviews)
-                    .Include(x => x.ProductFavorites)
-                    .FirstOrDefaultAsync(x => x.Slug == slug);
+            var p = await GetProductBySlug(slug);
 
-            if (p == null || p.IsDelete || p.Quantity == 0)
+            if (p == null || p.Quantity == 0)
             {
                 _response.Message = ErrorContent.ProductNotFound;
                 return _response;
@@ -376,7 +370,7 @@ namespace BE_TKDecor.Service
                         var imageOld = productDb.ProductImages.FirstOrDefault(x => x.ImageUrl == imageUrlOld);
                         if (imageOld != null)
                         {
-                            productDb.ProductImages.Remove(imageOld);
+                            _context.ProductImages.Remove(imageOld);
                         }
                     }
                 }
@@ -397,7 +391,7 @@ namespace BE_TKDecor.Service
                 }
 
                 // Update information except photos
-                _context.Update(productDb);
+                _context.Products.Update(productDb);
                 await _context.SaveChangesAsync();
 
                 _response.Success = true;

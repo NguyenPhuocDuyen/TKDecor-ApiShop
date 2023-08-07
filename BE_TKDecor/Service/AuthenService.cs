@@ -59,7 +59,7 @@ namespace BE_TKDecor.Service
 
             if (u.IsDelete)
             {
-                _response.Message = "Tài khoản bị xoá!";
+                _response.Message = "Tài khoản đã bị chặn!";
                 return _response;
             }
 
@@ -106,7 +106,14 @@ namespace BE_TKDecor.Service
             {
                 if (user.EmailConfirmed == true)
                 {
-                    _response.Message = "Email đã tồn tại!";
+                    if (user.IsDelete == true)
+                    {
+                        _response.Message = "Tài khoản đã bị chặn";
+                    }
+                    else
+                    {
+                        _response.Message = "Email đã tồn tại!";
+                    }
                     return _response;
                 }
                 isAdd = false;
