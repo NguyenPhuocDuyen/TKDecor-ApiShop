@@ -1,5 +1,4 @@
-﻿using BusinessObject;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Utility;
 
 namespace BE_TKDecor.Core.Dtos.Coupon
@@ -21,7 +20,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [Range(1, int.MaxValue)]
         public int RemainingUsageCount { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public DateTime StartDate { get; set; }
 

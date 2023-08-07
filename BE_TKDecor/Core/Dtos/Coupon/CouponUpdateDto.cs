@@ -1,5 +1,4 @@
-﻿using BusinessObject;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Utility;
 
 namespace BE_TKDecor.Core.Dtos.Coupon
