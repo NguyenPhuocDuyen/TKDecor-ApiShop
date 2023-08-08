@@ -161,7 +161,6 @@ namespace BE_TKDecor.Service
             }
 
             userAddressDb.FullName = dto.FullName;
-            //userAddressDb.Address = dto.Address;
             userAddressDb.Phone = dto.Phone;
             userAddressDb.CityCode = dto.CityCode;
             userAddressDb.City = dto.City;

@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Notification;
-using BE_TKDecor.Core.Dtos.ProductReport;
+﻿using BE_TKDecor.Core.Dtos.ProductReport;
 using BE_TKDecor.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

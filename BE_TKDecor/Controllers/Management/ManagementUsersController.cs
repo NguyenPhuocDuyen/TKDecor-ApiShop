@@ -29,7 +29,11 @@ namespace BE_TKDecor.Controllers.Management
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _user.GetAllUser(user.UserId);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // PUT: api/ManagementUsers/SetRole

@@ -23,7 +23,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var res = await _order.GetAll();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/ManagementOrders/FindById/1

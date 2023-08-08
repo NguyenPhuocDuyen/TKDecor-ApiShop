@@ -32,7 +32,11 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _productFavorite.GetFavoriteOfUser(user.UserId, pageIndex, pageSize);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Favorites/SetFavorite

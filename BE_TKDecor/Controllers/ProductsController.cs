@@ -30,7 +30,11 @@ namespace BE_TKDecor.Controllers
         {
             var user = await GetUser();
             var res = await _product.GetAll(user?.UserId, categoryId, search, sort, pageIndex, pageSize);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Products/FeaturedProducts
@@ -39,7 +43,11 @@ namespace BE_TKDecor.Controllers
         {
             var user = await GetUser();
             var res = await _product.FeaturedProducts(user?.UserId);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Products/GetReview/2
@@ -78,29 +86,13 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetBySlug(string slug)
         {
             var user = await GetUser();
-            var res = await _product.RelatedProducts(user?.UserId, slug);
+            var res = await _product.GetBySlug(user?.UserId, slug);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
         }
-
-        //// GET: api/Products/GetById/5
-        //[HttpGet("GetById/{id}")]
-        //public async Task<IActionResult> GetById(Guid id)
-        //{
-        //    var product = await _product.FindById(id);
-
-        //    if (product == null || product.IsDelete)
-        //        return NotFound(new ApiResponse { Message = ErrorContent.ProductNotFound });
-
-        //    var result = _mapper.Map<ProductGetDto>(product);
-        //    var user = await GetUser();
-        //    result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == user?.UserId);
-
-        //    return Ok(new ApiResponse { Success = true, Data = result });
-        //}
 
         private async Task<User?> GetUser()
         {

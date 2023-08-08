@@ -24,7 +24,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/ReportProductReviews/MakeReport
         [HttpPost("MakeReport")]
-        public async Task<ActionResult<ReportProductReview>> MakeReportProductReview(ReportProductReviewCreateDto reportDto)
+        public async Task<IActionResult> MakeReportProductReview(ReportProductReviewCreateDto reportDto)
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)

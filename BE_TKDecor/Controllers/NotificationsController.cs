@@ -30,7 +30,11 @@ namespace BE_TKDecor.Controllers
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _notification.GetNotificationsForUser(user.UserId);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // POST: api/Notifications/Read

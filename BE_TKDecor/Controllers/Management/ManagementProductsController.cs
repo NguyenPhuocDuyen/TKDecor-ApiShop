@@ -24,7 +24,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var res = await _product.GetAll();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // POST: api/Products/Create

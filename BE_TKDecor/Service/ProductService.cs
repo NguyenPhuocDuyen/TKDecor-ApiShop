@@ -175,9 +175,9 @@ namespace BE_TKDecor.Service
             // filter search
             if (!string.IsNullOrEmpty(search))
             {
-                list = list.Where(x => x.Name.Contains(search)
-                || x.Description.Contains(search)
-                || x.Category.Name.Contains(search)
+                list = list.Where(x => x.Name.ToLower().Trim().Contains(search.ToLower().Trim())
+                || x.Description.ToLower().Trim().Contains(search.ToLower().Trim())
+                || x.Category.Name.ToLower().Trim().Contains(search.ToLower().Trim())
                 ).ToList();
             }
 

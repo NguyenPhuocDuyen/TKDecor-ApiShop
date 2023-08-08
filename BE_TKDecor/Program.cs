@@ -21,6 +21,30 @@ builder.Services.AddSignalR();
 // config automapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+// service Database
+builder.Services.AddDbContext<TkdecorContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+builder.Services.AddScoped<IAuthenService, AuthenService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IProduct3DModelService, Product3DModelService>();
+builder.Services.AddScoped<IProductReportService, ProductReportService>();
+builder.Services.AddScoped<IReportProductReviewService, ReportProductReviewService>();
+builder.Services.AddScoped<IStatisticalService, StatisticalService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IProductFavoriteService, ProductFavoriteService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IProductReviewInteractionService, ProductReviewInteractionService>();
+builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
+builder.Services.AddScoped<IUserAddressService, UserAddressService>();
+
 // config send mail
 builder.Services.AddOptions();                                         // Kích hoạt Options
 var mailsettings = builder.Configuration.GetSection("MailSettings");  // đọc config
@@ -65,51 +89,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
     });
-
-// service Database
-//builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-//builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-//builder.Services.AddScoped<IUserRepository, UserRepository>();
-//builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-//builder.Services.AddScoped<IProductRepository, ProductRepository>();
-//builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
-//builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
-//builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
-//builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
-//builder.Services.AddScoped<ICouponRepository, CouponRepository>();
-//builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
-//builder.Services.AddScoped<ICartRepository, CartRepository>();
-//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-//builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
-//builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
-//builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-//builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
-//builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
-//builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-
-// Add services to the container.
-builder.Services.AddDbContext<TkdecorContext>(option =>
-{
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-builder.Services.AddScoped<IAuthenService, AuthenService>();
-builder.Services.AddScoped<IArticleService, ArticleService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ICouponService, CouponService>();
-builder.Services.AddScoped<IProduct3DModelService, Product3DModelService>();
-builder.Services.AddScoped<IProductReportService, ProductReportService>();
-builder.Services.AddScoped<IReportProductReviewService, ReportProductReviewService>();
-builder.Services.AddScoped<IStatisticalService, StatisticalService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IProductFavoriteService, ProductFavoriteService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IProductReviewInteractionService, ProductReviewInteractionService>();
-builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
-builder.Services.AddScoped<IUserAddressService, UserAddressService>();
 
 // config json no loop data
 builder.Services.AddControllersWithViews()

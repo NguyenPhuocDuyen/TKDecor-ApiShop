@@ -22,7 +22,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalUser()
         {
             var res = await _statistical.GetTotalUser();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Statisticals/GetTotalRevenue
@@ -30,7 +34,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalRevenue()
         {
             var res = await _statistical.GetTotalRevenue();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Statisticals/GetTotalOrder
@@ -38,7 +46,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetTotalOrder()
         {
             var res = await _statistical.GetTotalOrder();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Statisticals/RecentOrders
@@ -46,7 +58,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> RecentOrders()
         {
             var res = await _statistical.RecentOrders();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Statisticals/GetTopProductSale
@@ -57,7 +73,11 @@ namespace BE_TKDecor.Controllers.Management
             int take = 5)
         {
             var res = await _statistical.GetTopProductSale(startDate, endDate, take);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Statisticals/GetRevenueChart
@@ -65,7 +85,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetRevenueChart(int? year)
         {
             var res = await _statistical.GetRevenueChart(year);
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
     }
 }

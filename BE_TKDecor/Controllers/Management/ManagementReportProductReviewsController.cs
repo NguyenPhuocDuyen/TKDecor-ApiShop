@@ -23,7 +23,11 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAll()
         {
             var res = await _reportProductReview.GetAll();
-            return Ok(res);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // PUT: api/ManagementReportProductReviews/UpdateStatusReport
