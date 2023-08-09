@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utility;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BE_TKDecor.Core.Dtos.User
 {
@@ -18,12 +12,5 @@ namespace BE_TKDecor.Core.Dtos.User
 
         [MaxLength(255)]
         public string FullName { get; set; } = null!;
-
-        //public DateTime BirthDay { get; set; }
-
-        //public string Phone { get; set; } = null!;
-
-        //[RegularExpression($"^({SD.GenderMale}|{SD.GenderFemale}|{SD.GenderOther})$")]
-        //public string Gender { get; set; } = null!;
     }
 }

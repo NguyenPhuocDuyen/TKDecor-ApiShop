@@ -18,9 +18,7 @@ namespace BE_TKDecor.Service
         private readonly IHubContext<NotificationHub> _hub;
         private ApiResponse _response;
 
-        public ProductReportService(TkdecorContext context,
-            IMapper mapper,
-            IHubContext<NotificationHub> hub)
+        public ProductReportService(TkdecorContext context, IMapper mapper, IHubContext<NotificationHub> hub)
         {
             _context = context;
             _mapper = mapper;

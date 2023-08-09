@@ -742,21 +742,5 @@ public partial class TkdecorContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserAddress_User");
         });
-
-        //modelBuilder.Entity<Category>().HasData(
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Bàn", Thumbnail = "https://icons.veryicon.com/png/o/miscellaneous/common-home-icon/table-26.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Ghế", Thumbnail = "https://icons.veryicon.com/png/o/object/articles-for-daily-use/chair-53.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Tủ", Thumbnail = "https://icons.veryicon.com/png/o/miscellaneous/common-home-icon/cabinet-15.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Giường", Thumbnail = "https://icons.veryicon.com/png/o/food--drinks/home-furnishing-furniture/bed-4.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Kệ", Thumbnail = "https://icons.veryicon.com/png/o/system/system-01/shelf-4.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Đèn", Thumbnail = "https://icons.veryicon.com/png/o/miscellaneous/common-home-icon/lamp-18.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Sofa", Thumbnail = "https://icons.veryicon.com/png/o/miscellaneous/common-home-icon/sofa-28.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Thảm", Thumbnail = "https://icons.veryicon.com/png/o/miscellaneous/bijing-cloud-chain-common-basic-icons/carpet-2.png" },
-        //    new Category { CategoryId = Guid.NewGuid(), Name = "Trang trí", Thumbnail = "https://icons.veryicon.com/png/o/object/niche/ornament-13.png" });
-        //    //new Category { CategoryId = Guid.NewGuid(), Name = "", Thumbnail = "" },
-
-        //OnModelCreatingPartial(modelBuilder);
     }
-
-    //partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

@@ -6,9 +6,7 @@ namespace BE_TKDecor.Service.IService
 {
     public interface IArticleService
     {
-        Task<ApiResponse> GetAll(string sort = "default",
-            int pageIndex = 1,
-            int pageSize = 20);
+        Task<ApiResponse> GetAll(string sort, int pageIndex, int pageSize);
         Task<ApiResponse> GetAll();
         Task<ApiResponse> GetBySlug(string slug);
         Task<ApiResponse> GetById(Guid id);

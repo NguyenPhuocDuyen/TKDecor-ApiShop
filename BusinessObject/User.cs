@@ -20,8 +20,6 @@ public partial class User : BaseEntity
 
     public string? AvatarUrl { get; set; } = null!;
 
-    //public bool IsSubscriber { get; set; } = false;
-
     public bool EmailConfirmed { get; set; } = false;
 
     public string? EmailConfirmationCode { get; set; }

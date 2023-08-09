@@ -15,8 +15,7 @@ namespace BE_TKDecor.Service
         private readonly IMapper _mapper;
         private ApiResponse _response;
 
-        public ProductFavoriteService(TkdecorContext context,
-            IMapper mapper)
+        public ProductFavoriteService(TkdecorContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

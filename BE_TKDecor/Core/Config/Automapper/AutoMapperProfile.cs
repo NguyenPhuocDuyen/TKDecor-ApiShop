@@ -47,7 +47,7 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(x => x.User.FullName));
 
             // product favorite 
-            CreateMap<ProductFavorite, FavoriteGetDto>();
+            //CreateMap<ProductFavorite, FavoriteGetDto>();
 
             // user address
             CreateMap<UserAddressCreateDto, UserAddress>();

@@ -12,12 +12,12 @@ namespace BE_TKDecor.Core.Dtos.User
 
         public string FullName { get; set; } = null!;
 
-        public DateTime BirthDay { get; set; }
+        public DateTime? BirthDay { get; set; }
 
-        public string Gender { get; set; } = null!;
+        public string? Gender { get; set; } = null!;
 
-        public string Phone { get; set; } = null!;
+        public string? Phone { get; set; } = null!;
         
-        public string AvatarUrl { get; set; } = null!;
+        public string? AvatarUrl { get; set; } = null!;
     }
 }

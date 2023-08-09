@@ -13,8 +13,7 @@ namespace BE_TKDecor.Service
         private readonly IMapper _mapper;
         private ApiResponse _response;
 
-        public CouponService(TkdecorContext context,
-            IMapper mapper)
+        public CouponService(TkdecorContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

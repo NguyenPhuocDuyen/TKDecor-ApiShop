@@ -19,7 +19,7 @@ namespace BE_TKDecor.Controllers.Management
             _product = product;
         }
 
-        // GET: api/Products/GetAll
+        // GET: api/ManagementProducts/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -31,7 +31,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // GET: api/Products/GetBySlug
+        // GET: api/ManagementProducts/GetBySlug
         [HttpGet("GetBySlug/{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
         {
@@ -43,7 +43,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // POST: api/Products/Create
+        // POST: api/ManagementProducts/Create
         [HttpPost("Create")]
         public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
         {
@@ -55,7 +55,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // PUT: api/Products/Update/5
+        // PUT: api/ManagementProducts/Update/5
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(Guid id, ProductUpdateDto productDto)
         {
@@ -67,7 +67,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // DELETE: api/Products/Delete/5
+        // DELETE: api/ManagementProducts/Delete/5
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
