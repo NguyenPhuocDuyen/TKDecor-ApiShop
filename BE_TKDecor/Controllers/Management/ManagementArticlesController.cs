@@ -35,7 +35,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // GET: api/ManagementArticles/GetById/abc-def
+        // GET: api/ManagementArticles/GetById/id
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
