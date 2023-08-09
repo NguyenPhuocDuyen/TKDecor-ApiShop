@@ -9,7 +9,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = SD.RoleAdmin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProductsController : ControllerBase
     {
         private readonly IProductService _product;
@@ -32,7 +32,7 @@ namespace BE_TKDecor.Controllers.Management
         }
 
         // GET: api/Products/GetBySlug
-        [HttpGet("GetBySlug/slug")]
+        [HttpGet("GetBySlug/{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
         {
             var res = await _product.GetBySlug(null, slug);
