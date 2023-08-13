@@ -42,10 +42,7 @@ namespace BE_TKDecor.Service
 
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -88,9 +85,13 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var result = _mapper.Map<UserAddressGetDto>(address);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<UserAddressGetDto>(address);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -101,9 +102,13 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
-            var result = _mapper.Map<List<UserAddressGetDto>>(list);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<UserAddressGetDto>>(list);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -138,10 +143,7 @@ namespace BE_TKDecor.Service
 
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 

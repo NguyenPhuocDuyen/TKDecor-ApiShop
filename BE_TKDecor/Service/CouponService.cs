@@ -22,36 +22,36 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> Create(CouponCreateDto dto)
         {
-            bool isAdd = true;
-            var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code == dto.Code);
-            if (couponCode == null)
-            {
-                couponCode = _mapper.Map<Coupon>(dto);
-                couponCode.Code = dto.Code.ToLower();
-            }
-            else
-            {
-                if (!couponCode.IsDelete)
-                {
-                    _response.Message = "Mã giảm giá đã tồn tại!";
-                    return _response;
-                }
-
-                couponCode.IsDelete = false;
-                isAdd = false;
-
-                couponCode.IsActive = dto.IsActive;
-                couponCode.Value = dto.Value;
-                couponCode.MaxValue = dto.MaxValue;
-                couponCode.RemainingUsageCount = dto.RemainingUsageCount;
-                couponCode.StartDate = dto.StartDate;
-                couponCode.EndDate = dto.EndDate;
-                couponCode.UpdatedAt = DateTime.Now;
-            }
-            couponCode.CouponType = dto.CouponType;
-
             try
             {
+                bool isAdd = true;
+                var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code == dto.Code);
+                if (couponCode == null)
+                {
+                    couponCode = _mapper.Map<Coupon>(dto);
+                    couponCode.Code = dto.Code.ToLower();
+                }
+                else
+                {
+                    if (!couponCode.IsDelete)
+                    {
+                        _response.Message = "Mã giảm giá đã tồn tại!";
+                        return _response;
+                    }
+
+                    couponCode.IsDelete = false;
+                    isAdd = false;
+
+                    couponCode.IsActive = dto.IsActive;
+                    couponCode.Value = dto.Value;
+                    couponCode.MaxValue = dto.MaxValue;
+                    couponCode.RemainingUsageCount = dto.RemainingUsageCount;
+                    couponCode.StartDate = dto.StartDate;
+                    couponCode.EndDate = dto.EndDate;
+                    couponCode.UpdatedAt = DateTime.Now;
+                }
+                couponCode.CouponType = dto.CouponType;
+
                 if (isAdd)
                 {
                     _context.Coupons.Add(couponCode);
@@ -63,10 +63,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -87,10 +84,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -101,9 +95,13 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
-            var result = _mapper.Map<List<CouponGetDto>>(coupons);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<CouponGetDto>>(coupons);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -129,9 +127,13 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var result = _mapper.Map<CouponGetDto>(coupon);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<CouponGetDto>(coupon);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 

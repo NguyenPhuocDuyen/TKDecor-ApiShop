@@ -37,10 +37,14 @@ namespace BE_TKDecor.Service
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
-            var result = _mapper.Map<List<OrderGetDto>>(orders);
+            try
+            {
+                var result = _mapper.Map<List<OrderGetDto>>(orders);
 
-            _response.Success = true;
-            _response.Data = result;
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -55,10 +59,14 @@ namespace BE_TKDecor.Service
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
-            var result = _mapper.Map<List<OrderGetDto>>(orders);
+            try
+            {
+                var result = _mapper.Map<List<OrderGetDto>>(orders);
 
-            _response.Success = true;
-            _response.Data = result;
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -69,13 +77,16 @@ namespace BE_TKDecor.Service
             if (order == null || order.IsDelete)
             {
                 _response.Message = ErrorContent.OrderNotFound;
+                return _response;
             }
-            else
+           
+            try
             {
                 var result = _mapper.Map<OrderGetDto>(order);
                 _response.Success = true;
                 _response.Data = result;
             }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -86,13 +97,16 @@ namespace BE_TKDecor.Service
             if (order == null || order.UserId != userId || order.IsDelete)
             {
                 _response.Message = ErrorContent.OrderNotFound;
+                return _response;
             }
-            else
+
+            try
             {
                 var result = _mapper.Map<OrderGetDto>(order);
                 _response.Success = true;
                 _response.Data = result;
             }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -349,7 +363,7 @@ namespace BE_TKDecor.Service
 
             // seller and admin have the right to accept orders for delivery
             var order = await _context.Orders
-                    .Include(x=>x.OrderDetails)
+                    .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
                     .FirstOrDefaultAsync(x => x.OrderId == id);
             if (order == null || order.UserId != user.UserId || order.IsDelete)

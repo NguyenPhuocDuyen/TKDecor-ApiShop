@@ -57,10 +57,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -90,10 +87,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -104,9 +98,13 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
-            var result = _mapper.Map<List<CategoryGetDto>>(list);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<CategoryGetDto>>(list);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -141,10 +139,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

@@ -128,7 +128,8 @@ namespace BE_TKDecor.Service
                     Email = dto.Email,
                     AvatarUrl = "",
                     Role = SD.RoleCustomer,
-                    EmailConfirmed = false
+                    EmailConfirmed = false,
+                    Gender = SD.GenderOther
                 };
             }
 

@@ -35,32 +35,36 @@ namespace BE_TKDecor.Service
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
-            var listProductFavorite = new List<ProductGetDto>();
-            foreach (var product in list)
+            try
             {
-                var productDto = _mapper.Map<ProductGetDto>(product);
+                var listProductFavorite = new List<ProductGetDto>();
+                foreach (var product in list)
+                {
+                    var productDto = _mapper.Map<ProductGetDto>(product);
 
-                // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    // Check if the user has liked the product or not
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
 
-                listProductFavorite.Add(productDto);
+                    listProductFavorite.Add(productDto);
+                }
+                listProductFavorite = listProductFavorite.Where(x => x.IsFavorite).ToList();
+
+
+                PaginatedList<ProductGetDto> pagingFavorites = PaginatedList<ProductGetDto>.CreateAsync(
+                    listProductFavorite, pageIndex, pageSize);
+
+                var result = new
+                {
+                    favorites = pagingFavorites,
+                    pagingFavorites.PageIndex,
+                    pagingFavorites.TotalPages,
+                    pagingFavorites.TotalItem
+                };
+
+                _response.Success = true;
+                _response.Data = result;
             }
-            listProductFavorite = listProductFavorite.Where(x => x.IsFavorite).ToList();
-
-
-            PaginatedList<ProductGetDto> pagingFavorites = PaginatedList<ProductGetDto>.CreateAsync(
-                listProductFavorite, pageIndex, pageSize);
-
-            var result = new
-            {
-                favorites = pagingFavorites,
-                pagingFavorites.PageIndex,
-                pagingFavorites.TotalPages,
-                pagingFavorites.TotalItem
-            };
-
-            _response.Success = true;
-            _response.Data = result;
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 

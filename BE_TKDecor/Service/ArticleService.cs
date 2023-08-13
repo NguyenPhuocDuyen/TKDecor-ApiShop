@@ -30,21 +30,20 @@ namespace BE_TKDecor.Service
             if (articleDb == null)
                 newSlug += new Random().Next(1000, 9999);
 
-            articleDb = new Article();
-            articleDb = _mapper.Map<Article>(dto);
-            articleDb.Slug = newSlug;
-            articleDb.UserId = userId;
-
             try
             {
+                articleDb = new Article();
+                articleDb = _mapper.Map<Article>(dto);
+                articleDb.Slug = newSlug;
+                articleDb.UserId = userId;
+
                 _context.Articles.Add(articleDb);
                 await _context.SaveChangesAsync();
+
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
+
             return _response;
         }
 
@@ -63,12 +62,11 @@ namespace BE_TKDecor.Service
             {
                 _context.Articles.Update(article);
                 await _context.SaveChangesAsync();
+
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
+
             return _response;
         }
 
@@ -80,9 +78,15 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
-            var result = _mapper.Map<List<ArticleGetDto>>(list);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<ArticleGetDto>>(list);
+
+                _response.Data = result;
+                _response.Success = true;
+            }
+            catch { _response.Message = ErrorContent.Data; }
+
             return _response;
         }
 
@@ -92,26 +96,30 @@ namespace BE_TKDecor.Service
             list = list.Where(x => !x.IsDelete && x.IsPublish)
                 .ToList();
 
-            var listArticleGet = _mapper.Map<List<ArticleGetDto>>(list);
-            // filter sort
-            listArticleGet = sort switch
+            try
             {
-                "date-old" => listArticleGet.OrderBy(x => x.CreatedAt).ToList(),
-                _ => listArticleGet.OrderByDescending(x => x.CreatedAt).ToList(),
-            };
+                var listArticleGet = _mapper.Map<List<ArticleGetDto>>(list);
+                // filter sort
+                listArticleGet = sort switch
+                {
+                    "date-old" => listArticleGet.OrderBy(x => x.CreatedAt).ToList(),
+                    _ => listArticleGet.OrderByDescending(x => x.CreatedAt).ToList(),
+                };
 
-            PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
-                listArticleGet, pageIndex, pageSize);
+                PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
+                    listArticleGet, pageIndex, pageSize);
 
-            var result = new
-            {
-                articles = pagingArticle,
-                pagingArticle.PageIndex,
-                pagingArticle.TotalPages,
-                pagingArticle.TotalItem
-            };
-            _response.Success = true;
-            _response.Data = result;
+                var result = new
+                {
+                    articles = pagingArticle,
+                    pagingArticle.PageIndex,
+                    pagingArticle.TotalPages,
+                    pagingArticle.TotalItem
+                };
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -124,9 +132,13 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            try
+            {
             var result = _mapper.Map<ArticleGetDto>(article);
             _response.Success = true;
             _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -140,9 +152,13 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            try
+            {
             var result = _mapper.Map<ArticleGetDto>(article);
             _response.Success = true;
             _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -163,10 +179,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 

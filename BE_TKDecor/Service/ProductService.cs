@@ -46,32 +46,29 @@ namespace BE_TKDecor.Service
             if (productDb != null)
                 newSlug += new Random().Next(1000, 9999);
 
-            var newProduct = new Product();
-            newProduct = _mapper.Map<Product>(dto);
-            newProduct.Slug = newSlug;
-            newProduct.ProductImages = new List<ProductImage>();
-
-            //set image for product
-            foreach (var urlImage in dto.ProductImages)
-            {
-                ProductImage productImage = new()
-                {
-                    Product = newProduct,
-                    ImageUrl = urlImage,
-                };
-                newProduct.ProductImages.Add(productImage);
-            }
-
             try
             {
+                var newProduct = new Product();
+                newProduct = _mapper.Map<Product>(dto);
+                newProduct.Slug = newSlug;
+                newProduct.ProductImages = new List<ProductImage>();
+
+                //set image for product
+                foreach (var urlImage in dto.ProductImages)
+                {
+                    ProductImage productImage = new()
+                    {
+                        Product = newProduct,
+                        ImageUrl = urlImage,
+                    };
+                    newProduct.ProductImages.Add(productImage);
+                }
+
                 _context.Products.Add(newProduct);
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -100,10 +97,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -117,11 +111,15 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var result = _mapper.Map<ProductGetDto>(product);
-            result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+            try
+            {
+                var result = _mapper.Map<ProductGetDto>(product);
+                result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
 
-            _response.Success = true;
-            _response.Data = result;
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -133,19 +131,23 @@ namespace BE_TKDecor.Service
                     .Take(9)
                     .ToList();
 
-            var result = new List<ProductGetDto>();
-            foreach (var product in products)
+            try
             {
-                var productDto = _mapper.Map<ProductGetDto>(product);
+                var result = new List<ProductGetDto>();
+                foreach (var product in products)
+                {
+                    var productDto = _mapper.Map<ProductGetDto>(product);
 
-                // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    // Check if the user has liked the product or not
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
 
-                result.Add(productDto);
+                    result.Add(productDto);
+                }
+
+                _response.Success = true;
+                _response.Data = result;
             }
-
-            _response.Success = true;
-            _response.Data = result;
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -154,10 +156,14 @@ namespace BE_TKDecor.Service
             var products = await GetAllProducts();
             products = products.Where(x => x.Quantity > 0).ToList();
 
-            var result = _mapper.Map<List<ProductGetDto>>(products);
+            try
+            {
+                var result = _mapper.Map<List<ProductGetDto>>(products);
 
-            _response.Success = true;
-            _response.Data = result;
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -180,40 +186,44 @@ namespace BE_TKDecor.Service
                 ).ToList();
             }
 
-            // map dto
-            var listProductGet = new List<ProductGetDto>();
-            foreach (var product in list)
+            try
             {
-                var productDto = _mapper.Map<ProductGetDto>(product);
+                // map dto
+                var listProductGet = new List<ProductGetDto>();
+                foreach (var product in list)
+                {
+                    var productDto = _mapper.Map<ProductGetDto>(product);
 
-                // Check if the user has liked the product or not
-                productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    // Check if the user has liked the product or not
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
 
-                listProductGet.Add(productDto);
+                    listProductGet.Add(productDto);
+                }
+
+                // filter sort
+                listProductGet = sort switch
+                {
+                    "price-high-to-low" => listProductGet.OrderByDescending(x => x.Price).ToList(),
+                    "price-low-to-high" => listProductGet.OrderBy(x => x.Price).ToList(),
+                    "average-rate" => listProductGet.OrderByDescending(x => x.AverageRate).ToList(),
+                    _ => listProductGet.OrderByDescending(x => x.CreatedAt).ToList(),
+                };
+
+                PaginatedList<ProductGetDto> pagingProduct = PaginatedList<ProductGetDto>.CreateAsync(
+                    listProductGet, pageIndex, pageSize);
+
+                var result = new
+                {
+                    products = pagingProduct,
+                    pagingProduct.PageIndex,
+                    pagingProduct.TotalPages,
+                    pagingProduct.TotalItem
+                };
+
+                _response.Success = true;
+                _response.Data = result;
             }
-
-            // filter sort
-            listProductGet = sort switch
-            {
-                "price-high-to-low" => listProductGet.OrderByDescending(x => x.Price).ToList(),
-                "price-low-to-high" => listProductGet.OrderBy(x => x.Price).ToList(),
-                "average-rate" => listProductGet.OrderByDescending(x => x.AverageRate).ToList(),
-                _ => listProductGet.OrderByDescending(x => x.CreatedAt).ToList(),
-            };
-
-            PaginatedList<ProductGetDto> pagingProduct = PaginatedList<ProductGetDto>.CreateAsync(
-                listProductGet, pageIndex, pageSize);
-
-            var result = new
-            {
-                products = pagingProduct,
-                pagingProduct.PageIndex,
-                pagingProduct.TotalPages,
-                pagingProduct.TotalItem
-            };
-
-            _response.Success = true;
-            _response.Data = result;
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -232,44 +242,47 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
-
-            var listReviewGetDto = new List<ProductReviewGetDto>();
-            foreach (var review in revews)
+            try
             {
-                var reviewDto = _mapper.Map<ProductReviewGetDto>(review);
-
-                // Check if the user has liked the product or not
-                var interaction = review.ProductReviewInteractions.FirstOrDefault(pf => !pf.IsDelete && pf.UserId == userId);
-                if (interaction != null)
+                var listReviewGetDto = new List<ProductReviewGetDto>();
+                foreach (var review in revews)
                 {
-                    reviewDto.InteractionOfUser = interaction.Interaction.ToString();
+                    var reviewDto = _mapper.Map<ProductReviewGetDto>(review);
+
+                    // Check if the user has liked the product or not
+                    var interaction = review.ProductReviewInteractions.FirstOrDefault(pf => !pf.IsDelete && pf.UserId == userId);
+                    if (interaction != null)
+                    {
+                        reviewDto.InteractionOfUser = interaction.Interaction.ToString();
+                    }
+
+                    listReviewGetDto.Add(reviewDto);
                 }
 
-                listReviewGetDto.Add(reviewDto);
+                // filter sort
+                listReviewGetDto = sort switch
+                {
+                    "rate-high-to-low" => listReviewGetDto.OrderByDescending(x => x.Rate).ToList(),
+                    "rate-low-to-high" => listReviewGetDto.OrderBy(x => x.Rate).ToList(),
+                    "rate-most-like" => listReviewGetDto.OrderByDescending(x => x.TotalLike).ToList(),
+                    _ => listReviewGetDto.OrderByDescending(x => x.CreatedAt).ToList(),
+                };
+
+                PaginatedList<ProductReviewGetDto> pagingReviews = PaginatedList<ProductReviewGetDto>.CreateAsync(
+                   listReviewGetDto, pageIndex, pageSize);
+
+                var result = new
+                {
+                    reviews = pagingReviews,
+                    pagingReviews.PageIndex,
+                    pagingReviews.TotalPages,
+                    pagingReviews.TotalItem
+                };
+
+                _response.Success = true;
+                _response.Data = result;
             }
-
-            // filter sort
-            listReviewGetDto = sort switch
-            {
-                "rate-high-to-low" => listReviewGetDto.OrderByDescending(x => x.Rate).ToList(),
-                "rate-low-to-high" => listReviewGetDto.OrderBy(x => x.Rate).ToList(),
-                "rate-most-like" => listReviewGetDto.OrderByDescending(x => x.TotalLike).ToList(),
-                _ => listReviewGetDto.OrderByDescending(x => x.CreatedAt).ToList(),
-            };
-
-            PaginatedList<ProductReviewGetDto> pagingReviews = PaginatedList<ProductReviewGetDto>.CreateAsync(
-               listReviewGetDto, pageIndex, pageSize);
-
-            var result = new
-            {
-                reviews = pagingReviews,
-                pagingReviews.PageIndex,
-                pagingReviews.TotalPages,
-                pagingReviews.TotalItem
-            };
-
-            _response.Success = true;
-            _response.Data = result;
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -290,6 +303,8 @@ namespace BE_TKDecor.Service
                 .Take(5)
                 .ToList();
 
+            try
+            {
             // map dto
             var listProductGet = new List<ProductGetDto>();
             foreach (var product in productList)
@@ -304,6 +319,8 @@ namespace BE_TKDecor.Service
 
             _response.Success = true;
             _response.Data = listProductGet;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -395,10 +412,7 @@ namespace BE_TKDecor.Service
 
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 

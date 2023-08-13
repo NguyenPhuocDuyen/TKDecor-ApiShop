@@ -22,17 +22,15 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> Create(Product3DModelCreateDto dto)
         {
-            var model = _mapper.Map<Product3DModel>(dto);
             try
             {
+                var model = _mapper.Map<Product3DModel>(dto);
                 await _context.Product3Dmodels.AddAsync(model);
                 await _context.SaveChangesAsync();
+
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -75,9 +73,13 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
-            var result = _mapper.Map<List<Product3DModelGetDto>>(models);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<Product3DModelGetDto>>(models);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -100,9 +102,13 @@ namespace BE_TKDecor.Service
                 models = models.Where(x => x.Product == null).ToList();
             }
 
-            var result = _mapper.Map<List<Product3DModelGetDto>>(models);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<Product3DModelGetDto>>(models);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

@@ -27,9 +27,13 @@ namespace BE_TKDecor.Service
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
-            var result = _mapper.Map<List<NotificationGetDto>>(notifications);
-            _response.Success = true;
-            _response.Data = result;
+            try
+            {
+                var result = _mapper.Map<List<NotificationGetDto>>(notifications);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -42,16 +46,14 @@ namespace BE_TKDecor.Service
                 item.IsRead = true;
                 item.UpdatedAt = DateTime.Now;
             }
+            
             try
             {
                 _context.Notifications.UpdateRange(notifications);
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

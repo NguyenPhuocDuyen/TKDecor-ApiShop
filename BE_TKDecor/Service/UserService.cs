@@ -40,17 +40,17 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            if (user.ResetPasswordCode != dto.Code)
-            {
-                _response.Message = "Sai mã xác nhận!";
-                return _response;
-            }
-
             //check correct password
             bool isCorrectPassword = Password.VerifyPassword(dto.Password, user.Password);
             if (!isCorrectPassword)
             {
                 _response.Message = "Sai mật khẩu!";
+                return _response;
+            }
+
+            if (user.ResetPasswordCode != dto.Code)
+            {
+                _response.Message = "Sai mã xác nhận!";
                 return _response;
             }
 
@@ -131,10 +131,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -145,9 +142,13 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToList();
 
+            try
+            {
             var result = _mapper.Map<List<UserGetDto>>(users);
             _response.Success = true;
             _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -242,10 +243,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
