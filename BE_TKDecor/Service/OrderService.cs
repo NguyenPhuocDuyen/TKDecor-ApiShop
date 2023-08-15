@@ -142,8 +142,8 @@ namespace BE_TKDecor.Service
             if (!string.IsNullOrEmpty(dto.CodeCoupon))
             {
                 coupon = await _context.Coupons
-                    .FirstOrDefaultAsync(x => x.Code == dto.CodeCoupon);
-                if (coupon == null || coupon.IsDelete)
+                    .FirstOrDefaultAsync(x => x.Code == dto.CodeCoupon &&  !x.IsDelete);
+                if (coupon == null)
                 {
                     _response.Message = ErrorContent.CouponNotFound;
                     return _response;
@@ -217,21 +217,23 @@ namespace BE_TKDecor.Service
 
             // calculate total price
             newOrder.TotalPrice = newOrder.OrderDetails.Sum(x => x.PaymentPrice * x.Quantity);
+
             // check coupon discount
             if (coupon != null)
             {
-                coupon.RemainingUsageCount--;
+                coupon.RemainingUsageCount = coupon.RemainingUsageCount - 1;
                 newOrder.CouponId = coupon.CouponId;
                 if (coupon.CouponType == SD.CouponByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)
-                    newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value;
+                    newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value / 100;
                 }
                 else
                 {
                     // By value: 100 = 100 - 10 (90)
                     newOrder.TotalPrice -= coupon.Value;
                 }
+
                 // If the discount is more than the total amount, you will have to pay $0 
                 if (newOrder.TotalPrice < 0)
                 {
