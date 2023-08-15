@@ -12,6 +12,8 @@ namespace BE_TKDecor.Core.Dtos.User
         [EmailAddress]
         [MaxLength(100)]
         public string Email { get; set; } = null!;
+
+        [MinLength(7)]
         [MaxLength(20)]
         public string Code { get; set; } = null!;
     }

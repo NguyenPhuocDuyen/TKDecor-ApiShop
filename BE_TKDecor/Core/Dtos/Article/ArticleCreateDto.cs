@@ -4,9 +4,11 @@ namespace BE_TKDecor.Core.Dtos.Article
 {
     public class ArticleCreateDto
     {
+        [MinLength(5)]
         [MaxLength(100)]
         public string Title { get; set; } = null!;
 
+        [MinLength(100)]
         public string Content { get; set; } = null!;
 
         public string Thumbnail { get; set; } = null!;

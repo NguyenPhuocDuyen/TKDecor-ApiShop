@@ -8,6 +8,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [RegularExpression($"^({SD.CouponByPercent}|{SD.CouponByValue})$")]
         public string CouponType { get; set; } = null!;
 
+        [MinLength(5)]
         [MaxLength(50)]
         public string Code { get; set; } = null!;
 

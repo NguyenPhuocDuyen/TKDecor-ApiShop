@@ -4,6 +4,7 @@ namespace BE_TKDecor.Core.Dtos.Category
 {
     public class CategoryCreateDto
     {
+        [MinLength(5)]
         [MaxLength(100)]
         public string Name { get; set; } = null!;
 
