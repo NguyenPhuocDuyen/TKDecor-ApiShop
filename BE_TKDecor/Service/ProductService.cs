@@ -265,7 +265,7 @@ namespace BE_TKDecor.Service
                     "rate-high-to-low" => listReviewGetDto.OrderByDescending(x => x.Rate).ToList(),
                     "rate-low-to-high" => listReviewGetDto.OrderBy(x => x.Rate).ToList(),
                     "rate-most-like" => listReviewGetDto.OrderByDescending(x => x.TotalLike).ToList(),
-                    _ => listReviewGetDto.OrderByDescending(x => x.CreatedAt).ToList(),
+                    _ => listReviewGetDto.OrderByDescending(x => x.UpdatedAt).ToList(),
                 };
 
                 PaginatedList<ProductReviewGetDto> pagingReviews = PaginatedList<ProductReviewGetDto>.CreateAsync(

@@ -50,18 +50,43 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> GetAllForUser(Guid userId)
         {
+            //var orders = await _context.Orders
+            //        .Include(x => x.User)
+            //        .Include(x => x.OrderDetails)
+            //            .ThenInclude(x => x.Product)
+            //                .ThenInclude(x => x.ProductImages)
+            //        .Where(o => o.UserId == userId && !o.IsDelete)
+            //        .OrderByDescending(x => x.CreatedAt)
+            //        .ToListAsync();
+
+
             var orders = await _context.Orders
                     .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
                             .ThenInclude(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.Product)
+                            .ThenInclude(x => x.ProductReviews)
+                                .Where(pr => pr.UserId == userId)
                     .Where(o => o.UserId == userId && !o.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
             try
             {
-                var result = _mapper.Map<List<OrderGetDto>>(orders);
+                List<OrderGetDto> result = new();
+
+                foreach (var order in orders)
+                {
+                    var orderGet = _mapper.Map<OrderGetDto>(order);
+                    foreach (var od in orderGet.OrderDetails)
+                    {
+                        od.HasUserReviewed = order.OrderDetails
+                            .Any(x => x.Product.ProductReviews.Any(pr => pr.UserId == order.UserId && pr.ProductId == od.ProductId && !pr.IsDelete));
+                    }
+                    result.Add(orderGet);
+                }
 
                 _response.Success = true;
                 _response.Data = result;
@@ -79,7 +104,7 @@ namespace BE_TKDecor.Service
                 _response.Message = ErrorContent.OrderNotFound;
                 return _response;
             }
-           
+
             try
             {
                 var result = _mapper.Map<OrderGetDto>(order);

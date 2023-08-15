@@ -69,6 +69,7 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<OrderDetail, OrderDetailGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.ProductSlug, opt => opt.MapFrom(src => src.Product.Slug))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.ProductImages.Select(pi => pi.ImageUrl).ToList()));
 
             // product review

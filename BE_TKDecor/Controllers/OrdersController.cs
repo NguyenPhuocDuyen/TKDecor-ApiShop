@@ -38,21 +38,21 @@ namespace BE_TKDecor.Controllers
             return BadRequest(res);
         }
 
-        // GET: api/Orders/FindById/1
-        [HttpGet("FindById/{id}")]
-        public async Task<IActionResult> FindById(Guid id)
-        {
-            var user = await GetUser();
-            if (user == null || user.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
+        //// GET: api/Orders/FindById/1
+        //[HttpGet("FindById/{id}")]
+        //public async Task<IActionResult> FindById(Guid id)
+        //{
+        //    var user = await GetUser();
+        //    if (user == null || user.IsDelete)
+        //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var res = await _order.GetByIdAndUser(id, user.UserId);
-            if (res.Success)
-            {
-                return Ok(res);
-            }
-            return BadRequest(res);
-        }
+        //    var res = await _order.GetByIdAndUser(id, user.UserId);
+        //    if (res.Success)
+        //    {
+        //        return Ok(res);
+        //    }
+        //    return BadRequest(res);
+        //}
 
         // POST: api/Orders/MakeOrder
         [HttpPost("MakeOrder")]

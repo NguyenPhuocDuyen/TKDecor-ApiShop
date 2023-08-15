@@ -16,7 +16,7 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [Range(0, 99999999)]
         public decimal MaxValue { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, 1000)]
         public int RemainingUsageCount { get; set; }
 
         public bool IsActive { get; set; }
