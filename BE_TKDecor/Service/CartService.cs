@@ -126,6 +126,8 @@ namespace BE_TKDecor.Service
             var carts = await _context.Carts
                     .Include(x => x.Product)
                         .ThenInclude(x => x.ProductImages)
+                    .Include(x => x.Product)
+                        .ThenInclude(x => x.Category)
                     .Where(x => x.UserId == userId && !x.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();

@@ -61,7 +61,10 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<CartCreateDto, Cart>();
             CreateMap<Cart, CartGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(x => x.Product.Name))
+                .ForMember(dest => dest.ProductSlug, opt => opt.MapFrom(x => x.Product.Slug))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(x => x.Product.Category.Name))
                 .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(x => x.Product.Price))
+                .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(x => x.Product.Quantity))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
 
             // order
