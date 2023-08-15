@@ -1,4 +1,5 @@
 ﻿using BusinessObject;
+using System.ComponentModel.DataAnnotations;
 
 namespace BE_TKDecor.Core.Dtos.ProductReport
 {
@@ -6,6 +7,7 @@ namespace BE_TKDecor.Core.Dtos.ProductReport
     {
         public Guid ProductReportedId { get; set; }
 
+        [MaxLength(255)]
         public string Reason { get; set; } = null!;
     }
 }

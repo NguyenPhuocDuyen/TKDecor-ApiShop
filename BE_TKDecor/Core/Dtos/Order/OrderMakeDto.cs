@@ -6,9 +6,11 @@ namespace BE_TKDecor.Core.Dtos.Order
     {
         public List<Guid> ListCartIdSelect { get; set; } = new List<Guid>();
         public Guid AddressId { get; set; }
-        [MaxLength(255)]
+
+        [MaxLength(50)]
         public string? CodeCoupon { get; set; }
 
+        [MaxLength(255)]
         public string? Note { get; set; }
     }
 }

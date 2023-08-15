@@ -6,10 +6,9 @@ namespace BE_TKDecor.Core.Dtos.Category
     {
         public Guid CategoryId { get; set; }
 
-        [MaxLength(255)]
+        [MaxLength(100)]
         public string Name { get; set; } = null!;
 
-        [MaxLength(255)]
         public string Thumbnail { get; set; } = null!;
     }
 }

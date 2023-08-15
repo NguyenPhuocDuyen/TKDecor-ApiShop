@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.Article
     {
         public Guid ArticleId { get; set; }
 
-        [MaxLength(255)]
+        [MaxLength(100)]
         public string Title { get; set; } = null!;
 
         public string Content { get; set; } = null!;

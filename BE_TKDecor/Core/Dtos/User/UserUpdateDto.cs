@@ -5,10 +5,9 @@ namespace BE_TKDecor.Core.Dtos.User
 {
     public class UserUpdateDto
     {
-        [MaxLength(255)]
+        [MaxLength(100)]
         public string FullName { get; set; } = null!;
 
-        [MaxLength(255)]
         public string? AvatarUrl { get; set; }
 
         public DateTime? BirthDay { get; set; }
@@ -16,6 +15,7 @@ namespace BE_TKDecor.Core.Dtos.User
         [RegularExpression($"^({SD.GenderMale}|{SD.GenderFemale}|{SD.GenderOther})$")]
         public string? Gender { get; set; }
 
+        [MaxLength(20)]
         public string? Phone { get; set; }
     }
 }

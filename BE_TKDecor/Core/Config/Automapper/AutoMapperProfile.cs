@@ -79,7 +79,7 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.TotalDisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == SD.InteractionDislike).Count()));
 
             // product review interaction
-            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
+            //CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()

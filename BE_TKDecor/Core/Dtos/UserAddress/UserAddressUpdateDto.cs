@@ -6,7 +6,7 @@ namespace BE_TKDecor.Core.Dtos.UserAddress
     {
         public Guid UserAddressId { get; set; }
 
-        [MaxLength(255)]
+        [MaxLength(100)]
         public string FullName { get; set; } = null!;
 
         [MaxLength(20)]
@@ -14,16 +14,20 @@ namespace BE_TKDecor.Core.Dtos.UserAddress
 
         public int CityCode { get; set; }
 
+        [MaxLength(100)]
         public string City { get; set; } = null!;
 
         public int DistrictCode { get; set; }
 
+        [MaxLength(100)]
         public string District { get; set; } = null!;
 
         public int WardCode { get; set; }
 
+        [MaxLength(100)]
         public string Ward { get; set; } = null!;
 
+        [MaxLength(100)]
         public string Street { get; set; } = null!;
     }
 }

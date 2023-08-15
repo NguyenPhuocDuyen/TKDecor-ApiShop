@@ -5,6 +5,11 @@ namespace BusinessObject;
 
 public partial class TkdecorContext : DbContext
 {
+
+    public TkdecorContext()
+    {
+    }
+
     public TkdecorContext(DbContextOptions<TkdecorContext> options)
         : base(options)
     {
@@ -46,8 +51,9 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<UserAddress> UserAddresses { get; set; }
 
-    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //    => optionsBuilder.UseSqlServer("Server=tcp:server-database-duyen.database.windows.net,1433;Initial Catalog=TKDecor;Persist Security Info=False;User ID=database_azure;Password=01248163264Tkdecor;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -73,13 +79,13 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.Slug, "IX_Article_slug")
                 .IsUnique();
 
-            entity.Property(e => e.Slug).HasColumnName("slug");
+            entity.Property(e => e.Slug).HasColumnName("slug").HasColumnType("nvarchar(255)");
 
             entity.Property(e => e.ArticleId).HasColumnType("uniqueidentifier").HasColumnName("article_id");
             entity.Property(e => e.Content).HasColumnName("content");
             entity.Property(e => e.IsPublish).HasColumnName("is_publish");
             entity.Property(e => e.Thumbnail).HasColumnName("thumbnail");
-            entity.Property(e => e.Title).HasColumnName("title");
+            entity.Property(e => e.Title).HasColumnName("title").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -146,7 +152,7 @@ public partial class TkdecorContext : DbContext
                 .HasColumnName("created_at");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             entity.Property(e => e.Name)
-                .HasColumnName("name");
+                .HasColumnName("name").HasColumnType("nvarchar(100)");
             entity.Property(e => e.Thumbnail)
                 .HasColumnName("thumbnail");
 
@@ -159,62 +165,6 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
         });
 
-        //modelBuilder.Entity<ChatMessage>(entity =>
-        //{
-        //    entity.HasKey(e => e.ChatMessageId).HasName("PK__ChatMessage__59CF6536A836CD8D");
-        //    entity.ToTable("ChatMessage");
-
-        //    entity.HasIndex(e => e.ChatRoomId, "IX_ChatMessage_chat_room_id");
-
-        //    entity.HasIndex(e => e.SenderId, "IX_ChatMessage_sender_id");
-
-        //    entity.Property(e => e.ChatMessageId).HasColumnType("uniqueidentifier").HasColumnName("chat_message_id");
-        //    entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
-        //    entity.Property(e => e.SenderId).HasColumnType("uniqueidentifier").HasColumnName("sender_id");
-
-        //    entity.Property(e => e.Content).HasColumnName("content");
-        //    entity.Property(e => e.IsRead).HasColumnName("is_read");
-
-        //    entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
-        //    entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
-        //    entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-
-        //    entity.HasOne(cm => cm.Sender)
-        //        .WithMany(u => u.ChatMessages)
-        //        .HasForeignKey(cm => cm.SenderId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull);
-        //});
-
-        //modelBuilder.Entity<ChatRoom>(entity =>
-        //{
-        //    entity.HasKey(e => e.ChatRoomId).HasName("PK__ChatRoom__58CF6536A836CD8D");
-        //    entity.ToTable("ChatRoom");
-
-        //    entity.HasIndex(e => e.StaffId, "IX_ChatRoom_staff_id");
-
-        //    entity.HasIndex(e => e.CustomerId, "IX_ChatRoom_customer_id");
-
-        //    entity.Property(e => e.ChatRoomId).HasColumnType("uniqueidentifier").HasColumnName("chat_room_id");
-        //    entity.Property(e => e.StaffId).HasColumnType("uniqueidentifier").HasColumnName("staff_id");
-        //    entity.Property(e => e.CustomerId).HasColumnType("uniqueidentifier").HasColumnName("customer_id");
-
-        //    entity.Property(e => e.IsClose).HasColumnName("is_close");
-
-        //    entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasColumnName("created_at");
-        //    entity.Property(e => e.UpdatedAt).HasColumnType("datetime").HasColumnName("updated_at");
-        //    entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-
-        //    entity.HasOne(cr => cr.Staff)
-        //        .WithMany(u => u.StaffChatRooms)
-        //        .HasForeignKey(cr => cr.StaffId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull);
-
-        //    entity.HasOne(cr => cr.Customer)
-        //        .WithMany(u => u.CustomerChatRooms)
-        //        .HasForeignKey(cr => cr.CustomerId)
-        //        .OnDelete(DeleteBehavior.ClientSetNull);
-        //});
-
         modelBuilder.Entity<Coupon>(entity =>
         {
             entity.HasKey(e => e.CouponId).HasName("PK__Coupon__58CF6389A836CD8D");
@@ -225,11 +175,10 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.CouponId).HasColumnType("uniqueidentifier").HasColumnName("coupon_id");
             entity.Property(e => e.Code)
-                .IsUnicode(false)
-                .HasColumnName("code");
-            entity.Property(e => e.CouponType).HasColumnName("coupon_type");
-                //.HasConversion(type => type.ToString(),
-                //       typeString => (CouponType)Enum.Parse(typeof(CouponType), typeString)); ;
+                //.IsUnicode(false)
+                .HasColumnName("code").HasColumnType("nvarchar(50)");
+            entity.Property(e => e.CouponType).HasColumnName("coupon_type").HasColumnType("nvarchar(20)");
+
             entity.Property(e => e.EndDate)
                 .HasColumnType("datetime")
                 .HasColumnName("end_date");
@@ -263,7 +212,7 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.NotificationId).HasColumnType("uniqueidentifier").HasColumnName("notification_id");
             entity.Property(e => e.IsRead).HasColumnName("is_read");
-            entity.Property(e => e.Message).HasColumnName("message");
+            entity.Property(e => e.Message).HasColumnName("message").HasColumnType("nvarchar(255)");
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -291,16 +240,15 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.OrderId).HasColumnType("uniqueidentifier").HasColumnName("order_id");
             entity.Property(e => e.Address).HasColumnName("address");
-            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.Note).HasColumnName("note").HasColumnType("nvarchar(255)");
             entity.Property(e => e.FullName)
-                .HasColumnName("full_name");
+                .HasColumnName("full_name").HasColumnType("nvarchar(100)");
             entity.Property(e => e.OrderStatus)
-                .HasColumnName("order_status");
-                //.HasConversion(status => status.ToString(),
-                //      statusString => (OrderStatus)Enum.Parse(typeof(OrderStatus), statusString));
+                .HasColumnName("order_status").HasColumnType("nvarchar(20)");
+
             entity.Property(e => e.Phone)
                 .IsUnicode(false)
-                .HasColumnName("phone");
+                .HasColumnName("phone").HasColumnType("nvarchar(20)");
             entity.Property(e => e.TotalPrice)
                 .HasColumnType("decimal(18, 0)")
                 .HasColumnName("total_price");
@@ -377,13 +325,13 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             entity.Property(e => e.Product3DModelId).HasColumnType("uniqueidentifier").HasColumnName("product_3d_model_id");
             entity.Property(e => e.Name)
-                .HasColumnName("name");
+                .HasColumnName("name").HasColumnType("nvarchar(100)");
             entity.Property(e => e.Price)
                 .HasColumnType("decimal(10, 0)")
                 .HasColumnName("price");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.Slug)
-                .HasColumnName("slug");
+                .HasColumnName("slug").HasColumnType("nvarchar(255)");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -406,7 +354,7 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.Product3DModelId).HasColumnType("uniqueidentifier").HasColumnName("product_3d_model_id");
             entity.Property(e => e.ModelName)
-                .HasColumnName("model_name");
+                .HasColumnName("model_name").HasColumnType("nvarchar(100)");
             entity.Property(e => e.ModelUrl)
                 .HasColumnName("model_url");
             entity.Property(e => e.ThumbnailUrl)
@@ -456,7 +404,7 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.ProductImageId).HasColumnType("uniqueidentifier").HasColumnName("productImage_id");
             entity.Property(e => e.ImageUrl)
-                .IsUnicode(false)
+                //.IsUnicode(false)
                 .HasColumnName("image_url");
             entity.Property(e => e.ProductId).HasColumnType("uniqueidentifier").HasColumnName("product_id");
 
@@ -479,9 +427,8 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.ProductReviewInteractionId).HasColumnType("uniqueidentifier").HasColumnName("product_review_interaction_id");
             entity.Property(e => e.ProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("product_review_id");
             entity.Property(e => e.Interaction)
-                .HasColumnName("interaction");
-                //.HasConversion(interaction => interaction.ToString(),
-                //       interactionString => (Interaction)Enum.Parse(typeof(Interaction), interactionString)); ;
+                .HasColumnName("interaction").HasColumnType("nvarchar(20)");
+
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -517,11 +464,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.ProductReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_reported_id");
-            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.Reason).HasColumnName("reason").HasColumnType("nvarchar(255)");
             entity.Property(e => e.ReportStatus)
-                .HasColumnName("report_status");
-                //.HasConversion(status => status.ToString(),
-                //       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString));
+                .HasColumnName("report_status").HasColumnType("nvarchar(20)");
+
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -553,7 +499,7 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
-            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Description).HasColumnName("description").HasColumnType("nvarchar(255)");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             entity.Property(e => e.ProductId).HasColumnType("uniqueidentifier").HasColumnName("product_id");
             entity.Property(e => e.Rate).HasColumnName("rate");
@@ -590,8 +536,8 @@ public partial class TkdecorContext : DbContext
             entity.Property(e => e.IssuedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("issued_at");
-            entity.Property(e => e.JwtId).HasColumnName("jwt_id");
-            entity.Property(e => e.Token).HasColumnName("token");
+            entity.Property(e => e.JwtId).HasColumnName("jwt_id").HasColumnType("nvarchar(255)");
+            entity.Property(e => e.Token).HasColumnName("token").HasColumnType("nvarchar(255)");
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
@@ -615,11 +561,10 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.ProductReviewReportedId).HasColumnType("uniqueidentifier").HasColumnName("product_review_reported_id");
-            entity.Property(e => e.Reason).HasColumnName("reason");
+            entity.Property(e => e.Reason).HasColumnName("reason").HasColumnType("nvarchar(255)");
             entity.Property(e => e.ReportStatus)
-                .HasColumnName("report_status");
-                //.HasConversion(status => status.ToString(),
-                //       statusString => (ReportStatus)Enum.Parse(typeof(ReportStatus), statusString)); ;
+                .HasColumnName("report_status").HasColumnType("nvarchar(20)");
+
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
@@ -645,7 +590,7 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
             entity.Property(e => e.AvatarUrl)
-                .IsUnicode(false)
+                //.IsUnicode(false)
                 .HasColumnName("avatar_url");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
@@ -654,39 +599,36 @@ public partial class TkdecorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("birth_day");
             entity.Property(e => e.Gender)
-                .HasColumnName("gender");
+                .HasColumnName("gender").HasColumnType("nvarchar(20)");
             entity.Property(e => e.Phone)
-                .HasColumnName("phone");
+                .HasColumnName("phone").HasColumnType("nvarchar(20)");
             entity.Property(e => e.Email)
                 .IsUnicode(false)
-                .HasColumnName("email");
+                .HasColumnName("email").HasColumnType("nvarchar(100)");
             entity.Property(e => e.EmailConfirmationCode)
                 .IsUnicode(false)
-                .HasColumnName("email_confirmation_code");
+                .HasColumnName("email_confirmation_code").HasColumnType("nvarchar(20)");
             entity.Property(e => e.EmailConfirmationSentAt)
                 .HasColumnType("datetime")
                 .HasColumnName("email_confirmation_sent_at");
             entity.Property(e => e.EmailConfirmed).HasColumnName("email_confirmed");
             entity.Property(e => e.FullName)
-                .HasColumnName("full_name");
+                .HasColumnName("full_name").HasColumnType("nvarchar(100)");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
             //entity.Property(e => e.IsSubscriber).HasColumnName("is_subscriber");
             entity.Property(e => e.Password)
                 .IsUnicode(false)
-                .HasColumnName("password");
+                .HasColumnName("password").HasColumnType("nvarchar(255)");
             entity.Property(e => e.ResetPasswordCode)
                 .IsUnicode(false)
-                .HasColumnName("reset_password_code");
+                .HasColumnName("reset_password_code").HasColumnType("nvarchar(20)");
             entity.Property(e => e.ResetPasswordRequired).HasColumnName("reset_password_required");
             entity.Property(e => e.ResetPasswordSentAt)
                 .HasColumnType("datetime")
                 .HasColumnName("reset_password_sent_at");
 
             entity.Property(e => e.Role)
-                .HasColumnName("role");
-                //.HasColumnType("datetime")
-                //.HasConversion(role => role.ToString(),
-                //       roleString => (Role)Enum.Parse(typeof(Role), roleString));
+                .HasColumnName("role").HasColumnType("nvarchar(20)");
 
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
@@ -702,35 +644,36 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.UserId, "IX_UserAddress_user_id");
 
             entity.Property(e => e.UserAddressId).HasColumnType("uniqueidentifier").HasColumnName("user_address_id");
-            //entity.Property(e => e.Address).HasColumnName("address");
+            
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+
             entity.Property(e => e.FullName)
-                .HasColumnName("full_name");
+                .HasColumnName("full_name").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.CityCode)
                 .HasColumnName("city_code");
             entity.Property(e => e.City)
-                .HasColumnName("city");
+                .HasColumnName("city").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.DistrictCode)
                 .HasColumnName("district_code");
             entity.Property(e => e.District)
-                .HasColumnName("district");
+                .HasColumnName("district").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.WardCode)
                 .HasColumnName("ward_code");
             entity.Property(e => e.Ward)
-                .HasColumnName("ward");
+                .HasColumnName("ward").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.Street)
-                .HasColumnName("street");
+                .HasColumnName("street").HasColumnType("nvarchar(100)");
 
             entity.Property(e => e.IsDefault).HasColumnName("is_default");
             entity.Property(e => e.Phone)
                 .IsUnicode(false)
-                .HasColumnName("phone");
+                .HasColumnName("phone").HasColumnType("nvarchar(20)");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");

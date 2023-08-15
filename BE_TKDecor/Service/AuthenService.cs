@@ -510,8 +510,6 @@ namespace BE_TKDecor.Service
             var tokenHandler = new JwtSecurityTokenHandler();
             //encoding key in json
             var key = Encoding.ASCII.GetBytes(_jwtSettings.SecretKey);
-            //set description for token
-            //string roleString = Enum.GetName(typeof(Role), user.Role);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

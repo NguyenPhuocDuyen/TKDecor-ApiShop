@@ -10,10 +10,10 @@ namespace BE_TKDecor.Core.Dtos.Coupon
         [RegularExpression($"^({SD.CouponByPercent}|{SD.CouponByValue})$")]
         public string CouponType { get; set; } = null!;
 
-        [Range(0, 9999999)]
+        [Range(0, 99999999)]
         public decimal Value { get; set; }
 
-        [Range(0, 9999999)]
+        [Range(0, 99999999)]
         public decimal MaxValue { get; set; }
 
         [Range(1, int.MaxValue)]
