@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class UserAddress : BaseEntity
 {
@@ -12,8 +9,6 @@ public partial class UserAddress : BaseEntity
     public string FullName { get; set; } = null!;
 
     public string Phone { get; set; } = null!;
-
-    public string Address { get; set; } = null!;
 
     public int CityCode { get; set; }
 

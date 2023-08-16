@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using DataAccess.Repository.IRepository;
-using BE_TKDecor.Core.Dtos.Article;
-using BE_TKDecor.Core.Response;
-using Utility;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -11,13 +7,10 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class ArticlesController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IArticleRepository _article;
+        private readonly IArticleService _article;
 
-        public ArticlesController(IMapper mapper,
-            IArticleRepository article)
+        public ArticlesController(IArticleService article)
         {
-            _mapper = mapper;
             _article = article;
         }
 
@@ -29,43 +22,24 @@ namespace BE_TKDecor.Controllers
             int pageSize = 20
             )
         {
-            var list = await _article.GetAll();
-            list = list.Where(x => !x.IsDelete && x.IsPublish)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ToList();
-
-            var listArticleGet = _mapper.Map<List<ArticleGetDto>>(list);
-            // filter sort
-            listArticleGet = sort switch
+            var res = await _article.GetAll( sort, pageIndex, pageSize );
+            if (res.Success)
             {
-                "date-new" => listArticleGet.OrderByDescending(x => x.UpdatedAt).ToList(),
-                _ => listArticleGet.OrderBy(x => x.UpdatedAt).ToList(),
-            };
-
-            PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
-                listArticleGet, pageIndex, pageSize);
-
-            var result = new
-            {
-                products = pagingArticle,
-                pagingArticle.PageIndex,
-                pagingArticle.TotalPages,
-                pagingArticle.TotalItem
-            };
-
-            return Ok(new ApiResponse { Success = true, Data = result });
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/Articles/GetBySlug/abc-def
         [HttpGet("GetBySlug/{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
         {
-            var article = await _article.FindBySlug(slug);
-            if (article == null || article.IsDelete || !article.IsPublish)
-                return NotFound(new ApiResponse { Message = ErrorContent.ArticleNotFound });
-
-            var result = _mapper.Map<ArticleGetDto>(article);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _article.GetBySlug(slug);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
     }
 }

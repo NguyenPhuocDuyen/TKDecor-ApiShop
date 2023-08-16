@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BE_TKDecor.Core.Dtos.User
 {
     public class UserRegisterDto
     {
         [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; } = null!;
 
-        [MaxLength(100)]
+        [MinLength(7)]
+        [MaxLength(20)]
         public string Password { get; set; } = null!;
 
-        [MaxLength(255)]
+        [MinLength(5)]
+        [MaxLength(100)]
         public string FullName { get; set; } = null!;
-
-        public DateTime BirthDay { get; set; }
-
-        [RegularExpression($"^(Male|Female|Other)$")]
-        public string Gender { get; set; } = null!;
     }
 }

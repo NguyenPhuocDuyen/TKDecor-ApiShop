@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Utility.SD;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class Order : BaseEntity
 {
@@ -10,7 +6,7 @@ public partial class Order : BaseEntity
 
     public Guid UserId { get; set; }
 
-    public OrderStatus OrderStatus { get; set; }
+    public string OrderStatus { get; set; } = null!;
 
     public Guid? CouponId { get; set; }
 

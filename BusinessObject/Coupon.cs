@@ -1,12 +1,10 @@
-﻿using Utility.SD;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class Coupon : BaseEntity
 {
     public Guid CouponId { get; set; }
 
-    public CouponType CouponType { get; set; }
+    public string CouponType { get; set; } = null!;
 
     public string Code { get; set; } = null!;
 

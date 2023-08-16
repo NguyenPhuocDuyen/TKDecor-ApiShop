@@ -31,9 +31,13 @@ namespace BE_TKDecor.Core.Dtos.Order
 
         public string ProductName { get; set; } = null!;
 
+        public string ProductSlug { get; set; } = null!;
+
         public int Quantity { get; set; }
 
         public decimal PaymentPrice { get; set; }
+
+        public bool HasUserReviewed { get; set; } = false;
 
         public List<string> ProductImages { get; set; } = new List<string>();
     }

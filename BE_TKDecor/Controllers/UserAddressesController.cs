@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
-using AutoMapper;
-using DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Core.Dtos.Notification;
-using Microsoft.AspNetCore.SignalR;
-using BE_TKDecor.Hubs;
-using Utility.SD;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -17,24 +12,14 @@ namespace BE_TKDecor.Controllers
     [Authorize]
     public class UserAddressesController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly IUserAddressRepository _userAddress;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IUserAddressService _userAddress;
+        private readonly IUserService _user;
 
-        public UserAddressesController(IMapper mapper,
-            IUserRepository user,
-            IUserAddressRepository userAddress,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub
-            )
+        public UserAddressesController(IUserAddressService userAddress,
+            IUserService user)
         {
-            _mapper = mapper;
-            _user = user;
             _userAddress = userAddress;
-            _notification = notification;
-            _hub = hub;
+            _user = user;
         }
 
         // GET: api/UserAddresses/GetUserAddresses
@@ -45,12 +30,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var list = (await _userAddress.FindByUserId(user.UserId))
-                .Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt);
-            var result = _mapper.Map<List<UserAddressGetDto>>(list);
-
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _userAddress.GetUserAddressesForUser(user.UserId);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/UserAddresses/GetUserAddressDefault
@@ -61,11 +46,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var address = (await _userAddress.FindByUserId(user.UserId))
-                .FirstOrDefault(x => !x.IsDelete && x.IsDefault);
-
-            var result = _mapper.Map<UserAddressGetDto>(address);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _userAddress.GetUserAddressDefault(user.UserId);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // GET: api/UserAddresses/SetDefault
@@ -76,32 +62,12 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var address = await _userAddress.FindById(dto.UserAddressId);
-            if (address == null || address.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
-
-            address.IsDefault = true;
-            address.UpdatedAt = DateTime.Now;
-            try
+            var res = await _userAddress.SetDefault(user.UserId, dto);
+            if (res.Success)
             {
-                await _userAddress.Update(address);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Thay đổi địa chỉ mặc định thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // POST: api/UserAddresses/Create
@@ -112,122 +78,44 @@ namespace BE_TKDecor.Controllers
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            UserAddress newAddress = _mapper.Map<UserAddress>(userAddressDto);
-            newAddress.UserId = user.UserId;
-            try
+            var res = await _userAddress.Create(user.UserId, userAddressDto);
+            if (res.Success)
             {
-                await _userAddress.Add(newAddress);
-
-                var listAddress = await _userAddress.FindByUserId(user.UserId);
-                if (listAddress.Count == 1)
-                {
-                    listAddress[0].IsDefault = true;
-                    await _userAddress.Update(listAddress[0]);
-                }
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Thêm địa chỉ mới thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // POST: api/UserAddresses/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> UpdateUserAddress(Guid id, UserAddressUpdateDto userAddressDto)
+        public async Task<IActionResult> Update(Guid id, UserAddressUpdateDto userAddressDto)
         {
-            if (id != userAddressDto.UserAddressId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-
             var user = await GetUser();
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var userAddressDb = await _userAddress.FindById(id);
-            if (userAddressDb == null || userAddressDb.IsDelete || userAddressDb.UserId != user.UserId)
-                return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
-
-            userAddressDb.FullName = userAddressDto.FullName;
-            userAddressDb.Address = userAddressDto.Address;
-            userAddressDb.Phone = userAddressDto.Phone;
-            userAddressDb.CityCode = userAddressDto.CityCode;
-            userAddressDb.City = userAddressDto.City;
-            userAddressDb.DistrictCode = userAddressDto.DistrictCode;
-            userAddressDb.District = userAddressDto.District;
-            userAddressDb.WardCode = userAddressDto.WardCode;
-            userAddressDb.Ward = userAddressDto.Ward;
-            userAddressDb.Street = userAddressDto.Street;
-            userAddressDb.UpdatedAt = DateTime.Now;
-            try
+            var res = await _userAddress.Update(user.UserId, id, userAddressDto);
+            if (res.Success)
             {
-                await _userAddress.Update(userAddressDb);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Cập nhật địa chỉ thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         // DELETE: api/UserAddresses/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteUserAddress(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var user = await GetUser();
             if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var userAddress = await _userAddress.FindById(id);
-            if (userAddress == null || userAddress.UserId != user.UserId)
-                return NotFound(new ApiResponse { Message = ErrorContent.AddressNotFound });
-
-            if (userAddress.IsDefault)
-                return BadRequest(new ApiResponse { Message = "Không thể xóa địa chỉ mặc định!" });
-
-            userAddress.IsDelete = true;
-            userAddress.UpdatedAt = DateTime.Now;
-            try
+            var res = await _userAddress.Delete(user.UserId, id);
+            if (res.Success)
             {
-                await _userAddress.Update(userAddress);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    User = user,
-                    Message = $"Xoá địa chỉ thành công"
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -238,7 +126,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }

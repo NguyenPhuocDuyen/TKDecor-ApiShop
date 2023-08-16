@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BE_TKDecor", "BE_TKDecor\BE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{84BB8CFF-13FE-4E3C-8ECA-750E901A4777}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{5FD5CF45-99B3-463E-9D1F-6BEF2E248FD0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "Utility\Utility.csproj", "{D25A2636-ABC1-4F1A-96F3-27C7DF2AE6AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utility", "Utility\Utility.csproj", "{D25A2636-ABC1-4F1A-96F3-27C7DF2AE6AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{84BB8CFF-13FE-4E3C-8ECA-750E901A4777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84BB8CFF-13FE-4E3C-8ECA-750E901A4777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84BB8CFF-13FE-4E3C-8ECA-750E901A4777}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FD5CF45-99B3-463E-9D1F-6BEF2E248FD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FD5CF45-99B3-463E-9D1F-6BEF2E248FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FD5CF45-99B3-463E-9D1F-6BEF2E248FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FD5CF45-99B3-463E-9D1F-6BEF2E248FD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D25A2636-ABC1-4F1A-96F3-27C7DF2AE6AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D25A2636-ABC1-4F1A-96F3-27C7DF2AE6AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D25A2636-ABC1-4F1A-96F3-27C7DF2AE6AE}.Release|Any CPU.ActiveCfg = Release|Any CPU

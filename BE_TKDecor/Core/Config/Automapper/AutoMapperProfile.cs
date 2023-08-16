@@ -15,7 +15,7 @@ using BE_TKDecor.Core.Dtos.ReportProductReview;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Dtos.UserAddress;
 using BusinessObject;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Core.Config.Automapper
 {
@@ -47,7 +47,7 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(x => x.User.FullName));
 
             // product favorite 
-            CreateMap<ProductFavorite, FavoriteGetDto>();
+            //CreateMap<ProductFavorite, FavoriteGetDto>();
 
             // user address
             CreateMap<UserAddressCreateDto, UserAddress>();
@@ -61,7 +61,10 @@ namespace BE_TKDecor.Core.Config.Automapper
             CreateMap<CartCreateDto, Cart>();
             CreateMap<Cart, CartGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(x => x.Product.Name))
+                .ForMember(dest => dest.ProductSlug, opt => opt.MapFrom(x => x.Product.Slug))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(x => x.Product.Category.Name))
                 .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(x => x.Product.Price))
+                .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(x => x.Product.Quantity))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.Product.ProductImages.Select(x => x.ImageUrl).ToList()));
 
             // order
@@ -69,26 +72,28 @@ namespace BE_TKDecor.Core.Config.Automapper
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<OrderDetail, OrderDetailGetDto>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.ProductSlug, opt => opt.MapFrom(src => src.Product.Slug))
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.Product.ProductImages.Select(pi => pi.ImageUrl).ToList()));
 
             // product review
             CreateMap<ProductReview,  ProductReviewGetDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
-                .ForMember(dest => dest.TotalLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.Like).Count()))
-                .ForMember(dest => dest.TotalDisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == Interaction.DisLike).Count()));
+                .ForMember(dest => dest.TotalLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == SD.InteractionLike).Count()))
+                .ForMember(dest => dest.TotalDisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == SD.InteractionDislike).Count()));
 
             // product review interaction
-            CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
+            //CreateMap<ProductReviewInteraction, ProductReviewInteractionGetDto>();
 
             // product report
             CreateMap<ProductReport, ProductReportGetDto>()
                 .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
+                .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.ProductReported.Name));
 
             // report product review
             CreateMap<ReportProductReview, ReportProductReviewGetDto>()
-                //.ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
+                .ForMember(dest => dest.UserReportName, opt => opt.MapFrom(src => src.UserReport.FullName))
                 .ForMember(dest => dest.UserReportEmail, opt => opt.MapFrom(src => src.UserReport.Email))
                 .ForMember(dest => dest.ProductReviewReportedDescription, opt => opt.MapFrom(src => src.ProductReviewReported.Description));
 

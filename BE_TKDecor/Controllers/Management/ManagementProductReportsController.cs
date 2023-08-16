@@ -1,96 +1,45 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Dtos.Notification;
-using BE_TKDecor.Core.Dtos.ProductReport;
-using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
-using BusinessObject;
-using DataAccess.Repository.IRepository;
+﻿using BE_TKDecor.Core.Dtos.ProductReport;
+using BE_TKDecor.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Utility.SD;
+using Utility;
 
 namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = $"{RoleContent.Admin},{RoleContent.Seller}")]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementProductReportsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IProductReportRepository _productReport;
-        private readonly INotificationRepository _notification;
-        private readonly IHubContext<NotificationHub> _hub;
+        private readonly IProductReportService _productReport;
 
-        public ManagementProductReportsController(IMapper mapper,
-            IProductReportRepository productReport,
-            INotificationRepository notification,
-            IHubContext<NotificationHub> hub
-            )
+        public ManagementProductReportsController(IProductReportService productReport)
         {
-            _mapper = mapper;
             _productReport = productReport;
-            _notification = notification;
-            _hub = hub;
         }
-
 
         // GET: api/ManagementProductReports/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var reports = await _productReport.GetAll();
-            reports = reports.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<ProductReportGetDto>>(reports);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _productReport.GetAll();
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
         // PUT: api/ManagementProductReports/UpdateStatusReport
         [HttpPut("UpdateStatusReport/{id}")]
         public async Task<IActionResult> UpdateStatusReport(Guid id, ProductReportUpdateDto reportDto)
         {
-            if (id != reportDto.ProductReportId)
-                return BadRequest(new ApiResponse { Message = ErrorContent.NotMatchId });
-
-            var report = await _productReport.FindById(id);
-            if (report == null || report.IsDelete)
-                return NotFound(new ApiResponse { Message = ErrorContent.ProductReportNotFound });
-
-            if (!Enum.TryParse(reportDto.ReportStatus, out ReportStatus status))
-                return BadRequest(new ApiResponse { Message = ErrorContent.ReportStatusNotFound });
-
-            report.ReportStatus = status;
-            report.UpdatedAt = DateTime.Now;
-
-            var message = "";
-            if (status == ReportStatus.Accept)
-                message = "được chấp nhận";
-            else if (status == ReportStatus.Reject)
-                message = "bị từ chối";
-
-            try
+            var res = await _productReport.Update(id, reportDto);
+            if (res.Success)
             {
-                await _productReport.Update(report);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = report.UserReportId,
-                    Message = $"Báo cáo sản phẩm {report.ProductReported.Name} đã {message}."
-                };
-                await _notification.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(report.UserReportId.ToString())
-                    .SendAsync(Common.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
-                return Ok(new ApiResponse { Success = true });
+                return Ok(res);
             }
-            catch { return BadRequest(new ApiResponse { Message = ErrorContent.Data }); }
+            return BadRequest(res);
         }
-
     }
 }

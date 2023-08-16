@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.User
 {
@@ -6,7 +7,7 @@ namespace BE_TKDecor.Core.Dtos.User
     {
         public Guid UserId { get; set; }
 
-        [RegularExpression($"^(Staff|Customer|Admin)$")]
+        [RegularExpression($"^({SD.RoleAdmin}|{SD.RoleCustomer})$")]
         public string Role { get; set; } = null!;
     }
 }

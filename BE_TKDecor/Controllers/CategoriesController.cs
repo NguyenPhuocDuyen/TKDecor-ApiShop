@@ -1,8 +1,5 @@
-﻿using DataAccess.Repository.IRepository;
-using Microsoft.AspNetCore.Mvc;
-using BE_TKDecor.Core.Response;
-using AutoMapper;
-using BE_TKDecor.Core.Dtos.Category;
+﻿using Microsoft.AspNetCore.Mvc;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -10,13 +7,10 @@ namespace BE_TKDecor.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly ICategoryRepository _category;
+        private readonly ICategoryService _category;
 
-        public CategoriesController(IMapper mapper,
-            ICategoryRepository category)
+        public CategoriesController(ICategoryService category)
         {
-            _mapper = mapper;
             _category = category;
         }
 
@@ -24,13 +18,12 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _category.GetAll();
-            list = list.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ToList();
-
-            var result = _mapper.Map<List<CategoryGetDto>>(list);
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _category.GetAll();
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
     }
 }

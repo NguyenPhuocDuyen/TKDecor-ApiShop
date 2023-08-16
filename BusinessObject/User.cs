@@ -1,12 +1,10 @@
-﻿using Utility.SD;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class User : BaseEntity
 {
     public Guid UserId { get; set; }
 
-    public Role Role { get; set; }
+    public string Role { get; set; } = null!;
 
     public string Email { get; set; } = null!;
 
@@ -14,13 +12,13 @@ public partial class User : BaseEntity
 
     public string FullName { get; set; } = null!;
 
-    public DateTime BirthDay { get; set; }
+    public DateTime? BirthDay { get; set; }
 
-    public Gender Gender { get; set; }
+    public string? Gender { get; set; } = null!;
 
-    public string AvatarUrl { get; set; } = null!;
+    public string? Phone { get; set; } = null!;
 
-    //public bool IsSubscriber { get; set; } = false;
+    public string? AvatarUrl { get; set; } = null!;
 
     public bool EmailConfirmed { get; set; } = false;
 

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.ReportProductReview
 {
@@ -6,9 +7,7 @@ namespace BE_TKDecor.Core.Dtos.ReportProductReview
     {
         public Guid ReportProductReviewId { get; set; }
 
-        [RegularExpression($"^(Accept|Reject)$")]
+        [RegularExpression($"^({SD.ReportAccept}|{SD.ReportReject})$")]
         public string ReportStatus { get; set; } = null!;
-
-        //public string Reason { get; set; } = null!;
     }
 }

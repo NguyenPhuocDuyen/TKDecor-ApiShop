@@ -48,7 +48,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
                     b.Property<string>("Thumbnail")
@@ -58,7 +58,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("title");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -138,7 +138,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
                     b.Property<string>("Thumbnail")
@@ -168,13 +168,12 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(900)")
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("code");
 
                     b.Property<string>("CouponType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("coupon_type");
 
                     b.Property<DateTime>("CreatedAt")
@@ -243,7 +242,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("message");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -284,7 +283,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("full_name");
 
                     b.Property<bool>("IsDelete")
@@ -292,18 +291,18 @@ namespace BusinessObject.Migrations
                         .HasColumnName("is_delete");
 
                     b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("note");
 
                     b.Property<string>("OrderStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("order_status");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("phone");
 
                     b.Property<decimal>("TotalPrice")
@@ -387,7 +386,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
                     b.Property<decimal>("Price")
@@ -404,7 +403,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("slug");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -445,7 +444,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("ModelName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("model_name");
 
                     b.Property<string>("ModelUrl")
@@ -518,8 +517,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("image_url");
 
                     b.Property<Guid>("ProductId")
@@ -555,12 +553,12 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("reason");
 
                     b.Property<string>("ReportStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("report_status");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -594,7 +592,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("description");
 
                     b.Property<bool>("IsDelete")
@@ -640,7 +638,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Interaction")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("interaction");
 
                     b.Property<bool>("IsDelete")
@@ -693,12 +691,12 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("JwtId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("jwt_id");
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("token");
 
                     b.Property<Guid>("UserId")
@@ -733,12 +731,12 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("reason");
 
                     b.Property<string>("ReportStatus")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("report_status");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -767,12 +765,10 @@ namespace BusinessObject.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<string>("AvatarUrl")
-                        .IsRequired()
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("avatar_url");
 
-                    b.Property<DateTime>("BirthDay")
+                    b.Property<DateTime?>("BirthDay")
                         .HasColumnType("datetime")
                         .HasColumnName("birth_day");
 
@@ -783,12 +779,12 @@ namespace BusinessObject.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("email");
 
                     b.Property<string>("EmailConfirmationCode")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("email_confirmation_code");
 
                     b.Property<DateTime?>("EmailConfirmationSentAt")
@@ -801,12 +797,11 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("full_name");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("gender");
 
                     b.Property<bool>("IsDelete")
@@ -816,12 +811,16 @@ namespace BusinessObject.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(255)")
                         .HasColumnName("password");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("phone");
 
                     b.Property<string>("ResetPasswordCode")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("reset_password_code");
 
                     b.Property<bool>("ResetPasswordRequired")
@@ -834,7 +833,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("role");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -854,14 +853,9 @@ namespace BusinessObject.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("user_address_id");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("address");
-
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("city");
 
                     b.Property<int>("CityCode")
@@ -874,7 +868,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("District")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("district");
 
                     b.Property<int>("DistrictCode")
@@ -883,7 +877,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("full_name");
 
                     b.Property<bool>("IsDefault")
@@ -897,12 +891,12 @@ namespace BusinessObject.Migrations
                     b.Property<string>("Phone")
                         .IsRequired()
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)")
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("phone");
 
                     b.Property<string>("Street")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("street");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -915,7 +909,7 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("Ward")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("ward");
 
                     b.Property<int>("WardCode")

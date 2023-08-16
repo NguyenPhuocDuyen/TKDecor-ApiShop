@@ -2,9 +2,7 @@
 using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Response;
-using DataAccess.Repository.IRepository;
-using AutoMapper;
-using BE_TKDecor.Core.Dtos.Notification;
+using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
 {
@@ -13,17 +11,14 @@ namespace BE_TKDecor.Controllers
     [Authorize]
     public class NotificationsController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _user;
-        private readonly INotificationRepository _notification;
+        private readonly INotificationService _notification;
+        private readonly IUserService _user;
 
-        public NotificationsController(IMapper mapper,
-            IUserRepository user,
-            INotificationRepository notification)
+        public NotificationsController(INotificationService notification,
+            IUserService user)
         {
-            _mapper = mapper;
-            _user = user;
             _notification = notification;
+            _user = user;
         }
 
         // GET: api/Notifications/GetAll
@@ -31,33 +26,31 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetNotifications()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user == null || user.IsDelete)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var notifications = await _notification.FindByUserId(user.UserId);
-            notifications = notifications.Where(x => !x.IsDelete).ToList();
-            var result = _mapper.Map<List<NotificationGetDto>>(notifications);
-
-            return Ok(new ApiResponse { Success = true, Data = result });
+            var res = await _notification.GetNotificationsForUser(user.UserId);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
         }
 
-        // POST: api/Notifications/GetAll
-        [HttpPost("ReadAll")]
+        // POST: api/Notifications/Read
+        [HttpGet("ReadAll")]
         public async Task<IActionResult> ReadAll()
         {
             var user = await GetUser();
             if (user == null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
-            var notifications = await _notification.FindByUserId(user.UserId);
-            notifications = notifications.Where(x => !x.IsRead).ToList();
-            foreach (var item in notifications)
+            var res = await _notification.ReadAll(user.UserId);
+            if (res.Success)
             {
-                item.IsRead = true;
-                item.UpdatedAt = DateTime.Now;
-                await _notification.Update(item);
+                return Ok(res);
             }
-            return Ok(new ApiResponse { Success = true });
+            return BadRequest(res);
         }
 
         private async Task<User?> GetUser()
@@ -68,7 +61,7 @@ namespace BE_TKDecor.Controllers
                 var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
                 // get user by user id
                 if (userId != null)
-                    return await _user.FindById(Guid.Parse(userId));
+                    return await _user.GetById(Guid.Parse(userId));
             }
             return null;
         }

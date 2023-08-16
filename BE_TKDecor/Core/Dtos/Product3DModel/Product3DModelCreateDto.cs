@@ -1,7 +1,11 @@
-﻿namespace BE_TKDecor.Core.Dtos.Product3DModel
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BE_TKDecor.Core.Dtos.Product3DModel
 {
     public class Product3DModelCreateDto
     {
+        [MinLength(5)]
+        [MaxLength(100)]
         public string ModelName { get; set; } = null!;
 
         public string VideoUrl { get; set; } = null!;

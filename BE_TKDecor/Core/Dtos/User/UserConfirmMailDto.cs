@@ -10,8 +10,11 @@ namespace BE_TKDecor.Core.Dtos.User
     public class UserConfirmMailDto
     {
         [EmailAddress]
-        public string Email { get; set; } = null!;
         [MaxLength(100)]
+        public string Email { get; set; } = null!;
+
+        [MinLength(7)]
+        [MaxLength(20)]
         public string Code { get; set; } = null!;
     }
 }

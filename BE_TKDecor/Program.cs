@@ -1,14 +1,16 @@
 ﻿using BE_TKDecor.Core.Config.Automapper;
 using BE_TKDecor.Core.Config.JWT;
+using BE_TKDecor.Core.Mail;
+using BE_TKDecor.Data;
 using BE_TKDecor.Hubs;
-using DataAccess.Data;
-using DataAccess.Repository;
-using DataAccess.Repository.IRepository;
+using BE_TKDecor.Service;
+using BE_TKDecor.Service.IService;
+using BusinessObject;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Utility.Mail;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,30 @@ builder.Services.AddSignalR();
 
 // config automapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+// service Database
+builder.Services.AddDbContext<TkdecorContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+builder.Services.AddScoped<IAuthenService, AuthenService>();
+builder.Services.AddScoped<IArticleService, ArticleService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<IProduct3DModelService, Product3DModelService>();
+builder.Services.AddScoped<IProductReportService, ProductReportService>();
+builder.Services.AddScoped<IReportProductReviewService, ReportProductReviewService>();
+builder.Services.AddScoped<IStatisticalService, StatisticalService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IProductFavoriteService, ProductFavoriteService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IProductReviewInteractionService, ProductReviewInteractionService>();
+builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
+builder.Services.AddScoped<IUserAddressService, UserAddressService>();
 
 // config send mail
 builder.Services.AddOptions();                                         // Kích hoạt Options
@@ -64,27 +90,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// service Database
-builder.Services.AddScoped<IDbInitializer, DbInitializer>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
-builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
-builder.Services.AddScoped<IProductFavoriteRepository, ProductFavoriteRepository>();
-builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
-builder.Services.AddScoped<ICouponRepository, CouponRepository>();
-builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductReportRepository, ProductReportRepository>();
-builder.Services.AddScoped<IReportProductReviewRepository, ReportProductReviewRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<IProductReviewInteractionRepository, ProductReviewInteractionRepository>();
-builder.Services.AddScoped<IProduct3DModelRepository, Product3DModelRepository>();
-builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
-
 // config json no loop data
 builder.Services.AddControllersWithViews()
         .AddNewtonsoftJson(options =>
@@ -122,17 +127,16 @@ builder.Services.AddSwaggerGen(swagger =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:3000")
+        builder => builder
+                    .WithOrigins("http://localhost:3000/", "https://tkdecor-tkd-ecor.vercel.app/")
                     .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials();
-        });
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .SetIsOriginAllowed(hostName => true)
+        );
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();

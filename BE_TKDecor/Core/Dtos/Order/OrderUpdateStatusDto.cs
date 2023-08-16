@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.Order
 {
@@ -6,7 +7,7 @@ namespace BE_TKDecor.Core.Dtos.Order
     {
         public Guid OrderId { get; set; }
 
-        [RegularExpression($"^(Delivering|Received|Refund|Canceled)$")]
+        [RegularExpression($"^({SD.OrderDelivering}|{SD.OrderReceived}|{SD.OrderCanceled})$")]
         public string OrderStatus { get; set; } = null!;
     }
 }

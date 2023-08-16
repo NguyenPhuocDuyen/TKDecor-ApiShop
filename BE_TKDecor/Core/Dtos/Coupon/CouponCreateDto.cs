@@ -1,25 +1,27 @@
-﻿using BusinessObject;
-using System.ComponentModel.DataAnnotations;
-using Utility.SD;
+﻿using System.ComponentModel.DataAnnotations;
+using Utility;
 
 namespace BE_TKDecor.Core.Dtos.Coupon
 {
     public class CouponCreateDto
     {
-        [RegularExpression($"^(ByPercent|ByValue)$")]
+        [RegularExpression($"^({SD.CouponByPercent}|{SD.CouponByValue})$")]
         public string CouponType { get; set; } = null!;
 
-        [MaxLength(255)]
+        [MinLength(5)]
+        [MaxLength(50)]
         public string Code { get; set; } = null!;
 
-        [Range(0, 9999999)]
+        [Range(1, 99999999)]
         public decimal Value { get; set; }
 
-        [Range(0, 9999999)]
+        [Range(1, 99999999)]
         public decimal MaxValue { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(1, 1000)]
         public int RemainingUsageCount { get; set; }
+
+        public bool IsActive { get; set; } = true;
 
         public DateTime StartDate { get; set; }
 

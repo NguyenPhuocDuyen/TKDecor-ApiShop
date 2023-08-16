@@ -6,9 +6,9 @@ namespace BE_TKDecor.Core.Dtos.ReportProductReview
     {
         public Guid ReportProductReviewId { get; set; }
 
-        //public string UserReportName { get; set; } = null!;
-
         public string UserReportEmail { get; set; } = null!;
+
+        public string UserReportName { get; set; } = null!;
 
         public string ProductReviewReportedDescription { get; set; } = null!;
 
