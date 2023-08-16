@@ -1,5 +1,4 @@
 ﻿using BE_TKDecor.Core.Dtos.Product3DModel;
-using BE_TKDecor.Core.Dtos.ProductReview;
 using BusinessObject;
 
 namespace BE_TKDecor.Core.Dtos.Product
@@ -22,9 +21,9 @@ namespace BE_TKDecor.Core.Dtos.Product
 
         public decimal Price { get; set; }
 
-        public float AverageRate { get; set; }
+        public double AverageRate { get; set; } = 0;
 
-        public int CountRate { get; set; }
+        public int CountRate { get; set; } = 0;
 
         public bool IsFavorite { get; set; } = false;
 

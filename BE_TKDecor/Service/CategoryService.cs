@@ -63,7 +63,9 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> Delete(Guid id)
         {
-            var categoryDb = await _context.Categories.FindAsync(id);
+            var categoryDb = await _context.Categories
+                .Include(x => x.Products)
+                .FirstOrDefaultAsync(x => x.CategoryId == id);
             if (categoryDb == null || categoryDb.IsDelete)
             {
                 _response.Message = ErrorContent.CategoryNotFound;

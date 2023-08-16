@@ -8,7 +8,7 @@ namespace BE_TKDecor.Controllers.Management
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = SD.RoleAdmin)]
+    [Authorize(Roles = SD.RoleAdmin)]
     public class ManagementOrdersController : ControllerBase
     {
         private readonly IOrderService _order;

@@ -49,9 +49,13 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> MakeReportProductReview(Guid userId, ReportProductReviewCreateDto reportDto)
         {
-            var productReview = await _context.ProductReviews.Include(x => x.User)
+            var productReview = await _context.ProductReviews
+                    .Include(x => x.OrderDetail)
+                        .ThenInclude(x => x.Order)
+                            .ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.ProductReviewId == reportDto.ProductReviewReportedId);
-            if (productReview == null || productReview.IsDelete)
+
+            if (productReview is null || productReview.IsDelete)
             {
                 _response.Message = ErrorContent.ProductReviewNotFound;
                 return _response;
@@ -61,14 +65,9 @@ namespace BE_TKDecor.Service
                 .FirstOrDefaultAsync(x => x.UserReportId == userId
                 && x.ProductReviewReportedId == productReview.ProductReviewId);
 
-            bool isAdd = true;
-
-            if (report != null && report.ReportStatus == SD.ReportPending)
-                isAdd = false;
-
             try
             {
-                if (isAdd)
+                if (report is null)
                 {
                     ReportProductReview newReport = new()
                     {
@@ -92,7 +91,7 @@ namespace BE_TKDecor.Service
                 Notification newNotification = new()
                 {
                     UserId = userId,
-                    Message = $"Đã báo cáo đánh giá của {productReview.User.FullName} thành công"
+                    Message = $"Đã báo cáo đánh giá của {productReview.OrderDetail.Order.User.FullName} thành công"
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR
@@ -109,7 +108,7 @@ namespace BE_TKDecor.Service
                     Notification notiForStaffOrAdmin = new()
                     {
                         UserId = staff.UserId,
-                        Message = $"{user?.Email} đã báo cáo đánh giá của {productReview.User.FullName}"
+                        Message = $"{user?.Email} đã báo cáo đánh giá của {productReview.OrderDetail.Order.User.FullName}"
                     };
                     _context.Notifications.Add(notiForStaffOrAdmin);
                     // notification signalR

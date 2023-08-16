@@ -46,8 +46,6 @@ public partial class User : BaseEntity
 
     public virtual ICollection<ProductReport> ProductReports { get; set; } = new List<ProductReport>();
 
-    public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
-
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public virtual ICollection<ReportProductReview> ReportProductReviews { get; set; } = new List<ReportProductReview>();

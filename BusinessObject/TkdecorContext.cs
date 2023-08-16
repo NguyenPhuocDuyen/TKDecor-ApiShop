@@ -51,9 +51,8 @@ public partial class TkdecorContext : DbContext
 
     public virtual DbSet<UserAddress> UserAddresses { get; set; }
 
-//    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//        => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseSqlServer("Server=localhost;Database=TKDecor;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -286,6 +285,7 @@ public partial class TkdecorContext : DbContext
 
             entity.Property(e => e.OrderDetailId).HasColumnType("uniqueidentifier").HasColumnName("order_detail_id");
             entity.Property(e => e.OrderId).HasColumnType("uniqueidentifier").HasColumnName("order_id");
+            entity.Property(e => e.ProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("product_review_id");
             entity.Property(e => e.PaymentPrice)
                 .HasColumnType("decimal(10, 0)")
                 .HasColumnName("payment_price");
@@ -301,6 +301,10 @@ public partial class TkdecorContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetail_Product");
+
+            entity.HasOne(p => p.ProductReview)
+                .WithOne(m => m.OrderDetail)
+                .HasForeignKey<OrderDetail>(p => p.ProductReviewId);
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -491,32 +495,16 @@ public partial class TkdecorContext : DbContext
 
             entity.ToTable("ProductReview");
 
-            entity.HasIndex(e => e.ProductId, "IX_ProductReview_product_id");
-
-            entity.HasIndex(e => e.UserId, "IX_ProductReview_user_id");
-
             entity.Property(e => e.ProductReviewId).HasColumnType("uniqueidentifier").HasColumnName("product_review_id");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
             entity.Property(e => e.Description).HasColumnName("description").HasColumnType("nvarchar(255)");
             entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-            entity.Property(e => e.ProductId).HasColumnType("uniqueidentifier").HasColumnName("product_id");
             entity.Property(e => e.Rate).HasColumnName("rate");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("updated_at");
-            entity.Property(e => e.UserId).HasColumnType("uniqueidentifier").HasColumnName("user_id");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductReviews)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductReview_Product");
-
-            entity.HasOne(d => d.User).WithMany(p => p.ProductReviews)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductReview_User");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>

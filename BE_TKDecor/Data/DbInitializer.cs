@@ -67,7 +67,7 @@ namespace BE_TKDecor.Data
                 .FirstOrDefaultAsync(x => x.Role == SD.RoleCustomer);
 
             var reviews = await _db.ProductReviews
-                .Include(x => x.Product)
+                //.Include(x => x.Product)
                 .ToListAsync();
 
             List<string> reportStatusValues = new()
@@ -107,21 +107,15 @@ namespace BE_TKDecor.Data
                     .ThenInclude(x => x.User)
                 .Include(x => x.Product);
 
-            //var productReviewSetDefaults = new Faker<ProductReview>();
-            //productReviewSetDefaults.RuleFor(x => x.Description, f => f.Lorem.Paragraph());
-
             foreach (var od in orderDetail)
             {
                 ProductReview productReview = new()
                 {
-                    UserId = od.Order.UserId,
-                    User = od.Order.User,
-                    ProductId = od.Product.ProductId,
-                    Product = od.Product,
                     Rate = random.Next(3, 6),
                     Description = "Sản phẩm đẹp, chất lượng tốt"
                 };
-                _db.ProductReviews.Add(productReview);
+                od.ProductReview = productReview;
+                _db.OrderDetails.Update(od);
             }
             _db.SaveChanges();
         }

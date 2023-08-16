@@ -67,8 +67,8 @@ namespace BE_TKDecor.Service
                             .ThenInclude(x => x.ProductImages)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
-                            .ThenInclude(x => x.ProductReviews)
-                                .Where(pr => pr.UserId == userId)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
                     .Where(o => o.UserId == userId && !o.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
@@ -82,8 +82,7 @@ namespace BE_TKDecor.Service
                     var orderGet = _mapper.Map<OrderGetDto>(order);
                     foreach (var od in orderGet.OrderDetails)
                     {
-                        od.HasUserReviewed = order.OrderDetails
-                            .Any(x => x.Product.ProductReviews.Any(pr => pr.UserId == order.UserId && pr.ProductId == od.ProductId && !pr.IsDelete));
+                        od.HasUserReviewed = order.OrderDetails.FirstOrDefault(x => x.OrderDetailId == od.OrderDetailId)?.ProductReview != null;
                     }
                     result.Add(orderGet);
                 }
