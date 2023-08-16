@@ -361,8 +361,13 @@ namespace BE_TKDecor.Service
 
             var productList = await GetAllProducts();
 
-            productList = productList.Where(x => x.ProductId != p.ProductId
-                && x.CategoryId == p.CategoryId)
+            //productList = productList.Where(x => x.ProductId != p.ProductId
+            //    && x.CategoryId == p.CategoryId)
+            //    .Take(5)
+            //    .ToList();
+
+            productList = productList.Where(x => x.ProductId != p.ProductId)
+                .OrderByDescending(x => x.Category == p.Category)
                 .Take(5)
                 .ToList();
 

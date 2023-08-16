@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using BusinessObject;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Utility;
 
 namespace BE_TKDecor.Data
@@ -27,6 +28,8 @@ namespace BE_TKDecor.Data
             }
             catch (Exception) { }
 
+            //DeleteData();
+
             //AddModel3D();
             AddUser();
             //await AddArticles();
@@ -37,6 +40,41 @@ namespace BE_TKDecor.Data
             await AddOrders();
             await AddProductReview();
             await AddReportProductReview();
+        }
+
+        private void DeleteData()
+        {
+            var productReports = _db.ProductReports.ToList();
+            _db.ProductReports.RemoveRange(productReports);
+            _db.SaveChanges();
+
+            var reportProductReview = _db.ReportProductReviews.ToList();
+            _db.ReportProductReviews.RemoveRange(reportProductReview);
+            _db.SaveChanges();
+
+            var interaction = _db.ProductReviewInteractions.ToList();
+            _db.ProductReviewInteractions.RemoveRange(interaction);
+            _db.SaveChanges();
+
+            var ods = _db.OrderDetails.Include(x => x.ProductReview).ToList();
+            foreach (var od in ods)
+            {
+                od.ProductReview = null;
+                od.ProductReviewId = null;
+                _db.OrderDetails.Update(od);
+            }
+            _db.SaveChanges();
+
+            var reviews = _db.ProductReviews.ToList();
+            _db.ProductReviews.RemoveRange(reviews);
+            _db.SaveChanges();
+
+            _db.OrderDetails.RemoveRange(ods);
+            _db.SaveChanges();
+
+            var orders = _db.Orders.ToList();
+            _db.Orders.RemoveRange(orders);
+            _db.SaveChanges();
         }
 
         //private void AddModel3D()
