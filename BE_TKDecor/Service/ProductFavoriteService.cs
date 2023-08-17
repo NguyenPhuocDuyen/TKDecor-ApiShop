@@ -92,7 +92,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> SetFavorite(Guid userId, FavoriteSetDto dto)
         {
             var product = await _context.Products.FindAsync(dto.ProductId);
-            if (product == null || product.IsDelete)
+            if (product is null || product.IsDelete)
             {
                 _response.Message = ErrorContent.ProductNotFound;
                 return _response;
@@ -106,7 +106,7 @@ namespace BE_TKDecor.Service
 
             try
             {
-                if (productFavoriteDb == null)
+                if (productFavoriteDb is null)
                 {
                     ProductFavorite newProductFavorite = new()
                     {
@@ -124,10 +124,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

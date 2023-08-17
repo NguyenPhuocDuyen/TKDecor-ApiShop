@@ -23,10 +23,10 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Notifications/GetAll
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetNotifications()
+        public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _notification.GetNotificationsForUser(user.UserId);
@@ -37,12 +37,12 @@ namespace BE_TKDecor.Controllers
             return BadRequest(res);
         }
 
-        // POST: api/Notifications/Read
+        // POST: api/Notifications/ReadAll
         [HttpGet("ReadAll")]
         public async Task<IActionResult> ReadAll()
         {
             var user = await GetUser();
-            if (user == null)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _notification.ReadAll(user.UserId);

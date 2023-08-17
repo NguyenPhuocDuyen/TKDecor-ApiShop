@@ -28,18 +28,33 @@ namespace BE_TKDecor.Data
             }
             catch (Exception) { }
 
-            //DeleteData();
+            //// add admin
+            //User admin = new()
+            //{
+            //    Email = "admin2@gmail.com",
+            //    Password = Password.HashPassword("Default@123"),
+            //    FullName = "admin 2",
+            //    Role = SD.RoleAdmin,
+            //    BirthDay = DateTime.Now,
+            //    Gender = SD.GenderMale,
+            //    Phone = GenerateRandomPhoneNumber(),
+            //    EmailConfirmed = true,
+            //    AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
+            //};
+            //_db.Users.Add(admin);
+            //_db.SaveChanges();
+            ////DeleteData();
 
-            //AddModel3D();
-            AddUser();
-            //await AddArticles();
-            AddCategories();
-            AddCoupons();
-            await AddNotifications();
-            await AddProductReports();
-            await AddOrders();
-            await AddProductReview();
-            await AddReportProductReview();
+            ////AddModel3D();
+            //AddUser();
+            ////await AddArticles();
+            //AddCategories();
+            //AddCoupons();
+            //await AddNotifications();
+            //await AddProductReports();
+            //await AddOrders();
+            //await AddProductReview();
+            //await AddReportProductReview();
         }
 
         private void DeleteData()

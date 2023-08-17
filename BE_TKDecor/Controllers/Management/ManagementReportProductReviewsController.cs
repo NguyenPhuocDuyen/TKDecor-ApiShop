@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // PUT: api/ManagementReportProductReviews/UpdateStatusReport
+        // PUT: api/ManagementReportProductReviews/UpdateStatusReport/1
         [HttpPut("UpdateStatusReport/{id}")]
         public async Task<IActionResult> UpdateStatusReport(Guid id, ReportProductReviewUpdateDto reportDto)
         {

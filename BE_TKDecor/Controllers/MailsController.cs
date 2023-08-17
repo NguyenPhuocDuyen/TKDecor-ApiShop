@@ -25,7 +25,7 @@ namespace BE_TKDecor.Controllers
             {
                 To = "DuyenNP7901@gmail.com",
                 Subject = "Mail để đưa ra nhận xét về trang web",
-                Body = $"<h4>Được góp ý bởi: ${mailSendDto.MailSender}. Tên khánh hàng: {mailSendDto.Name}</h4>" +
+                Body = $"<h4>Được góp ý bởi: {mailSendDto.MailSender}. Tên khánh hàng: {mailSendDto.Name}</h4>" +
                 $"<p>Nội dung: {mailSendDto.Content}</p>"
             };
             // send mail

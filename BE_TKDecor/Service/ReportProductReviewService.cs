@@ -26,16 +26,15 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // get all report
         public async Task<ApiResponse> GetAll()
         {
             var reports = await _context.ReportProductReviews
-                    .Include(x => x.UserReport)
-                    .Include(x => x.ProductReviewReported)
-                    .ToListAsync();
-
-            reports = reports.Where(x => !x.IsDelete)
+                .Include(x => x.UserReport)
+                .Include(x => x.ProductReviewReported)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
             try
             {
@@ -47,15 +46,17 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // make report product review
         public async Task<ApiResponse> MakeReportProductReview(Guid userId, ReportProductReviewCreateDto reportDto)
         {
             var productReview = await _context.ProductReviews
                     .Include(x => x.OrderDetail)
                         .ThenInclude(x => x.Order)
                             .ThenInclude(x => x.User)
-                    .FirstOrDefaultAsync(x => x.ProductReviewId == reportDto.ProductReviewReportedId);
+                    .FirstOrDefaultAsync(x => x.ProductReviewId == reportDto.ProductReviewReportedId
+                                            && !x.IsDelete);
 
-            if (productReview is null || productReview.IsDelete)
+            if (productReview is null)
             {
                 _response.Message = ErrorContent.ProductReviewNotFound;
                 return _response;
@@ -100,21 +101,23 @@ namespace BE_TKDecor.Service
                     _mapper.Map<NotificationGetDto>(newNotification));
 
                 // add notification for staff and admin
-                var listStaffOrAdmin = await _context.Users.Where(x => x.Role == SD.RoleAdmin).ToListAsync();
+                var admins = await _context.Users
+                    .Where(x => x.Role == SD.RoleAdmin && !x.IsDelete)
+                    .ToListAsync();
                 var user = await _context.Users.FindAsync(userId);
-                foreach (var staff in listStaffOrAdmin)
+                foreach (var admin in admins)
                 {
                     // add notification for user
-                    Notification notiForStaffOrAdmin = new()
+                    Notification notiForAdmin = new()
                     {
-                        UserId = staff.UserId,
+                        UserId = admin.UserId,
                         Message = $"{user?.Email} đã báo cáo đánh giá của {productReview.OrderDetail.Order.User.FullName}"
                     };
-                    _context.Notifications.Add(notiForStaffOrAdmin);
+                    _context.Notifications.Add(notiForAdmin);
                     // notification signalR
-                    await _hub.Clients.User(staff.UserId.ToString())
+                    await _hub.Clients.User(admin.UserId.ToString())
                         .SendAsync(SD.NewNotification,
-                        _mapper.Map<NotificationGetDto>(notiForStaffOrAdmin));
+                        _mapper.Map<NotificationGetDto>(notiForAdmin));
                 }
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -123,6 +126,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // update status of report product review
         public async Task<ApiResponse> Update(Guid id, ReportProductReviewUpdateDto dto)
         {
             if (id != dto.ReportProductReviewId)
@@ -134,9 +138,10 @@ namespace BE_TKDecor.Service
             var report = await _context.ReportProductReviews
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReviewReported)
-                    .FirstOrDefaultAsync(x => x.ReportProductReviewId == id);
+                    .FirstOrDefaultAsync(x => x.ReportProductReviewId == id
+                                        && !x.IsDelete);
 
-            if (report == null || report.IsDelete)
+            if (report is null)
             {
                 _response.Message = ErrorContent.ReportProductReviewNotFound;
                 return _response;

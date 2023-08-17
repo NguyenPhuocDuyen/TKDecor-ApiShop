@@ -28,7 +28,7 @@ namespace BE_TKDecor.Controllers
         {
             // get user by user id
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var result = _mapper.Map<UserGetDto>(user);
@@ -42,7 +42,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> UpdateUserInfo(UserUpdateDto userDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             user.FullName = userDto.FullName;
@@ -65,7 +65,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> RequestChangePassword()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _user.RequestChangePassword(user);
@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> ChangePassword(UserChangePasswordDto userDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _user.ChangePassword(user, userDto);

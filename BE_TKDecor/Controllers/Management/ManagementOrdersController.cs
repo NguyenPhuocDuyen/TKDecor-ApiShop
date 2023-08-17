@@ -18,7 +18,7 @@ namespace BE_TKDecor.Controllers.Management
             _order = order;
         }
 
-        // POST: api/ManagementOrders/GetOrder
+        // POST: api/ManagementOrders/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
@@ -42,7 +42,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // POST: api/ManagementOrders/UpdateStatusOrder
+        // POST: api/ManagementOrders/UpdateStatusOrder/1
         [HttpPut("UpdateStatusOrder/{id}")]
         public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
         {

@@ -48,45 +48,44 @@ namespace BE_TKDecor.Service
             dto.Email = dto.Email.ToLower().Trim();
             //var u = await _user.FindByEmail(dto.Email);
 
-            var u = _context.Users.FirstOrDefault(x => x.Email == dto.Email);
+            var user = _context.Users.FirstOrDefault(x => x.Email == dto.Email);
 
             //check user null
-            if (u == null)
+            if (user is null)
             {
                 _response.Message = ErrorContent.AccountIncorrect;
                 return _response;
             }
 
-            if (u.IsDelete)
+            if (user.IsDelete)
             {
                 _response.Message = "Tài khoản đã bị chặn!";
                 return _response;
             }
 
             //check correct password
-            if (!Password.VerifyPassword(dto.Password, u.Password))
+            if (!Password.VerifyPassword(dto.Password, user.Password))
             {
                 _response.Message = ErrorContent.AccountIncorrect;
                 return _response;
             }
 
             //check confirm email
-            if (!u.EmailConfirmed)
+            if (!user.EmailConfirmed)
             {
                 _response.Message = "Email chưa được xác nhận!";
                 return _response;
             }
 
             //convert token to string
-            var token = await GenerateToken(u);
-            //string roleString = Enum.GetName(typeof(Role), u.Role);
+            var token = await GenerateToken(user);
 
             var data = new
             {
-                u.Role,
-                u.Email,
-                u.FullName,
-                u.AvatarUrl,
+                user.Role,
+                user.Email,
+                user.FullName,
+                user.AvatarUrl,
                 token.AccessToken,
                 token.RefreshToken,
             };
@@ -100,10 +99,12 @@ namespace BE_TKDecor.Service
             dto.Email = dto.Email.ToLower().Trim();
             //get user in database by email
             User? user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
-            bool isAdd = true;
+
             //check exists
-            if (user != null)
+            bool isAdd = true;
+            if (user is not null)
             {
+                isAdd = false;
                 if (user.EmailConfirmed == true)
                 {
                     if (user.IsDelete == true)
@@ -116,19 +117,15 @@ namespace BE_TKDecor.Service
                     }
                     return _response;
                 }
-                isAdd = false;
             }
-
-            if (isAdd)
+            else
             {
                 // initial new user
                 // take customer role
                 user = new User
                 {
                     Email = dto.Email,
-                    AvatarUrl = "",
                     Role = SD.RoleCustomer,
-                    EmailConfirmed = false,
                     Gender = SD.GenderOther
                 };
             }
@@ -138,9 +135,6 @@ namespace BE_TKDecor.Service
             user.Password = Password.HashPassword(dto.Password);
 
             user.FullName = dto.FullName;
-            //user.BirthDay = dto.BirthDay;
-            //user.Gender = dto.Gender;
-            //user.Phone = dto.Phone;
 
             user.EmailConfirmationCode = code;
             user.EmailConfirmationSentAt = DateTime.Now;
@@ -171,11 +165,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-                //return BadRequest(new ApiResponse { Message = ErrorContent.Data });
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -186,7 +176,7 @@ namespace BE_TKDecor.Service
             // get user by email confirm token 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-            if (user == null)
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
                 return _response;
@@ -225,14 +215,6 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.Users.Update(user);
-
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = "Chào mừng bạn tới web TKDecor của chúng tôi"
-                };
-                _context.Notifications.Add(newNotification);
-
                 await _context.SaveChangesAsync();
 
                 if (codeOutOfDate)
@@ -240,20 +222,26 @@ namespace BE_TKDecor.Service
                     _response.Message = "Mã xác nhận đã hết hạn sử dụng. Vui lòng kiểm tra lại mã xác nhận mới trong email của bạn!";
                     return _response;
                 }
+
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    Message = "Chào mừng bạn tới web TKDecor của chúng tôi"
+                };
+                _context.Notifications.Add(newNotification);
+                await _context.SaveChangesAsync();
+
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
         public async Task<ApiResponse> ResendConfirmationEmail(UserEmailDto dto)
         {
-            // get user by email confirm token F
+            // get user by email 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email.ToLower().Trim());
-            if (user == null)
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
                 return _response;
@@ -291,20 +279,23 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
         public async Task<ApiResponse> ForgotPassword(UserEmailDto dto)
         {
-            // get user by email confirm token 
+            // get user by email 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email.ToLower().Trim());
-            if (user == null || user.IsDelete)
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            if (user.IsDelete)
+            {
+                _response.Message = "Tài khoản đã bị chặn";
                 return _response;
             }
 
@@ -345,10 +336,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -356,9 +344,15 @@ namespace BE_TKDecor.Service
         {
             // get user by email confirm token 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email.ToLower().Trim());
-            if (user == null || user.IsDelete)
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            if (user.IsDelete)
+            {
+                _response.Message = "Tài khoản đã bị chặn";
                 return _response;
             }
 
@@ -368,16 +362,16 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            if (user.ResetPasswordCode != dto.Code)
+            {
+                _response.Message = "Sai mã xác nhận!";
+                return _response;
+            }
+
             //check token expires: 5 minutes
             if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
             {
                 _response.Message = "Mã xác nhận hết hạn!";
-                return _response;
-            }
-
-            if (user.ResetPasswordCode != dto.Code)
-            {
-                _response.Message = "Sai mã xác nhận!";
                 return _response;
             }
 
@@ -402,10 +396,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -456,7 +447,7 @@ namespace BE_TKDecor.Service
 
                 //check 4: Check refreshtoken exist in DB
                 var storedToken = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == model.RefreshToken);
-                if (storedToken == null)
+                if (storedToken is null)
                 {
                     _response.Message = "Mã xác thực làm mới không tồn tại!";
                     return _response;
@@ -497,10 +488,7 @@ namespace BE_TKDecor.Service
                 _response.Message = "Gia hạn mã xác thực thành công";
                 _response.Data = token;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
@@ -559,7 +547,6 @@ namespace BE_TKDecor.Service
             var random = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(random);
-
             return Convert.ToBase64String(random);
         }
 
@@ -567,7 +554,6 @@ namespace BE_TKDecor.Service
         {
             var dateTimeInterval = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Local);
             dateTimeInterval.AddSeconds(utcExpireDate).ToUniversalTime();
-
             return dateTimeInterval;
         }
     }

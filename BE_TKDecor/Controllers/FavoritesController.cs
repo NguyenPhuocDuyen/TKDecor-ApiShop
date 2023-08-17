@@ -28,7 +28,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetFavoriteOfUser(int pageIndex = 1, int pageSize = 20)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _productFavorite.GetFavoriteOfUser(user.UserId, pageIndex, pageSize);
@@ -44,7 +44,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> SetFavorite(FavoriteSetDto favoriteDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _productFavorite.SetFavorite(user.UserId, favoriteDto);

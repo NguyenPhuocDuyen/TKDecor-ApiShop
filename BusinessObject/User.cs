@@ -14,11 +14,11 @@ public partial class User : BaseEntity
 
     public DateTime? BirthDay { get; set; }
 
-    public string? Gender { get; set; } = null!;
+    public string? Gender { get; set; }
 
-    public string? Phone { get; set; } = null!;
+    public string? Phone { get; set; }
 
-    public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; }
 
     public bool EmailConfirmed { get; set; } = false;
 

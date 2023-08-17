@@ -18,6 +18,7 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // user make review product when bought product
         public async Task<ApiResponse> ReviewProduct(Guid userId, ProductReviewCreateDto productReviewDto)
         {
             var orderDetail = await _context.OrderDetails
@@ -26,7 +27,7 @@ namespace BE_TKDecor.Service
                 .Include(x => x.ProductReview)
                 .FirstOrDefaultAsync(x => x.OrderDetailId == productReviewDto.OrderDetailId);
 
-            if (orderDetail == null)
+            if (orderDetail is null)
             {
                 _response.Message = "Không tìm thấy order item";
                 return _response;
@@ -43,7 +44,6 @@ namespace BE_TKDecor.Service
             orderDetail.ProductReview.UpdatedAt = DateTime.Now;
             orderDetail.ProductReview.Rate = productReviewDto.Rate;
             orderDetail.ProductReview.Description = productReviewDto.Description;
-
             try
             {
                 _context.OrderDetails.Update(orderDetail);
@@ -51,10 +51,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

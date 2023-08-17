@@ -28,7 +28,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetCarts()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _cart.GetCartsForUser(user.UserId);
@@ -44,7 +44,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> AddProductToCart(CartCreateDto cartDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _cart.AddProductToCart(user.UserId, cartDto);
@@ -60,7 +60,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto cartDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _cart.UpdateQuantity(user.UserId, id, cartDto);
@@ -76,7 +76,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _cart.Delete(user.UserId, id);

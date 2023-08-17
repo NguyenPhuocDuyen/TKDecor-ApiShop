@@ -27,7 +27,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetUserAddresses()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.GetUserAddressesForUser(user.UserId);
@@ -43,7 +43,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetUserAddressDefault()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.GetUserAddressDefault(user.UserId);
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.SetDefault(user.UserId, dto);
@@ -75,7 +75,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.Create(user.UserId, userAddressDto);
@@ -91,7 +91,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Update(Guid id, UserAddressUpdateDto userAddressDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.Update(user.UserId, id, userAddressDto);
@@ -107,7 +107,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _userAddress.Delete(user.UserId, id);

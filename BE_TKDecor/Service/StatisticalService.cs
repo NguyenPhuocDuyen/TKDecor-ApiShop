@@ -22,6 +22,7 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // get revenue chart
         public async Task<ApiResponse> GetRevenueChart(int? year)
         {
             if (!year.HasValue)
@@ -29,8 +30,10 @@ namespace BE_TKDecor.Service
 
             // Filter orders by the specified year
             var orders = await _context.Orders
-                        .Where(x => x.OrderStatus == SD.OrderReceived && !x.IsDelete
-                        && x.CreatedAt.Year == year).ToListAsync();
+                        .Where(x => x.OrderStatus == SD.OrderReceived 
+                                && !x.IsDelete
+                                && x.CreatedAt.Year == year)
+                        .ToListAsync();
 
             // Group orders by month and calculate the revenue for each month
             var revenueByMonth = orders
@@ -58,6 +61,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get top product sale
         public async Task<ApiResponse> GetTopProductSale(DateTime? startDate, DateTime? endDate, int take)
         {
             if (!startDate.HasValue)
@@ -69,7 +73,7 @@ namespace BE_TKDecor.Service
             var orders = await _context.Orders
                 .Include(x => x.OrderDetails)
                 .ThenInclude(x => x.Product)
-                .Where(x => !x.IsDelete && x.CreatedAt >= startDate && x.CreatedAt <= endDate)
+                .Where(x => !x.IsDelete && x.CreatedAt >= startDate && x.CreatedAt <= endDate && x.OrderStatus == SD.OrderReceived)
                 .ToListAsync();
 
             var productQuantities = orders
@@ -91,6 +95,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get total order 
         public async Task<ApiResponse> GetTotalOrder()
         {
             var currentDate = DateTime.Now;
@@ -121,18 +126,13 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get total revenue
         public async Task<ApiResponse> GetTotalRevenue()
         {
             var currentDate = DateTime.Now;
             var orders = await _context.Orders
-                        //.Include(x => x.User)
-                        //.Include(x => x.OrderDetails)
-                        //    .ThenInclude(x => x.Product)
-                        //        .ThenInclude(x => x.ProductImages)
-                        .ToListAsync();
-
-            orders = orders.Where(x => x.OrderStatus == SD.OrderReceived && !x.IsDelete)
-                           .ToList();
+                .Where(x => x.OrderStatus == SD.OrderReceived && !x.IsDelete)
+                .ToListAsync();
 
             // Calculate current month's total revenue
             decimal totalRevenueThisMonth = orders.Where(x => x.CreatedAt.Month == currentDate.Month && x.CreatedAt.Year == currentDate.Year)
@@ -162,6 +162,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get total user
         public async Task<ApiResponse> GetTotalUser()
         {
             var currentDate = DateTime.Now;
@@ -193,13 +194,11 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get revent order
         public async Task<ApiResponse> RecentOrders()
         {
             var orders = await _context.Orders.Where(x => !x.IsDelete)
                     .Include(x => x.User)
-                    //.Include(x => x.OrderDetails)
-                    //    .ThenInclude(x => x.Product)
-                    //        .ThenInclude(x => x.ProductImages)
                     .OrderByDescending(x => x.CreatedAt)
                     .Take(10)
                     .ToListAsync();
