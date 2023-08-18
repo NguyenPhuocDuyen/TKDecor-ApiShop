@@ -28,7 +28,11 @@ namespace BE_TKDecor.Data
             }
             catch (Exception) { }
 
-            //// add admin
+            //var admin = _db.Users.Where(x => x.Email == "admin2@gmail.com");
+            //_db.RemoveRange(admin);
+            //_db.SaveChanges();
+
+            // add admin
             //User admin = new()
             //{
             //    Email = "admin2@gmail.com",
@@ -43,6 +47,7 @@ namespace BE_TKDecor.Data
             //};
             //_db.Users.Add(admin);
             //_db.SaveChanges();
+
             ////DeleteData();
 
             ////AddModel3D();

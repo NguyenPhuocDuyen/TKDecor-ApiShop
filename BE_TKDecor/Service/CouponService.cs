@@ -135,7 +135,7 @@ namespace BE_TKDecor.Service
             code = code.ToUpper().Trim();
 
             var coupon = await _context.Coupons
-                .FirstOrDefaultAsync(x => x.Code == code && !x.IsDelete);
+                .FirstOrDefaultAsync(x => x.Code.ToUpper() == code && !x.IsDelete);
             if (coupon is null)
             {
                 _response.Message = ErrorContent.CouponNotFound;

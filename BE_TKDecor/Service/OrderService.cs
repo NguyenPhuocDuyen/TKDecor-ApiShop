@@ -421,7 +421,7 @@ namespace BE_TKDecor.Service
             var message = "";
             // update order status
             // customer can cancel, refund, receive the order
-            switch (dto.OrderStatus)
+            switch (order.OrderStatus)
             {
                 case SD.OrderOrdered:
                     // Cancellation of orders only when the order is in the Ordered status

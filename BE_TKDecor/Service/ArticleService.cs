@@ -24,6 +24,7 @@ namespace BE_TKDecor.Service
         // create article
         public async Task<ApiResponse> Create(ArticleCreateDto dto, Guid userId)
         {
+            dto.Title = dto.Title.Trim();
             // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Title);
             var articleDb = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == newSlug);
@@ -153,7 +154,7 @@ namespace BE_TKDecor.Service
         {
             var article = await _context.Articles
                 .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Slug == slug && !x.IsDelete);
+                .FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
 
             if (article is null || !article.IsPublish)
             {
@@ -210,6 +211,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            dto.Title = dto.Title.Trim();
             // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Title);
             var articleSlug = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == newSlug);

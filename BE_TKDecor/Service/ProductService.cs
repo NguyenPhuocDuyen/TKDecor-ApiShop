@@ -44,6 +44,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            dto.Name = dto.Name.Trim();
             // check already exists slug
             var newSlug = Slug.GenerateSlug(dto.Name);
             var productDb = await _context.Products.FirstOrDefaultAsync(x => x.Slug == newSlug);
@@ -112,7 +113,7 @@ namespace BE_TKDecor.Service
         // get product by slug
         public async Task<ApiResponse> GetBySlug(Guid? userId, string slug)
         {
-            var product = await GetProductBySlug(slug);
+            var product = await GetProductBySlug(slug.Trim());
 
             if (product is null)
             {
@@ -301,7 +302,7 @@ namespace BE_TKDecor.Service
         // get review of product by produc slug
         public async Task<ApiResponse> GetReview(Guid? userId, string slug, string sort, int pageIndex, int pageSize)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug && !x.IsDelete);
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
             if (product is null)
             {
                 _response.Message = ErrorContent.ProductNotFound;
@@ -363,7 +364,7 @@ namespace BE_TKDecor.Service
         // get relate products by product slug
         public async Task<ApiResponse> RelatedProducts(Guid? userId, string slug)
         {
-            var p = await GetProductBySlug(slug);
+            var p = await GetProductBySlug(slug.Trim());
 
             if (p is null)
             {
@@ -439,6 +440,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            dto.Name = dto.Name.Trim();
             // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Name);
             var proSlug = await _context.Products.FirstOrDefaultAsync(x => x.Slug == newSlug);

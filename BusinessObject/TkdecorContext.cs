@@ -573,6 +573,7 @@ public partial class TkdecorContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.UserId).HasName("PK__User__B9BE370F0AD19949");
+            entity.HasIndex(e => e.Email).IsUnique();
 
             entity.ToTable("User");
 
@@ -632,7 +633,7 @@ public partial class TkdecorContext : DbContext
             entity.HasIndex(e => e.UserId, "IX_UserAddress_user_id");
 
             entity.Property(e => e.UserAddressId).HasColumnType("uniqueidentifier").HasColumnName("user_address_id");
-            
+
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");

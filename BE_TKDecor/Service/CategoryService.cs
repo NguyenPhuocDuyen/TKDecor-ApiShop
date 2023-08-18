@@ -23,6 +23,7 @@ namespace BE_TKDecor.Service
         // create category
         public async Task<ApiResponse> Create(CategoryCreateDto dto)
         {
+            dto.Name = dto.Name.Trim();
             var categoryDb = await _context.Categories
                 .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == dto.Name.ToLower().Trim());
 
@@ -130,9 +131,10 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            categoryDto.Name = categoryDb.Name.Trim();
             // check name already exists
             var categoryName = await _context.Categories
-                .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == categoryDto.Name.ToLower().Trim());
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == categoryDto.Name.ToLower());
 
             if (categoryName is not null && categoryName.CategoryId != id)
             {
