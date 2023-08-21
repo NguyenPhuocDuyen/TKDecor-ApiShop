@@ -131,7 +131,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            categoryDto.Name = categoryDb.Name.Trim();
+            categoryDb.Name = categoryDto.Name.Trim();
             // check name already exists
             var categoryName = await _context.Categories
                 .FirstOrDefaultAsync(x => x.Name.ToLower() == categoryDto.Name.ToLower());
@@ -142,7 +142,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            categoryDb.Name = categoryDto.Name;
+            //categoryDb.Name = categoryDto.Name;
             categoryDb.Thumbnail = categoryDto.Thumbnail;
             categoryDb.UpdatedAt = DateTime.Now;
             try

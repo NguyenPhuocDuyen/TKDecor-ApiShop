@@ -293,6 +293,12 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            if (!user.EmailConfirmed)
+            {
+                _response.Message = "Email chưa được xác nhận!";
+                return _response;
+            }
+
             if (user.IsDelete)
             {
                 _response.Message = "Tài khoản đã bị chặn";
@@ -369,7 +375,7 @@ namespace BE_TKDecor.Service
             }
 
             //check token expires: 5 minutes
-            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-1))
             {
                 _response.Message = "Mã xác nhận hết hạn!";
                 return _response;
