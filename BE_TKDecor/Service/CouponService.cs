@@ -128,6 +128,7 @@ namespace BE_TKDecor.Service
                         || DateTime.Now > item.EndDate)
                     {
                         item.IsActive = false;
+                        item.UpdatedAt = DateTime.Now;
                         _context.Coupons.Update(item);
                     }
                 }
