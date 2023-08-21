@@ -121,6 +121,18 @@ namespace BE_TKDecor.Service
 
             try
             {
+                // update state coupon
+                foreach (var item in coupons)
+                {
+                    if (item.RemainingUsageCount == 0
+                        || DateTime.Now > item.EndDate)
+                    {
+                        item.IsActive = false;
+                        _context.Coupons.Update(item);
+                    }
+                }
+                _context.SaveChanges();
+
                 var result = _mapper.Map<List<CouponGetDto>>(coupons);
                 _response.Success = true;
                 _response.Data = result;
