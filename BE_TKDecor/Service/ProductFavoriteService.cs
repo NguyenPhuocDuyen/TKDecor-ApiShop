@@ -29,7 +29,9 @@ namespace BE_TKDecor.Service
                     .Include(x => x.OrderDetails)
                     .Include(x => x.Product3DModel)
                     .Include(x => x.ProductImages)
-                    .Include(x => x.ProductReviews)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    //.Include(x => x.ProductReviews)
                     .Include(x => x.ProductFavorites)
                     .Where(x => !x.IsDelete && x.Quantity > 0)
                     .OrderByDescending(x => x.CreatedAt)
@@ -44,6 +46,25 @@ namespace BE_TKDecor.Service
 
                     // Check if the user has liked the product or not
                     productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+
+                    int totalReviews = 0;
+                    int totalRating = 0;
+
+                    foreach (var orderDetail in product.OrderDetails)
+                    {
+                        if (orderDetail.ProductReview is not null)
+                        {
+                            totalReviews++;
+                            totalRating += orderDetail.ProductReview.Rate;
+                        }
+                    }
+
+                    if (totalReviews > 0)
+                    {
+                        double averageRating = (double)totalRating / totalReviews;
+                        productDto.AverageRate = averageRating;
+                    }
+                    productDto.CountRate = totalReviews;
 
                     listProductFavorite.Add(productDto);
                 }
@@ -71,7 +92,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> SetFavorite(Guid userId, FavoriteSetDto dto)
         {
             var product = await _context.Products.FindAsync(dto.ProductId);
-            if (product == null || product.IsDelete)
+            if (product is null || product.IsDelete)
             {
                 _response.Message = ErrorContent.ProductNotFound;
                 return _response;
@@ -85,7 +106,7 @@ namespace BE_TKDecor.Service
 
             try
             {
-                if (productFavoriteDb == null)
+                if (productFavoriteDb is null)
                 {
                     ProductFavorite newProductFavorite = new()
                     {
@@ -103,10 +124,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

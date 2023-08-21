@@ -4,6 +4,7 @@ using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    partial class TkdecorContextModelSnapshot : ModelSnapshot
+    [Migration("20230816083645_EditReview3")]
+    partial class EditReview3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -838,9 +841,6 @@ namespace BusinessObject.Migrations
 
                     b.HasKey("UserId")
                         .HasName("PK__User__B9BE370F0AD19949");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.ToTable("User", (string)null);
                 });

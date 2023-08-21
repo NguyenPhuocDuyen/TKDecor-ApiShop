@@ -32,6 +32,7 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // change password
         public async Task<ApiResponse> ChangePassword(User user, UserChangePasswordDto dto)
         {
             if (!user.ResetPasswordRequired)
@@ -72,25 +73,14 @@ namespace BE_TKDecor.Service
                 user.Password = Password.HashPassword(dto.NewPassword);
                 user.ResetPasswordRequired = false;
             }
+
             user.UpdatedAt = DateTime.Now;
             try
             {
                 // update success before send new code for user
                 _context.Users.Update(user);
-
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = $"Đổi mật khẩu thành công"
-                };
-                _context.Notifications.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(SD.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
-
                 await _context.SaveChangesAsync();
+
                 if (codeOutOfDate)
                 {
                     //send mail to changepassword
@@ -108,18 +98,45 @@ namespace BE_TKDecor.Service
                     _response.Message = "Hết thời gian mã xác nhận đổi mật khẩu. Vui lòng kiểm tra lại mail để xem mã mới!";
                     return _response;
                 }
+
+                // add notification for user
+                Notification newNotification = new()
+                {
+                    UserId = user.UserId,
+                    Message = $"Đổi mật khẩu thành công"
+                };
+                _context.Notifications.Add(newNotification);
+                // notification signalR
+                await _hub.Clients.User(user.UserId.ToString())
+                    .SendAsync(SD.NewNotification,
+                    _mapper.Map<NotificationGetDto>(newNotification));
+
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // delete user by userId
         public async Task<ApiResponse> Delete(Guid userId)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null || user.IsDelete)
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == userId
+                                    && !x.IsDelete);
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            // check can't not delete last admin
+            var admins = await _context.Users
+                .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
+                .ToListAsync();
+            if (admins.Count == 1 && admins[0].UserId == user.UserId)
+            {
+                _response.Message = "Không thể xoá admin cuối cùng.";
                 return _response;
             }
 
@@ -135,29 +152,32 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get all user except user have userId current
         public async Task<ApiResponse> GetAllUser(Guid userId)
         {
-            var users = await _context.Users.ToListAsync();
-            users = users.Where(x => !x.IsDelete && x.UserId != userId)
+            var users = await _context.Users
+                .Where(x => !x.IsDelete && x.UserId != userId)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
             try
             {
-            var result = _mapper.Map<List<UserGetDto>>(users);
-            _response.Success = true;
-            _response.Data = result;
+                var result = _mapper.Map<List<UserGetDto>>(users);
+                _response.Success = true;
+                _response.Data = result;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // get user by id
         public async Task<User?> GetById(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete);
             return user;
         }
 
+        // send mail request change password
         public async Task<ApiResponse> RequestChangePassword(User user)
         {
             // get random code
@@ -204,6 +224,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // set role for user
         public async Task<ApiResponse> SetRole(Guid userId, UserSetRoleDto dto)
         {
             if (userId != dto.UserId)
@@ -212,10 +233,20 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null || user.IsDelete)
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId && !x.IsDelete);
+            if (user is null)
             {
                 _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            // check can't not delete last admin
+            var admins = await _context.Users
+                .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
+                .ToListAsync();
+            if (admins.Count == 1 && admins[0].UserId == user.UserId && dto.Role != SD.RoleAdmin)
+            {
+                _response.Message = "Không thể thay đổi role admin cuối cùng.";
                 return _response;
             }
 
@@ -223,8 +254,9 @@ namespace BE_TKDecor.Service
             user.UpdatedAt = DateTime.Now;
             try
             {
-                var refreshTokenOfUser = await _context.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
-                _context.RefreshTokens.RemoveRange(refreshTokenOfUser);
+                // remove refreshTokenOfUser
+                //var refreshTokenOfUser = await _context.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
+                //_context.RefreshTokens.RemoveRange(refreshTokenOfUser);
 
                 _context.Users.Update(user);
 
@@ -232,7 +264,7 @@ namespace BE_TKDecor.Service
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}"
+                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}. Cần đăng nhập lại."
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR
@@ -247,6 +279,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // update user info
         public async Task<ApiResponse> UpdateUserInfo(User user)
         {
             try

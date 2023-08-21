@@ -52,7 +52,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> Create(ArticleCreateDto articleDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _article.Create(articleDto, user.UserId);

@@ -30,7 +30,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // GET: api/ManagementProduct3DModels/GetAllByProductId
+        // GET: api/ManagementProduct3DModels/GetAllByProductId/1
         [HttpGet("GetAllByProductId/{id}")]
         public async Task<IActionResult> GetAllByProductId(Guid id)
         {
@@ -54,7 +54,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // POST: api/ManagementProduct3DModels/Delete
+        // POST: api/ManagementProduct3DModels/Delete/1
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

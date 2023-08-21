@@ -165,7 +165,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // add hub
-app.MapHub<UserHub>("/hubs/user");
+//app.MapHub<UserHub>("/hubs/user");
 app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

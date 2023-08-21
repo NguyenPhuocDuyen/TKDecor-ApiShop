@@ -20,10 +20,12 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // create model 3d
         public async Task<ApiResponse> Create(Product3DModelCreateDto dto)
         {
             try
             {
+                dto.ModelName = dto.ModelName.Trim();
                 var model = _mapper.Map<Product3DModel>(dto);
                 await _context.Product3Dmodels.AddAsync(model);
                 await _context.SaveChangesAsync();
@@ -34,18 +36,21 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // delete model 3d
         public async Task<ApiResponse> Delete(Guid id)
         {
-            var model = await _context.Product3Dmodels.Include(x => x.Product)
-                        .FirstOrDefaultAsync(x => x.Product3DModelId == id);
+            var model = await _context.Product3Dmodels
+                .Include(x => x.Product)
+                .FirstOrDefaultAsync(x => x.Product3DModelId == id && !x.IsDelete);
 
-            if (model == null || model.IsDelete)
+            if (model is null)
             {
                 _response.Message = ErrorContent.Model3DNotFound;
                 return _response;
             }
 
-            if (model.Product != null)
+            // can't delete because it used by one product
+            if (model.Product is not null)
             {
                 _response.Message = "Model3D đang được sản phẩm sử dụng bởi " + model.Product.Name;
                 return _response;
@@ -59,19 +64,17 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // get all model 3d
         public async Task<ApiResponse> GetAll()
         {
-            var models = await _context.Product3Dmodels.Include(x => x.Product).ToListAsync();
-            models = models.Where(x => !x.IsDelete)
+            var models = await _context.Product3Dmodels.Include(x => x.Product)
+                .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
             try
             {
@@ -83,24 +86,27 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get all model 3d for update product
         public async Task<ApiResponse> GetAllByProductId(Guid id)
         {
-            var models = await _context.Product3Dmodels.Include(x => x.Product).ToListAsync();
-            models = models.Where(x => !x.IsDelete)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ToList();
+            // get models that are not used or used by the product itself
+            var models = await _context.Product3Dmodels
+                .Include(x => x.Product)
+                .Where(x => !x.IsDelete && (x.Product == null || x.Product.ProductId == id))
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
 
-            var product = await _context.Products.FindAsync(id);
-            if (product != null && product.Product3DModelId != null)
-            {
-                models = models.Where(x => x.Product == null
-                            || x.Product3DModelId == product.Product3DModelId)
-                            .ToList();
-            }
-            else
-            {
-                models = models.Where(x => x.Product == null).ToList();
-            }
+            //var product = await _context.Products.FindAsync(id);
+            //if (product is not null && product.Product3DModelId is not null)
+            //{
+            //    models = models.Where(x => x.Product is null
+            //                || x.Product3DModelId == product.Product3DModelId)
+            //                .ToList();
+            //}
+            //else
+            //{
+            //    models = models.Where(x => x.Product is null).ToList();
+            //}
 
             try
             {

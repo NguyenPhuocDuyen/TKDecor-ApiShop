@@ -14,11 +14,11 @@ public partial class User : BaseEntity
 
     public DateTime? BirthDay { get; set; }
 
-    public string? Gender { get; set; } = null!;
+    public string? Gender { get; set; }
 
-    public string? Phone { get; set; } = null!;
+    public string? Phone { get; set; }
 
-    public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; }
 
     public bool EmailConfirmed { get; set; } = false;
 
@@ -45,8 +45,6 @@ public partial class User : BaseEntity
     public virtual ICollection<ProductReviewInteraction> ProductInteractions { get; set; } = new List<ProductReviewInteraction>();
 
     public virtual ICollection<ProductReport> ProductReports { get; set; } = new List<ProductReport>();
-
-    public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 

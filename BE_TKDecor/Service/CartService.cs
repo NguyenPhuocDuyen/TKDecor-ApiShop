@@ -24,7 +24,7 @@ namespace BE_TKDecor.Service
         {
             // get current product info
             var product = await _context.Products.FindAsync(dto.ProductId);
-            if (product == null || product.IsDelete)
+            if (product is null || product.IsDelete)
             {
                 _response.Message = ErrorContent.ProductNotFound;
                 return _response;
@@ -47,7 +47,7 @@ namespace BE_TKDecor.Service
             bool isAdd = false;
 
             // If not, create a new one, if yes, add the quantity
-            if (cartDb == null)
+            if (cartDb is null)
             {
                 isAdd = true;
                 cartDb = _mapper.Map<Cart>(dto);
@@ -99,11 +99,12 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // delete cart by id
         public async Task<ApiResponse> Delete(Guid userId, Guid id)
         {
             // Find and delete cart
             var cartDb = await _context.Carts.FindAsync(id);
-            if (cartDb == null || cartDb.UserId != userId || cartDb.IsDelete)
+            if (cartDb is null || cartDb.UserId != userId || cartDb.IsDelete)
             {
                 _response.Message = ErrorContent.CartNotFound;
                 return _response;
@@ -121,6 +122,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // GetCartsForUser
         public async Task<ApiResponse> GetCartsForUser(Guid userId)
         {
             var carts = await _context.Carts
@@ -134,6 +136,7 @@ namespace BE_TKDecor.Service
 
             try
             {
+                // update quantity or delete cart when quantity of product in store is 0
                 foreach (var cartItem in carts)
                 {
                     if (cartItem.Quantity > cartItem.Product.Quantity)
@@ -151,6 +154,7 @@ namespace BE_TKDecor.Service
                     }
                 }
                 await _context.SaveChangesAsync();
+
                 var result = _mapper.Map<List<CartGetDto>>(carts);
                 _response.Success = true;
                 _response.Data = result;
@@ -159,6 +163,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // update quantity in cart
         public async Task<ApiResponse> UpdateQuantity(Guid userId, Guid id, CartUpdateDto cartDto)
         {
             if (id != cartDto.CartId)
@@ -168,20 +173,19 @@ namespace BE_TKDecor.Service
             }
 
             var cartDb = await _context.Carts.Include(x => x.Product)
-                    .FirstOrDefaultAsync(x => x.CartId == id);
+                    .FirstOrDefaultAsync(x => x.CartId == id && !x.IsDelete && x.UserId == userId);
 
-            if (cartDb == null || cartDb.UserId != userId || cartDb.IsDelete)
+            if (cartDb is null)
             {
                 _response.Message = ErrorContent.CartNotFound;
                 return _response;
             }
 
-            // Variable check number of valid products
-            bool quanlityIsValid = true;
-
             cartDb.Quantity = cartDto.Quantity;
             cartDb.UpdatedAt = DateTime.Now;
 
+            // Variable check number of valid products
+            bool quanlityIsValid = true;
             if (cartDb.Quantity > cartDb.Product.Quantity)
             {
                 cartDb.Quantity = cartDb.Product.Quantity;

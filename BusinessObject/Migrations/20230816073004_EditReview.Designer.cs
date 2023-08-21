@@ -4,6 +4,7 @@ using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(TkdecorContext))]
-    partial class TkdecorContextModelSnapshot : ModelSnapshot
+    [Migration("20230816073004_EditReview")]
+    partial class EditReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,8 +350,7 @@ namespace BusinessObject.Migrations
                         .HasColumnName("product_id");
 
                     b.Property<Guid?>("ProductReviewId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("product_review_id");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int")
@@ -359,7 +361,7 @@ namespace BusinessObject.Migrations
 
                     b.HasIndex("ProductReviewId")
                         .IsUnique()
-                        .HasFilter("[product_review_id] IS NOT NULL");
+                        .HasFilter("[ProductReviewId] IS NOT NULL");
 
                     b.HasIndex(new[] { "OrderId" }, "IX_OrderDetail_order_id");
 
@@ -839,9 +841,6 @@ namespace BusinessObject.Migrations
                     b.HasKey("UserId")
                         .HasName("PK__User__B9BE370F0AD19949");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("User", (string)null);
                 });
 
@@ -1168,8 +1167,7 @@ namespace BusinessObject.Migrations
 
             modelBuilder.Entity("BusinessObject.ProductReview", b =>
                 {
-                    b.Navigation("OrderDetail")
-                        .IsRequired();
+                    b.Navigation("OrderDetail");
 
                     b.Navigation("ProductReviewInteractions");
 

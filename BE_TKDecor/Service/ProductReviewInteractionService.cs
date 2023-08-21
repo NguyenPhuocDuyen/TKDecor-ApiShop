@@ -17,10 +17,11 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // user make interaction
         public async Task<ApiResponse> Interaction(Guid userId, ProductReviewInteractionDto interactionDto)
         {
             var productReview = await _context.ProductReviews.FindAsync(interactionDto.ProductReviewId);
-            if (productReview == null || productReview.IsDelete)
+            if (productReview is null || productReview.IsDelete)
             {
                 _response.Message = ErrorContent.ProductReviewNotFound;
                 return _response;
@@ -30,8 +31,7 @@ namespace BE_TKDecor.Service
                 x.UserId == userId && x.ProductReviewId == productReview.ProductReviewId);
 
             bool isAdd = false;
-
-            if (interactionReview == null)
+            if (interactionReview is null)
             {
                 isAdd = true;
                 interactionReview = new ProductReviewInteraction();
@@ -42,9 +42,9 @@ namespace BE_TKDecor.Service
                 interactionReview.UserId = userId;
                 interactionReview.ProductReviewId = productReview.ProductReviewId;
             }
-            interactionReview.UpdatedAt = DateTime.Now;
-            interactionReview.Interaction = interactionDto.Interaction;
 
+            interactionReview.Interaction = interactionDto.Interaction;
+            interactionReview.UpdatedAt = DateTime.Now;
             try
             {
                 if (isAdd)
@@ -58,10 +58,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }

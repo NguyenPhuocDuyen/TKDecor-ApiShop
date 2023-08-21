@@ -21,15 +21,17 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // create address
         public async Task<ApiResponse> Create(Guid userId, UserAddressCreateDto dto)
         {
-            UserAddress newAddress = _mapper.Map<UserAddress>(dto);
-            newAddress.UserId = userId;
             try
             {
+                UserAddress newAddress = _mapper.Map<UserAddress>(dto);
+                newAddress.UserId = userId;
                 _context.UserAddresses.Add(newAddress);
                 await _context.SaveChangesAsync();
 
+                // set as default address when there is a first address
                 var listAddress = await _context.UserAddresses
                     .Where(x => x.UserId == userId && !x.IsDelete)
                     .ToListAsync();
@@ -46,10 +48,15 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // delete address by id
         public async Task<ApiResponse> Delete(Guid userId, Guid id)
         {
-            var userAddress = await _context.UserAddresses.FindAsync(id);
-            if (userAddress == null || userAddress.UserId != userId || userAddress.IsDelete)
+            var userAddress = await _context.UserAddresses
+                .FirstOrDefaultAsync(x => x.UserAddressId == id
+                                    && x.UserId == userId
+                                    && !x.IsDelete);
+
+            if (userAddress is null)
             {
                 _response.Message = ErrorContent.AddressNotFound;
                 return _response;
@@ -66,7 +73,6 @@ namespace BE_TKDecor.Service
             try
             {
                 _context.UserAddresses.Update(userAddress);
-
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
@@ -74,12 +80,15 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get address default for user
         public async Task<ApiResponse> GetUserAddressDefault(Guid userId)
         {
             var address = await _context.UserAddresses
-                .FirstOrDefaultAsync(x => !x.IsDelete && x.IsDefault && x.UserId == userId);
+                .FirstOrDefaultAsync(x => !x.IsDelete
+                                    && x.IsDefault
+                                    && x.UserId == userId);
 
-            if (address == null)
+            if (address is null)
             {
                 _response.Message = ErrorContent.AddressNotFound;
                 return _response;
@@ -95,6 +104,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get list of address for user
         public async Task<ApiResponse> GetUserAddressesForUser(Guid userId)
         {
             var list = await _context.UserAddresses
@@ -112,41 +122,47 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // set address default
         public async Task<ApiResponse> SetDefault(Guid userId, UserAddressSetDefaultDto dto)
         {
-            var address = await _context.UserAddresses.FindAsync(dto.UserAddressId);
-            if (address == null || address.IsDelete || address.UserId != userId)
+            var address = await _context.UserAddresses
+                .FirstOrDefaultAsync(x => x.UserAddressId == dto.UserAddressId
+                                    && !x.IsDelete
+                                    && x.UserId == userId);
+
+            if (address is null)
             {
                 _response.Message = ErrorContent.AddressNotFound;
                 return _response;
             }
 
-            var listAddress = await _context.UserAddresses.Where(x => x.UserId == userId).ToListAsync();
+            // get address default
+            var addressDefaults = await _context.UserAddresses
+                .Where(x => x.UserId == userId && !x.IsDelete && x.IsDefault)
+                .ToListAsync();
 
             try
             {
-                foreach (var ad in listAddress)
-                {
-                    if (ad.UserAddressId == address.UserAddressId)
-                    {
-                        ad.IsDefault = true;
-                        ad.UpdatedAt = DateTime.Now;
-                    }
-                    else if (ad.IsDefault)
-                    {
-                        ad.IsDefault = false;
-                        ad.UpdatedAt = DateTime.Now;
-                    }
-                }
-                _context.UserAddresses.UpdateRange(listAddress);
-                await _context.SaveChangesAsync();
+                // set as default address and un - default in other addresses
+                address.IsDefault = true;
+                address.UpdatedAt = DateTime.Now;
+                _context.UserAddresses.Update(address);
 
+                foreach (var ad in addressDefaults)
+                {
+                    ad.IsDefault = false;
+                    ad.UpdatedAt = DateTime.Now;
+                    _context.UserAddresses.Update(ad);
+                }
+
+                await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // update address
         public async Task<ApiResponse> Update(Guid userId, Guid id, UserAddressUpdateDto dto)
         {
             if (id != dto.UserAddressId)
@@ -155,8 +171,12 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var userAddressDb = await _context.UserAddresses.FindAsync(id);
-            if (userAddressDb == null || userAddressDb.IsDelete || userAddressDb.UserId != userId)
+            var userAddressDb = await _context.UserAddresses
+                .FirstOrDefaultAsync(x => x.UserAddressId == id
+                                    && !x.IsDelete
+                                    && x.UserId == userId);
+
+            if (userAddressDb is null)
             {
                 _response.Message = ErrorContent.AddressNotFound;
                 return _response;

@@ -27,7 +27,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetAll()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _order.GetAllForUser(user.UserId);
@@ -43,7 +43,7 @@ namespace BE_TKDecor.Controllers
         //public async Task<IActionResult> FindById(Guid id)
         //{
         //    var user = await GetUser();
-        //    if (user == null || user.IsDelete)
+        //    if (user is null)
         //        return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
         //    var res = await _order.GetByIdAndUser(id, user.UserId);
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> MakeOrder(OrderMakeDto orderDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _order.MakeOrder(user, orderDto);
@@ -70,12 +70,12 @@ namespace BE_TKDecor.Controllers
             return BadRequest(res);
         }
 
-        // POST: api/Orders/UpdateStatusOrder
+        // POST: api/Orders/UpdateStatusOrder/1
         [HttpPut("UpdateStatusOrder/{id}")]
         public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _order.UpdateStatusOrderForCus(user, id, orderDto);

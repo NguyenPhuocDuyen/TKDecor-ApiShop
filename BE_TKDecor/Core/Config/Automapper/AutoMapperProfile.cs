@@ -37,9 +37,9 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             CreateMap<Product, ProductGetDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
-                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()))
-                .ForMember(dest => dest.AverageRate, opt => opt.MapFrom(src => src.ProductReviews.Any() ? src.ProductReviews.Average(review => review.Rate) : 0))
-                .ForMember(dest => dest.CountRate, opt => opt.MapFrom(src => src.ProductReviews.Count));
+                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(opt => opt.ProductImages.Select(x => x.ImageUrl).ToList()));
+                //.ForMember(dest => dest.AverageRate, opt => opt.MapFrom(src => src.ProductReviews.Any() ? src.ProductReviews.Average(review => review.Rate) : 0))
+                //.ForMember(dest => dest.CountRate, opt => opt.MapFrom(src => src.ProductReviews.Count));
 
             // article 
             CreateMap<ArticleCreateDto, Article>();
@@ -77,8 +77,8 @@ namespace BE_TKDecor.Core.Config.Automapper
 
             // product review
             CreateMap<ProductReview,  ProductReviewGetDto>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
-                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.OrderDetail.Order.User.FullName))
+                .ForMember(dest => dest.UserAvatarUrl, opt => opt.MapFrom(src => src.OrderDetail.Order.User.AvatarUrl))
                 .ForMember(dest => dest.TotalLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == SD.InteractionLike).Count()))
                 .ForMember(dest => dest.TotalDisLike, opt => opt.MapFrom(src => src.ProductReviewInteractions.Where(x => x.Interaction == SD.InteractionDislike).Count()));
 

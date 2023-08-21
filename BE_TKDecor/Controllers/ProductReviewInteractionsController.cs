@@ -28,7 +28,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> Interaction(ProductReviewInteractionDto interactionDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _interaction.Interaction(user.UserId, interactionDto);

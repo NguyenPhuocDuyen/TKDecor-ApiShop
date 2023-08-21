@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BusinessObject;
+﻿namespace BusinessObject;
 
 public partial class OrderDetail
 {
@@ -11,6 +8,8 @@ public partial class OrderDetail
 
     public Guid ProductId { get; set; }
 
+    public Guid? ProductReviewId { get; set; }
+
     public int Quantity { get; set; }
 
     public decimal PaymentPrice { get; set; }
@@ -18,4 +17,6 @@ public partial class OrderDetail
     public virtual Order Order { get; set; } = null!;
 
     public virtual Product Product { get; set; } = null!;
+
+    public virtual ProductReview? ProductReview { get; set; }
 }

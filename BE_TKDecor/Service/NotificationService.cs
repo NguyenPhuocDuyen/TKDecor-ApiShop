@@ -20,6 +20,7 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // get notification
         public async Task<ApiResponse> GetNotificationsForUser(Guid userId)
         {
             var notifications = await _context.Notifications
@@ -37,9 +38,12 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // set read notification
         public async Task<ApiResponse> ReadAll(Guid userId)
         {
-            var notifications = await _context.Notifications.Where(x => x.UserId == userId && !x.IsRead).ToListAsync();
+            var notifications = await _context.Notifications
+                .Where(x => x.UserId == userId && !x.IsRead)
+                .ToListAsync();
 
             foreach (var item in notifications)
             {

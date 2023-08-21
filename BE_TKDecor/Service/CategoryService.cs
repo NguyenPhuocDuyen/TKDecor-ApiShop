@@ -20,11 +20,15 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // create category
         public async Task<ApiResponse> Create(CategoryCreateDto dto)
         {
-            var categoryDb = await _context.Categories.FirstOrDefaultAsync(x => x.Name == dto.Name);
+            dto.Name = dto.Name.Trim();
+            var categoryDb = await _context.Categories
+                .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == dto.Name.ToLower().Trim());
+
             bool isAdd = true;
-            if (categoryDb == null)
+            if (categoryDb is null)
             {
                 categoryDb = _mapper.Map<Category>(dto);
             }
@@ -61,16 +65,18 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // delete category
         public async Task<ApiResponse> Delete(Guid id)
         {
-            var categoryDb = await _context.Categories.FindAsync(id);
-            if (categoryDb == null || categoryDb.IsDelete)
+            var categoryDb = await _context.Categories
+                .Include(x => x.Products.Where(x => !x.IsDelete))
+                .FirstOrDefaultAsync(x => x.CategoryId == id && !x.IsDelete);
+
+            if (categoryDb is null)
             {
                 _response.Message = ErrorContent.CategoryNotFound;
                 return _response;
             }
-
-            categoryDb.Products = categoryDb.Products.Where(x => !x.IsDelete).ToList();
 
             if (categoryDb.Products.Count > 0)
             {
@@ -80,7 +86,6 @@ namespace BE_TKDecor.Service
 
             categoryDb.IsDelete = true;
             categoryDb.UpdatedAt = DateTime.Now;
-
             try
             {
                 _context.Categories.Update(categoryDb);
@@ -91,6 +96,8 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+
+        // get all category
         public async Task<ApiResponse> GetAll()
         {
             var list = await _context.Categories.ToListAsync();
@@ -108,6 +115,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // update category
         public async Task<ApiResponse> Update(Guid id, CategoryUpdateDto categoryDto)
         {
             if (id != categoryDto.CategoryId)
@@ -117,14 +125,18 @@ namespace BE_TKDecor.Service
             }
 
             var categoryDb = await _context.Categories.FindAsync(categoryDto.CategoryId);
-            if (categoryDb == null || categoryDb.IsDelete)
+            if (categoryDb is null || categoryDb.IsDelete)
             {
                 _response.Message = ErrorContent.CategoryNotFound;
                 return _response;
             }
 
-            var categoryName = await _context.Categories.FirstOrDefaultAsync(x => x.Name == categoryDto.Name);
-            if (categoryName != null && categoryName.CategoryId != id)
+            categoryDto.Name = categoryDb.Name.Trim();
+            // check name already exists
+            var categoryName = await _context.Categories
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == categoryDto.Name.ToLower());
+
+            if (categoryName is not null && categoryName.CategoryId != id)
             {
                 _response.Message = "Tên danh mục đã tồn tại!";
                 return _response;

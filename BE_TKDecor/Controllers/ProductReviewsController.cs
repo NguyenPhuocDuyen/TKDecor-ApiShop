@@ -27,7 +27,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> ReviewProduct(ProductReviewCreateDto productReviewDto)
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _productReview.ReviewProduct(user.UserId, productReviewDto);

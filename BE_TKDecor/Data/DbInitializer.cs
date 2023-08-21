@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using BusinessObject;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Utility;
 
 namespace BE_TKDecor.Data
@@ -27,16 +28,73 @@ namespace BE_TKDecor.Data
             }
             catch (Exception) { }
 
-            //AddModel3D();
-            AddUser();
-            //await AddArticles();
-            AddCategories();
-            AddCoupons();
-            await AddNotifications();
-            await AddProductReports();
-            await AddOrders();
-            await AddProductReview();
-            await AddReportProductReview();
+            //var admin = _db.Users.Where(x => x.Email == "admin2@gmail.com");
+            //_db.RemoveRange(admin);
+            //_db.SaveChanges();
+
+            // add admin
+            //User admin = new()
+            //{
+            //    Email = "admin2@gmail.com",
+            //    Password = Password.HashPassword("Default@123"),
+            //    FullName = "admin 2",
+            //    Role = SD.RoleAdmin,
+            //    BirthDay = DateTime.Now,
+            //    Gender = SD.GenderMale,
+            //    Phone = GenerateRandomPhoneNumber(),
+            //    EmailConfirmed = true,
+            //    AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
+            //};
+            //_db.Users.Add(admin);
+            //_db.SaveChanges();
+
+            ////DeleteData();
+
+            ////AddModel3D();
+            //AddUser();
+            ////await AddArticles();
+            //AddCategories();
+            //AddCoupons();
+            //await AddNotifications();
+            //await AddProductReports();
+            //await AddOrders();
+            //await AddProductReview();
+            //await AddReportProductReview();
+        }
+
+        private void DeleteData()
+        {
+            var productReports = _db.ProductReports.ToList();
+            _db.ProductReports.RemoveRange(productReports);
+            _db.SaveChanges();
+
+            var reportProductReview = _db.ReportProductReviews.ToList();
+            _db.ReportProductReviews.RemoveRange(reportProductReview);
+            _db.SaveChanges();
+
+            var interaction = _db.ProductReviewInteractions.ToList();
+            _db.ProductReviewInteractions.RemoveRange(interaction);
+            _db.SaveChanges();
+
+            var ods = _db.OrderDetails.Include(x => x.ProductReview).ToList();
+            foreach (var od in ods)
+            {
+                od.ProductReview = null;
+                od.ProductReviewId = null;
+                _db.OrderDetails.Update(od);
+            }
+            _db.SaveChanges();
+
+            var reviews = _db.ProductReviews.ToList();
+            _db.ProductReviews.RemoveRange(reviews);
+            _db.SaveChanges();
+
+            _db.OrderDetails.RemoveRange(ods);
+            _db.SaveChanges();
+
+            var orders = _db.Orders.ToList();
+            _db.Orders.RemoveRange(orders);
+            _db.SaveChanges();
         }
 
         //private void AddModel3D()
@@ -67,7 +125,7 @@ namespace BE_TKDecor.Data
                 .FirstOrDefaultAsync(x => x.Role == SD.RoleCustomer);
 
             var reviews = await _db.ProductReviews
-                .Include(x => x.Product)
+                //.Include(x => x.Product)
                 .ToListAsync();
 
             List<string> reportStatusValues = new()
@@ -107,21 +165,15 @@ namespace BE_TKDecor.Data
                     .ThenInclude(x => x.User)
                 .Include(x => x.Product);
 
-            //var productReviewSetDefaults = new Faker<ProductReview>();
-            //productReviewSetDefaults.RuleFor(x => x.Description, f => f.Lorem.Paragraph());
-
             foreach (var od in orderDetail)
             {
                 ProductReview productReview = new()
                 {
-                    UserId = od.Order.UserId,
-                    User = od.Order.User,
-                    ProductId = od.Product.ProductId,
-                    Product = od.Product,
                     Rate = random.Next(3, 6),
                     Description = "Sản phẩm đẹp, chất lượng tốt"
                 };
-                _db.ProductReviews.Add(productReview);
+                od.ProductReview = productReview;
+                _db.OrderDetails.Update(od);
             }
             _db.SaveChanges();
         }

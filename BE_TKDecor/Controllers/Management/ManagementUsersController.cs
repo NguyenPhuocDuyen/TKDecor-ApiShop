@@ -25,7 +25,7 @@ namespace BE_TKDecor.Controllers.Management
         public async Task<IActionResult> GetAllUser()
         {
             var user = await GetUser();
-            if (user == null || user.IsDelete)
+            if (user is null)
                 return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
 
             var res = await _user.GetAllUser(user.UserId);
@@ -36,7 +36,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // PUT: api/ManagementUsers/SetRole
+        // PUT: api/ManagementUsers/SetRole/1
         [HttpPut("SetRole/{userId}")]
         public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto userDto)
         {
@@ -48,6 +48,7 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
+        // Delete: api/ManagementUsers/Delete/1
         [HttpDelete("Delete/{userId}")]
         public async Task<IActionResult> Delete(Guid userId)
         {

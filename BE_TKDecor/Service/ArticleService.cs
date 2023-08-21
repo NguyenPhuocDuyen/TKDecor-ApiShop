@@ -21,13 +21,15 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
+        // create article
         public async Task<ApiResponse> Create(ArticleCreateDto dto, Guid userId)
         {
+            dto.Title = dto.Title.Trim();
+            // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Title);
             var articleDb = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == newSlug);
-
-            //bool isAdd = true;
-            if (articleDb == null)
+            // auto - regenerate slug
+            if (articleDb is not null)
                 newSlug += new Random().Next(1000, 9999);
 
             try
@@ -43,14 +45,14 @@ namespace BE_TKDecor.Service
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }
-
             return _response;
         }
 
+        // delete article by id
         public async Task<ApiResponse> Delete(Guid id)
         {
             var article = await _context.Articles.FindAsync(id);
-            if (article == null || article.IsDelete)
+            if (article is null || article.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
                 return _response;
@@ -70,31 +72,32 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get list of articles for admin
         public async Task<ApiResponse> GetAll()
         {
-            var list = await _context.Articles.Include(x => x.User).ToListAsync();
-            list = list
+            var list = await _context.Articles
+                .Include(x => x.User)
                 .Where(x => !x.IsDelete)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToList();
+                .ToListAsync();
 
             try
             {
                 var result = _mapper.Map<List<ArticleGetDto>>(list);
-
                 _response.Data = result;
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }
-
             return _response;
         }
 
+        // get list of articles for customer have filter
         public async Task<ApiResponse> GetAll(string sort = "default", int pageIndex = 1, int pageSize = 20)
         {
-            var list = await _context.Articles.Include(x => x.User).ToListAsync();
-            list = list.Where(x => !x.IsDelete && x.IsPublish)
-                .ToList();
+            var list = await _context.Articles
+                .Include(x => x.User)
+                .Where(x => !x.IsDelete && x.IsPublish)
+                .ToListAsync();
 
             try
             {
@@ -105,7 +108,7 @@ namespace BE_TKDecor.Service
                     "date-old" => listArticleGet.OrderBy(x => x.CreatedAt).ToList(),
                     _ => listArticleGet.OrderByDescending(x => x.CreatedAt).ToList(),
                 };
-
+                // paging
                 PaginatedList<ArticleGetDto> pagingArticle = PaginatedList<ArticleGetDto>.CreateAsync(
                     listArticleGet, pageIndex, pageSize);
 
@@ -123,10 +126,14 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // get article by id for admin
         public async Task<ApiResponse> GetById(Guid id)
         {
-            var article = await _context.Articles.Include(x => x.User).FirstOrDefaultAsync(x => x.ArticleId == id);
-            if (article == null || article.IsDelete)
+            var article = await _context.Articles
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.ArticleId == id && !x.IsDelete);
+
+            if (article is null)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
                 return _response;
@@ -134,19 +141,22 @@ namespace BE_TKDecor.Service
 
             try
             {
-            var result = _mapper.Map<ArticleGetDto>(article);
-            _response.Success = true;
-            _response.Data = result;
+                var result = _mapper.Map<ArticleGetDto>(article);
+                _response.Success = true;
+                _response.Data = result;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // get article by slug for customer
         public async Task<ApiResponse> GetBySlug(string slug)
         {
-            var article = await _context.Articles.Include(x => x.User).FirstOrDefaultAsync(x => x.Slug == slug);
+            var article = await _context.Articles
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
 
-            if (article == null || article.IsDelete || !article.IsPublish)
+            if (article is null || !article.IsPublish)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
                 return _response;
@@ -154,18 +164,20 @@ namespace BE_TKDecor.Service
 
             try
             {
-            var result = _mapper.Map<ArticleGetDto>(article);
-            _response.Success = true;
-            _response.Data = result;
+                var result = _mapper.Map<ArticleGetDto>(article);
+                _response.Success = true;
+                _response.Data = result;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
 
+        // set publish for article
         public async Task<ApiResponse> SetPublish(ArticleSetPublishDto articleDto)
         {
             var article = await _context.Articles.FindAsync(articleDto.ArticleId);
-            if (article == null || article.IsDelete)
+
+            if (article is null || article.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
                 return _response;
@@ -183,6 +195,7 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
+        // update article
         public async Task<ApiResponse> Update(Guid id, ArticleUpdateDto dto)
         {
             if (id != dto.ArticleId)
@@ -192,24 +205,26 @@ namespace BE_TKDecor.Service
             }
 
             var articleDb = await _context.Articles.FindAsync(id);
-            if (articleDb == null || articleDb.IsDelete)
+            if (articleDb is null || articleDb.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
                 return _response;
             }
 
+            dto.Title = dto.Title.Trim();
+            // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Title);
             var articleSlug = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == newSlug);
-            if (articleSlug != null && articleSlug.ArticleId != id)
-            {
-                _response.Message = "Vui lòng đổi tên do dữ liệu trùng lặp!";
-                return _response;
-            }
+
+            // auto - regenerate slug
+            if (articleSlug is not null && articleSlug.ArticleId != id)
+                newSlug += new Random().Next(1000, 9999);
 
             // update info article
             articleDb.Title = dto.Title;
             articleDb.Content = dto.Content;
             articleDb.Thumbnail = dto.Thumbnail;
+            articleDb.Slug = newSlug;
             articleDb.UpdatedAt = DateTime.Now;
             try
             {
@@ -217,10 +232,7 @@ namespace BE_TKDecor.Service
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
-            catch
-            {
-                _response.Message = ErrorContent.Data;
-            }
+            catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
     }
