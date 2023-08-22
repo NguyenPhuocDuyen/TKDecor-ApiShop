@@ -253,6 +253,7 @@ namespace BE_TKDecor.Service
                     if (cart is not null)
                     {
                         // update quantity product in store
+                        cart.Product.Quantity -= cart.Quantity;
                         cart.IsDelete = true;
                         _context.Carts.Update(cart);
                     }
