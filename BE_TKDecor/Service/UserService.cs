@@ -67,6 +67,7 @@ namespace BE_TKDecor.Service
                 // get random code
                 string code = RandomCode.GenerateRandomCode();
                 user.ResetPasswordCode = code;
+                user.ResetPasswordSentAt = DateTime.Now;
             }
             else
             {
@@ -118,39 +119,39 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
-        // delete user by userId
-        public async Task<ApiResponse> Delete(Guid userId)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.UserId == userId
-                                    && !x.IsDelete);
-            if (user is null)
-            {
-                _response.Message = ErrorContent.UserNotFound;
-                return _response;
-            }
+        //// delete user by userId
+        //public async Task<ApiResponse> Delete(Guid userId)
+        //{
+        //    var user = await _context.Users
+        //        .FirstOrDefaultAsync(x => x.UserId == userId
+        //                            && !x.IsDelete);
+        //    if (user is null)
+        //    {
+        //        _response.Message = ErrorContent.UserNotFound;
+        //        return _response;
+        //    }
 
-            // check can't not delete last admin
-            var admins = await _context.Users
-                .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
-                .ToListAsync();
-            if (admins.Count == 1 && admins[0].UserId == user.UserId)
-            {
-                _response.Message = "Không thể xoá admin cuối cùng.";
-                return _response;
-            }
+        //    // check can't not delete last admin
+        //    var admins = await _context.Users
+        //        .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
+        //        .ToListAsync();
+        //    if (admins.Count == 1 && admins[0].UserId == user.UserId)
+        //    {
+        //        _response.Message = "Không thể xoá admin cuối cùng.";
+        //        return _response;
+        //    }
 
-            user.IsDelete = true;
-            user.UpdatedAt = DateTime.Now;
-            try
-            {
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                _response.Success = true;
-            }
-            catch { _response.Message = ErrorContent.Data; }
-            return _response;
-        }
+        //    user.IsDelete = true;
+        //    user.UpdatedAt = DateTime.Now;
+        //    try
+        //    {
+        //        _context.Users.Update(user);
+        //        await _context.SaveChangesAsync();
+        //        _response.Success = true;
+        //    }
+        //    catch { _response.Message = ErrorContent.Data; }
+        //    return _response;
+        //}
 
         // get all user except user have userId current
         public async Task<ApiResponse> GetAllUser(Guid userId)
@@ -240,7 +241,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            // check can't not delete last admin
+            // check can't not set role customer for last admin
             var admins = await _context.Users
                 .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
                 .ToListAsync();
@@ -254,17 +255,13 @@ namespace BE_TKDecor.Service
             user.UpdatedAt = DateTime.Now;
             try
             {
-                // remove refreshTokenOfUser
-                //var refreshTokenOfUser = await _context.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
-                //_context.RefreshTokens.RemoveRange(refreshTokenOfUser);
-
                 _context.Users.Update(user);
 
                 // add notification for user
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}. Cần đăng nhập lại."
+                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}. Cần đăng nhập lại để có thể sử dụng chức năng vai trò mới."
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR

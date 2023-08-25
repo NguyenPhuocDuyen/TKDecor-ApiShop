@@ -48,17 +48,17 @@ namespace BE_TKDecor.Controllers.Management
             return BadRequest(res);
         }
 
-        // Delete: api/ManagementUsers/Delete/1
-        [HttpDelete("Delete/{userId}")]
-        public async Task<IActionResult> Delete(Guid userId)
-        {
-            var res = await _user.Delete(userId);
-            if (res.Success)
-            {
-                return Ok(res);
-            }
-            return BadRequest(res);
-        }
+        //// Delete: api/ManagementUsers/Delete/1
+        //[HttpDelete("Delete/{userId}")]
+        //public async Task<IActionResult> Delete(Guid userId)
+        //{
+        //    var res = await _user.Delete(userId);
+        //    if (res.Success)
+        //    {
+        //        return Ok(res);
+        //    }
+        //    return BadRequest(res);
+        //}
 
         private async Task<User?> GetUser()
         {

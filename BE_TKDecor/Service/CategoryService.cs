@@ -25,7 +25,7 @@ namespace BE_TKDecor.Service
         {
             dto.Name = dto.Name.Trim();
             var categoryDb = await _context.Categories
-                .FirstOrDefaultAsync(x => x.Name.ToLower().Trim() == dto.Name.ToLower().Trim());
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == dto.Name.ToLower());
 
             bool isAdd = true;
             if (categoryDb is null)
@@ -95,7 +95,6 @@ namespace BE_TKDecor.Service
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
-
 
         // get all category
         public async Task<ApiResponse> GetAll()

@@ -28,7 +28,7 @@ namespace BE_TKDecor.Service
             {
                 dto.Code = dto.Code.ToUpper().Trim();
 
-                var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code == dto.Code);
+                var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code.ToUpper() == dto.Code);
 
                 bool isAdd = true;
                 if (couponCode is null)
@@ -50,11 +50,15 @@ namespace BE_TKDecor.Service
                     couponCode.Value = dto.Value;
                     couponCode.MaxValue = dto.MaxValue;
                     couponCode.RemainingUsageCount = dto.RemainingUsageCount;
-                    couponCode.StartDate = dto.StartDate;
-                    couponCode.EndDate = dto.EndDate;
+                    //couponCode.StartDate = dto.StartDate;
+                    //couponCode.EndDate = dto.EndDate;
                     couponCode.IsActive = dto.IsActive;
                     couponCode.UpdatedAt = DateTime.Now;
                 }
+                // set StartDate at 0:00 of dto.StartDate
+                couponCode.StartDate = new DateTime(dto.StartDate.Year, dto.StartDate.Month, dto.StartDate.Day, 0, 0, 0);
+                // set EndDate at 11:59 p.m. dto.EndDate
+                couponCode.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 11, 59, 0);
 
                 if (couponCode.CouponType == SD.CouponByPercent && couponCode.Value > 100)
                 {
@@ -68,9 +72,9 @@ namespace BE_TKDecor.Service
                     return _response;
                 }
 
-                if (couponCode.StartDate > couponCode.EndDate)
+                if (couponCode.StartDate >= couponCode.EndDate)
                 {
-                    _response.Message = "Ngày bắt đầu và kết thúc không hợp lệ";
+                    _response.Message = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc";
                     return _response;
                 }
 
@@ -198,8 +202,13 @@ namespace BE_TKDecor.Service
             couponDb.Value = dto.Value;
             couponDb.MaxValue = dto.MaxValue;
             couponDb.RemainingUsageCount = dto.RemainingUsageCount;
-            couponDb.StartDate = dto.StartDate;
-            couponDb.EndDate = dto.EndDate;
+
+            // set StartDate at 0:00 of dto.StartDate
+            couponDb.StartDate = new DateTime(dto.StartDate.Year, dto.StartDate.Month, dto.StartDate.Day, 0, 0, 0);
+            // set EndDate at 11:59 p.m. dto.EndDate
+            couponDb.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 11, 59, 0);
+            //couponDb.StartDate = dto.StartDate;
+            //couponDb.EndDate = dto.EndDate;
             couponDb.IsActive = dto.IsActive;
             couponDb.UpdatedAt = DateTime.Now;
             try

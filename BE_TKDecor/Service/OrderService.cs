@@ -133,10 +133,10 @@ namespace BE_TKDecor.Service
         {
             // get coupon
             Coupon? coupon = null;
-            if (!string.IsNullOrEmpty(dto.CodeCoupon))
+            if (dto.CodeCoupon is not null)
             {
                 coupon = await _context.Coupons
-                    .FirstOrDefaultAsync(x => x.Code == dto.CodeCoupon && !x.IsDelete);
+                    .FirstOrDefaultAsync(x => x.Code == dto.CodeCoupon.ToUpper().Trim() && !x.IsDelete);
                 if (coupon is null)
                 {
                     _response.Message = ErrorContent.CouponNotFound;
@@ -222,7 +222,9 @@ namespace BE_TKDecor.Service
                 if (coupon.CouponType == SD.CouponByPercent)
                 {
                     // By percent: 100 = 100 - 100 * 0.1 (90)
-                    newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value / 100;
+                    var valueReduce = newOrder.TotalPrice * coupon.Value / 100;
+                    newOrder.TotalPrice -= valueReduce < coupon.MaxValue ? valueReduce : coupon.MaxValue;
+                    //newOrder.TotalPrice -= newOrder.TotalPrice * coupon.Value / 100;
                 }
                 else
                 {

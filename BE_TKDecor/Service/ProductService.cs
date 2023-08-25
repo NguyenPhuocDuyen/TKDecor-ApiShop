@@ -83,6 +83,7 @@ namespace BE_TKDecor.Service
             // find product
             var product = await _context.Products
                     .Include(x => x.Carts.Where(x => !x.IsDelete))
+                    .Include(x => x.ProductReports.Where(x => !x.IsDelete))
                     .FirstOrDefaultAsync(x => x.ProductId == id && !x.IsDelete);
 
             if (product is null)
@@ -91,8 +92,10 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            product.Product3DModelId = null;
             product.IsDelete = true;
             product.UpdatedAt = DateTime.Now;
+
             // delete all cart items related to the product
             foreach (var item in product.Carts)
             {
@@ -100,8 +103,34 @@ namespace BE_TKDecor.Service
                 item.UpdatedAt = DateTime.Now;
             }
 
+            // delete all report related to the product
+            foreach (var report in product.ProductReports)
+            {
+                report.IsDelete = true;
+                report.UpdatedAt = DateTime.Now;
+            }
+
+            // delete all review and report review related to the product
+            var productReview = await _context.ProductReviews
+                .Include(x => x.OrderDetail)
+                .Include(x => x.ReportProductReviews.Where(x => !x.IsDelete))
+                .Where(x => x.OrderDetail.ProductId == id)
+                .ToListAsync();
+
+            foreach (var review in productReview)
+            {
+                review.IsDelete = true;
+                review.UpdatedAt = DateTime.Now;
+                foreach (var reportReview in review.ReportProductReviews)
+                {
+                    reportReview.IsDelete = true;
+                    reportReview.UpdatedAt = DateTime.Now;
+                }
+            }
+
             try
             {
+                _context.ProductReviews.UpdateRange(productReview);
                 _context.Products.Update(product);
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -113,7 +142,7 @@ namespace BE_TKDecor.Service
         // get product by slug
         public async Task<ApiResponse> GetBySlug(Guid? userId, string slug)
         {
-            var product = await GetProductBySlug(slug.Trim());
+            var product = await GetProductBySlug(slug);
 
             if (product is null)
             {
@@ -125,7 +154,7 @@ namespace BE_TKDecor.Service
             {
                 var result = _mapper.Map<ProductGetDto>(product);
                 result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
-                
+
                 // set total review and total rating
                 int totalReviews = 0;
                 int totalRating = 0;
@@ -232,9 +261,11 @@ namespace BE_TKDecor.Service
             // filter search
             if (!string.IsNullOrEmpty(search))
             {
-                list = list.Where(x => x.Name.ToLower().Trim().Contains(search.ToLower().Trim())
-                || x.Description.ToLower().Trim().Contains(search.ToLower().Trim())
-                || x.Category.Name.ToLower().Trim().Contains(search.ToLower().Trim())
+                search = Slug.GenerateSlug(search);
+
+                list = list.Where(x => Slug.GenerateSlug(x.Name).Contains(search)
+                || Slug.GenerateSlug(x.Description).Contains(search)
+                || Slug.GenerateSlug(x.Category.Name).Contains(search)
                 ).ToList();
             }
 

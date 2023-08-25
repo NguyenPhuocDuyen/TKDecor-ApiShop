@@ -42,7 +42,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> ReadAll(Guid userId)
         {
             var notifications = await _context.Notifications
-                .Where(x => x.UserId == userId && !x.IsRead)
+                .Where(x => x.UserId == userId && !x.IsRead && !x.IsDelete)
                 .ToListAsync();
 
             foreach (var item in notifications)

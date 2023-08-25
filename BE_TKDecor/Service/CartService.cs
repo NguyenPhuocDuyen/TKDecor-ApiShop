@@ -40,9 +40,6 @@ namespace BE_TKDecor.Service
             var cartDb = await _context.Carts
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == product.ProductId);
 
-            // Variable check number of valid products
-            bool quanlityIsValid = true;
-
             // Variable check add or update product
             bool isAdd = false;
 
@@ -68,6 +65,9 @@ namespace BE_TKDecor.Service
                     cartDb.Quantity += dto.Quantity;
                 }
             }
+
+            // Variable check number of valid products
+            bool quanlityIsValid = true;
 
             // Exceeded the number of existing products added
             if (cartDb.Quantity > product.Quantity)

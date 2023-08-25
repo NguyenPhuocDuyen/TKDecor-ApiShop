@@ -68,7 +68,7 @@ namespace BE_TKDecor.Service
 
             try
             {
-                if (report is null)
+                if (report is null || report.ReportStatus != SD.ReportPending)
                 {
                     ReportProductReview newReport = new()
                     {

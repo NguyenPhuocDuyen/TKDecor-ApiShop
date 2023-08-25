@@ -62,7 +62,7 @@ namespace BE_TKDecor.Service
             bool isAdd = false;
             // create a new report of that user for that product
             // if there is no report that product is in the peding state
-            if (report is null)
+            if (report is null || report.ReportStatus != SD.ReportPending)
             {
                 isAdd = true;
                 report = new ProductReport()

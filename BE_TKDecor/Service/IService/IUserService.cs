@@ -9,7 +9,7 @@ namespace BE_TKDecor.Service.IService
         Task<User?> GetById(Guid id);
         Task<ApiResponse> GetAllUser(Guid userId);
         Task<ApiResponse> SetRole(Guid userId, UserSetRoleDto dto);
-        Task<ApiResponse> Delete(Guid userId);
+        //Task<ApiResponse> Delete(Guid userId);
         Task<ApiResponse> UpdateUserInfo(User user);
         Task<ApiResponse> RequestChangePassword(User user);
         Task<ApiResponse> ChangePassword(User user, UserChangePasswordDto dto);

@@ -96,18 +96,6 @@ namespace BE_TKDecor.Service
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
-            //var product = await _context.Products.FindAsync(id);
-            //if (product is not null && product.Product3DModelId is not null)
-            //{
-            //    models = models.Where(x => x.Product is null
-            //                || x.Product3DModelId == product.Product3DModelId)
-            //                .ToList();
-            //}
-            //else
-            //{
-            //    models = models.Where(x => x.Product is null).ToList();
-            //}
-
             try
             {
                 var result = _mapper.Map<List<Product3DModelGetDto>>(models);

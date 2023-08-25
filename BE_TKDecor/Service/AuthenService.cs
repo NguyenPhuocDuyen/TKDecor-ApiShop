@@ -46,8 +46,6 @@ namespace BE_TKDecor.Service
         {
             //get user by email
             dto.Email = dto.Email.ToLower().Trim();
-            //var u = await _user.FindByEmail(dto.Email);
-
             var user = _context.Users.FirstOrDefault(x => x.Email == dto.Email);
 
             //check user null
@@ -172,7 +170,6 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> ConfirmMail(UserConfirmMailDto dto)
         {
             dto.Email = dto.Email.ToLower().Trim();
-
             // get user by email confirm token 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
 
@@ -189,7 +186,7 @@ namespace BE_TKDecor.Service
             }
 
             bool codeOutOfDate = false;
-            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-1))
             {
                 codeOutOfDate = true;
                 string code = RandomCode.GenerateRandomCode();
@@ -211,6 +208,7 @@ namespace BE_TKDecor.Service
                 //set email confirm
                 user.EmailConfirmed = true;
             }
+
             user.UpdatedAt = DateTime.Now;
             try
             {
@@ -239,7 +237,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> ResendConfirmationEmail(UserEmailDto dto)
         {
-            // get user by email 
+            // get user by email
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email.ToLower().Trim());
             if (user is null)
             {
@@ -254,7 +252,7 @@ namespace BE_TKDecor.Service
             }
 
             //check code expires to create new code: 5 minutes
-            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-1))
                 user.EmailConfirmationCode = RandomCode.GenerateRandomCode();
 
             user.EmailConfirmationSentAt = DateTime.Now;
@@ -520,6 +518,7 @@ namespace BE_TKDecor.Service
                 Expires = DateTime.Now.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
+
             //create token
             var token = tokenHandler.CreateToken(tokenDescriptor);
             //convert token to string
