@@ -10,7 +10,7 @@ namespace BE_TKDecor.Core.Dtos.Article
         [MaxLength(100)]
         public string Title { get; set; } = null!;
 
-        [MinLength(50)]
+        //[MinLength(50)]
         public string Content { get; set; } = null!;
 
         public string Thumbnail { get; set; } = null!;

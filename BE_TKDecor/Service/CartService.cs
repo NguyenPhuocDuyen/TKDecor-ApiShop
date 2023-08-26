@@ -90,7 +90,7 @@ namespace BE_TKDecor.Service
 
                 if (!quanlityIsValid)
                 {
-                    _response.Message = "Vượt quá số lượng trong kho nhưng vẫn thêm tối đa!";
+                    _response.Message = "Vượt quá số lượng trong kho. Đã thêm số lượng tối đa vào giỏ hàng cho bạn!";
                     return _response;
                 }
                 _response.Success = true;
@@ -199,7 +199,7 @@ namespace BE_TKDecor.Service
 
                 if (!quanlityIsValid)
                 {
-                    _response.Message = "Vượt quá số lượng trong kho nhưng vẫn cộng tối đa!";
+                    _response.Message = "Vượt quá số lượng trong kho. Đã thêm số lượng tối đa vào giỏ hàng cho bạn!";
                     return _response;
                 }
                 _response.Success = true;

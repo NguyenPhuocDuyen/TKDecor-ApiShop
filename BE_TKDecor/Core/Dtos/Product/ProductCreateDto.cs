@@ -13,7 +13,7 @@ namespace BE_TKDecor.Core.Dtos.Product
         [MaxLength(100)]
         public string Name { get; set; } = null!;
 
-        [MinLength(50)]
+        //[MinLength(50)]
         public string Description { get; set; } = null!;
 
         [Range(1, 1000000)]

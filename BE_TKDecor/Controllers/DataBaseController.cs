@@ -3,6 +3,7 @@ using BE_TKDecor.Core.Response;
 using BusinessObject;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BE_TKDecor.Controllers
 {
@@ -17,6 +18,50 @@ namespace BE_TKDecor.Controllers
         {
             _context = context;
             _apiResponse = new ApiResponse();
+        }
+
+        [HttpGet("ResetModelDelete")]
+        public async Task<IActionResult> ResetModelDelete()
+        {
+            var models = await _context.Product3Dmodels.Where(x => x.IsDelete).ToListAsync();
+            foreach (var item in models)
+            {
+                item.IsDelete = false;
+            }
+            try
+            {
+                _context.Product3Dmodels.UpdateRange(models);
+                await _context.SaveChangesAsync();
+                _apiResponse.Success = true;
+                return Ok(_apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _apiResponse.Message = ex.Message;
+                return BadRequest(_apiResponse);
+            }
+        }
+
+        [HttpGet("ResetProductDelete")]
+        public async Task<IActionResult> ResetProductDelete()
+        {
+            var products = await _context.Products.Where(x => x.IsDelete).ToListAsync();
+            foreach (var item in products)
+            {
+                item.IsDelete = false;
+            }
+            try
+            {
+                _context.Products.UpdateRange(products);
+                await _context.SaveChangesAsync();
+                _apiResponse.Success = true;
+                return Ok(_apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _apiResponse.Message = ex.Message;
+                return BadRequest(_apiResponse);
+            }
         }
 
         [HttpPut("UpdateModel3D/{id}")]

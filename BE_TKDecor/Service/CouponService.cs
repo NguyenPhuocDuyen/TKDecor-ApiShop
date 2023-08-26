@@ -58,17 +58,17 @@ namespace BE_TKDecor.Service
                 // set StartDate at 0:00 of dto.StartDate
                 couponCode.StartDate = new DateTime(dto.StartDate.Year, dto.StartDate.Month, dto.StartDate.Day, 0, 0, 0);
                 // set EndDate at 11:59 p.m. dto.EndDate
-                couponCode.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 11, 59, 0);
+                couponCode.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 23, 59, 59);
 
                 if (couponCode.CouponType == SD.CouponByPercent && couponCode.Value > 100)
                 {
-                    _response.Message = "Không thể giảm hơn 100%";
+                    _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
                     return _response;
                 }
 
                 if (couponCode.Value > couponCode.MaxValue)
                 {
-                    _response.Message = "Giá trị không được vượt quá giá trị tối đa";
+                    _response.Message = "Chiếc khấu không được vượt quá chiếc khấu tối đa";
                     return _response;
                 }
 

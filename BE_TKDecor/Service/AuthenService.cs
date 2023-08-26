@@ -457,18 +457,18 @@ namespace BE_TKDecor.Service
                     return _response;
                 }
 
-                //check 5: check refreshToken is used/revoked?
-                if (storedToken.IsUsed)
-                {
-                    _response.Message = "Mã xác thực làm mới đã được sử dụng!";
-                    return _response;
-                }
+                ////check 5: check refreshToken is used/revoked?
+                //if (storedToken.IsUsed)
+                //{
+                //    _response.Message = "Mã xác thực làm mới đã được sử dụng!";
+                //    return _response;
+                //}
 
-                if (storedToken.IsRevoked)
-                {
-                    _response.Message = "Mã xác thực làm mới đã bị thu hồi!";
-                    return _response;
-                }
+                //if (storedToken.IsRevoked)
+                //{
+                //    _response.Message = "Mã xác thực làm mới đã bị thu hồi!";
+                //    return _response;
+                //}
 
                 //check 6: AccessToken id == JwtId in RefreshToken
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
