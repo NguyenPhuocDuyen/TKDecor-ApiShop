@@ -7,11 +7,11 @@ namespace BE_TKDecor.Service.IService
     public interface IOrderService
     {
         Task<ApiResponse> GetAll();
-        Task<ApiResponse> GetById(Guid id);
-        Task<ApiResponse> GetByIdAndUser(Guid id, Guid userId);
-        Task<ApiResponse> UpdateStatusOrder(Guid id, OrderUpdateStatusDto dto);
-        Task<ApiResponse> GetAllForUser(Guid userId);
-        Task<ApiResponse> MakeOrder(User user, OrderMakeDto dto);
-        Task<ApiResponse> UpdateStatusOrderForCus(User user, Guid id, OrderUpdateStatusDto dto);
+        Task<ApiResponse> GetById(Guid orderId);
+        Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId);
+        Task<ApiResponse> UpdateStatusOrder(Guid orderId, OrderUpdateStatusDto dto);
+        Task<ApiResponse> GetAllForUser(string? userId);
+        Task<ApiResponse> MakeOrder(string? userId, OrderMakeDto dto);
+        Task<ApiResponse> UpdateStatusOrderForCus(string? userId, Guid orderId, OrderUpdateStatusDto dto);
     }
 }

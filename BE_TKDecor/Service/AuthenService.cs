@@ -1,13 +1,9 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Config.JWT;
-using BE_TKDecor.Core.Dtos.Notification;
+﻿using BE_TKDecor.Core.Config.JWT;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Mail;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
 using BE_TKDecor.Service.IService;
 using BusinessObject;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -23,21 +19,15 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly ISendMailService _sendMailService;
-        private readonly IHubContext<NotificationHub> _hub;
-        private readonly IMapper _mapper;
         private readonly JwtSettings _jwtSettings;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public AuthenService(TkdecorContext context,
             IOptions<JwtSettings> options,
-            ISendMailService sendMailService,
-            IHubContext<NotificationHub> hub,
-            IMapper mapper)
+            ISendMailService sendMailService)
         {
             _context = context;
             _sendMailService = sendMailService;
-            _hub = hub;
-            _mapper = mapper;
             _jwtSettings = options.Value;
             _response = new ApiResponse();
         }
@@ -329,13 +319,13 @@ namespace BE_TKDecor.Service
                 //update user
                 _context.Users.Update(user);
 
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = "Bạn đã yêu cầu quên mật khẩu"
-                };
-                _context.Notifications.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = "Bạn đã yêu cầu quên mật khẩu"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -389,13 +379,13 @@ namespace BE_TKDecor.Service
                 //update to database and return info user
                 _context.Users.Update(user);
 
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = "Xác nhận mật khẩu mới thành công"
-                };
-                _context.Notifications.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = "Xác nhận mật khẩu mới thành công"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;

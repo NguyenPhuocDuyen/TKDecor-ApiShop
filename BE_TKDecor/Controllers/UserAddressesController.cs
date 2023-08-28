@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
 using BE_TKDecor.Core.Dtos.UserAddress;
-using BE_TKDecor.Core.Response;
 using BE_TKDecor.Service.IService;
 
 namespace BE_TKDecor.Controllers
@@ -13,24 +11,18 @@ namespace BE_TKDecor.Controllers
     public class UserAddressesController : ControllerBase
     {
         private readonly IUserAddressService _userAddress;
-        private readonly IUserService _user;
 
-        public UserAddressesController(IUserAddressService userAddress,
-            IUserService user)
+        public UserAddressesController(IUserAddressService userAddress)
         {
             _userAddress = userAddress;
-            _user = user;
         }
 
         // GET: api/UserAddresses/GetUserAddresses
         [HttpGet("GetUserAddresses")]
         public async Task<IActionResult> GetUserAddresses()
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.GetUserAddressesForUser(user.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.GetUserAddressesForUser(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -42,11 +34,8 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetUserAddressDefault")]
         public async Task<IActionResult> GetUserAddressDefault()
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.GetUserAddressDefault(user.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.GetUserAddressDefault(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -58,11 +47,8 @@ namespace BE_TKDecor.Controllers
         [HttpPost("SetDefault")]
         public async Task<IActionResult> SetDefault(UserAddressSetDefaultDto dto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.SetDefault(user.UserId, dto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.SetDefault(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -74,11 +60,8 @@ namespace BE_TKDecor.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.Create(user.UserId, userAddressDto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.Create(userId, userAddressDto);
             if (res.Success)
             {
                 return Ok(res);
@@ -90,11 +73,8 @@ namespace BE_TKDecor.Controllers
         [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update(Guid id, UserAddressUpdateDto userAddressDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.Update(user.UserId, id, userAddressDto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.Update(userId, id, userAddressDto);
             if (res.Success)
             {
                 return Ok(res);
@@ -106,29 +86,13 @@ namespace BE_TKDecor.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _userAddress.Delete(user.UserId, id);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _userAddress.Delete(userId, id);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
-        }
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
         }
     }
 }

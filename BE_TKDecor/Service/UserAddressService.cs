@@ -11,7 +11,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public UserAddressService(TkdecorContext context,
             IMapper mapper)
@@ -22,18 +22,24 @@ namespace BE_TKDecor.Service
         }
 
         // create address
-        public async Task<ApiResponse> Create(Guid userId, UserAddressCreateDto dto)
+        public async Task<ApiResponse> Create(string? userId, UserAddressCreateDto dto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             try
             {
                 UserAddress newAddress = _mapper.Map<UserAddress>(dto);
-                newAddress.UserId = userId;
+                newAddress.UserId = Guid.Parse(userId);
                 _context.UserAddresses.Add(newAddress);
                 await _context.SaveChangesAsync();
 
                 // set as default address when there is a first address
                 var listAddress = await _context.UserAddresses
-                    .Where(x => x.UserId == userId && !x.IsDelete)
+                    .Where(x => x.UserId.ToString() == userId && !x.IsDelete)
                     .ToListAsync();
                 if (listAddress.Count == 1)
                 {
@@ -49,11 +55,11 @@ namespace BE_TKDecor.Service
         }
 
         // delete address by id
-        public async Task<ApiResponse> Delete(Guid userId, Guid id)
+        public async Task<ApiResponse> Delete(string? userId, Guid userAddressId)
         {
             var userAddress = await _context.UserAddresses
-                .FirstOrDefaultAsync(x => x.UserAddressId == id
-                                    && x.UserId == userId
+                .FirstOrDefaultAsync(x => x.UserAddressId == userAddressId
+                                    && x.UserId.ToString() == userId
                                     && !x.IsDelete);
 
             if (userAddress is null)
@@ -81,12 +87,12 @@ namespace BE_TKDecor.Service
         }
 
         // get address default for user
-        public async Task<ApiResponse> GetUserAddressDefault(Guid userId)
+        public async Task<ApiResponse> GetUserAddressDefault(string? userId)
         {
             var address = await _context.UserAddresses
                 .FirstOrDefaultAsync(x => !x.IsDelete
                                     && x.IsDefault
-                                    && x.UserId == userId);
+                                    && x.UserId.ToString() == userId);
 
             if (address is null)
             {
@@ -105,10 +111,10 @@ namespace BE_TKDecor.Service
         }
 
         // get list of address for user
-        public async Task<ApiResponse> GetUserAddressesForUser(Guid userId)
+        public async Task<ApiResponse> GetUserAddressesForUser(string? userId)
         {
             var list = await _context.UserAddresses
-                .Where(x => !x.IsDelete && x.UserId == userId)
+                .Where(x => !x.IsDelete && x.UserId.ToString() == userId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
@@ -123,12 +129,12 @@ namespace BE_TKDecor.Service
         }
 
         // set address default
-        public async Task<ApiResponse> SetDefault(Guid userId, UserAddressSetDefaultDto dto)
+        public async Task<ApiResponse> SetDefault(string? userId, UserAddressSetDefaultDto dto)
         {
             var address = await _context.UserAddresses
                 .FirstOrDefaultAsync(x => x.UserAddressId == dto.UserAddressId
                                     && !x.IsDelete
-                                    && x.UserId == userId);
+                                    && x.UserId.ToString() == userId);
 
             if (address is null)
             {
@@ -138,7 +144,7 @@ namespace BE_TKDecor.Service
 
             // get address default
             var addressDefaults = await _context.UserAddresses
-                .Where(x => x.UserId == userId && !x.IsDelete && x.IsDefault)
+                .Where(x => x.UserId.ToString() == userId && !x.IsDelete && x.IsDefault)
                 .ToListAsync();
 
             try
@@ -163,18 +169,18 @@ namespace BE_TKDecor.Service
         }
 
         // update address
-        public async Task<ApiResponse> Update(Guid userId, Guid id, UserAddressUpdateDto dto)
+        public async Task<ApiResponse> Update(string? userId, Guid userAddressId, UserAddressUpdateDto dto)
         {
-            if (id != dto.UserAddressId)
+            if (userAddressId != dto.UserAddressId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
             }
 
             var userAddressDb = await _context.UserAddresses
-                .FirstOrDefaultAsync(x => x.UserAddressId == id
+                .FirstOrDefaultAsync(x => x.UserAddressId == userAddressId
                                     && !x.IsDelete
-                                    && x.UserId == userId);
+                                    && x.UserId.ToString() == userId);
 
             if (userAddressDb is null)
             {

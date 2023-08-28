@@ -16,7 +16,7 @@ namespace BE_TKDecor.Service
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
         private readonly IHubContext<NotificationHub> _hub;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public OrderService(TkdecorContext context, IMapper mapper, IHubContext<NotificationHub> hub)
         {
@@ -50,7 +50,7 @@ namespace BE_TKDecor.Service
         }
 
         // get all order for 1 user
-        public async Task<ApiResponse> GetAllForUser(Guid userId)
+        public async Task<ApiResponse> GetAllForUser(string? userId)
         {
             var orders = await _context.Orders
                     .Include(x => x.User)
@@ -61,7 +61,7 @@ namespace BE_TKDecor.Service
                         .ThenInclude(x => x.Product)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.ProductReview)
-                    .Where(o => o.UserId == userId && !o.IsDelete)
+                    .Where(o => o.UserId.ToString() == userId && !o.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
@@ -74,7 +74,9 @@ namespace BE_TKDecor.Service
                     var orderGet = _mapper.Map<OrderGetDto>(order);
                     foreach (var od in orderGet.OrderDetails)
                     {
-                        od.HasUserReviewed = order.OrderDetails.FirstOrDefault(x => x.OrderDetailId == od.OrderDetailId)?.ProductReview is not null;
+                        od.HasUserReviewed = order.OrderDetails
+                            .FirstOrDefault(x => x.OrderDetailId == od.OrderDetailId)?
+                            .ProductReview is not null;
                     }
                     result.Add(orderGet);
                 }
@@ -87,9 +89,9 @@ namespace BE_TKDecor.Service
         }
 
         // get order by id
-        public async Task<ApiResponse> GetById(Guid id)
+        public async Task<ApiResponse> GetById(Guid orderId)
         {
-            var order = await GetOrderById(id);
+            var order = await GetOrderById(orderId);
 
             if (order is null)
             {
@@ -108,11 +110,11 @@ namespace BE_TKDecor.Service
         }
 
         // get order by id user and id order
-        public async Task<ApiResponse> GetByIdAndUser(Guid id, Guid userId)
+        public async Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId)
         {
-            var order = await GetOrderById(id);
+            var order = await GetOrderById(orderId);
 
-            if (order is null || order.UserId != userId)
+            if (order is null || order.UserId.ToString() != userId)
             {
                 _response.Message = ErrorContent.OrderNotFound;
                 return _response;
@@ -129,8 +131,15 @@ namespace BE_TKDecor.Service
         }
 
         // make order 
-        public async Task<ApiResponse> MakeOrder(User user, OrderMakeDto dto)
+        public async Task<ApiResponse> MakeOrder(string? userId, OrderMakeDto dto)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
+            if (user is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             // get coupon
             Coupon? coupon = null;
             if (dto.CodeCoupon is not null)
@@ -297,9 +306,9 @@ namespace BE_TKDecor.Service
         }
 
         // update status of order
-        public async Task<ApiResponse> UpdateStatusOrder(Guid id, OrderUpdateStatusDto dto)
+        public async Task<ApiResponse> UpdateStatusOrder(Guid orderId, OrderUpdateStatusDto dto)
         {
-            if (id != dto.OrderId)
+            if (orderId != dto.OrderId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
@@ -308,7 +317,7 @@ namespace BE_TKDecor.Service
             var order = await _context.Orders
                 .Include(x => x.OrderDetails)
                 .ThenInclude(x => x.Product)
-                .FirstOrDefaultAsync(x => x.OrderId == id && !x.IsDelete);
+                .FirstOrDefaultAsync(x => x.OrderId == orderId && !x.IsDelete);
 
             if (order is null)
             {
@@ -374,9 +383,9 @@ namespace BE_TKDecor.Service
         }
 
         // update status order for customer
-        public async Task<ApiResponse> UpdateStatusOrderForCus(User user, Guid id, OrderUpdateStatusDto dto)
+        public async Task<ApiResponse> UpdateStatusOrderForCus(string? userId, Guid orderId, OrderUpdateStatusDto dto)
         {
-            if (id != dto.OrderId)
+            if (orderId != dto.OrderId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
@@ -384,11 +393,12 @@ namespace BE_TKDecor.Service
 
             // seller and admin have the right to accept orders for delivery
             var order = await _context.Orders
+                    .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
-                    .FirstOrDefaultAsync(x => x.OrderId == id
+                    .FirstOrDefaultAsync(x => x.OrderId == orderId
                                         && !x.IsDelete
-                                        && x.UserId == user.UserId);
+                                        && x.UserId.ToString() == userId);
 
             if (order is null)
             {
@@ -396,31 +406,6 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            // update order status
-            // customer can cancel, refund, receive the order
-            //if (order.OrderStatus == SD.OrderOrdered)
-            //{
-            //    // Cancellation of orders only when the order is in the Ordered status
-            //    if (dto.OrderStatus != SD.OrderCanceled)
-            //    {
-            //        _response.Message = ErrorContent.OrderStatusUnable;
-            //        return _response;
-            //    }
-            //}
-            //else if (order.OrderStatus == SD.OrderDelivering)
-            //{
-            //    // Orders can only be accepted or refunded when the order is in the Delivering status
-            //    if (dto.OrderStatus != SD.OrderReceived)
-            //    {
-            //        _response.Message = ErrorContent.OrderStatusUnable;
-            //        return _response;
-            //    }
-            //}
-            //else
-            //{
-            //    _response.Message = ErrorContent.OrderStatusUnable;
-            //    return _response;
-            //}
             var message = "";
             // update order status
             // customer can cancel, refund, receive the order
@@ -461,30 +446,15 @@ namespace BE_TKDecor.Service
             {
                 _context.Orders.Update(order);
 
-                //var message = "";
-                //if (dto.OrderStatus == SD.OrderCanceled)
-                //{
-                //    // add quantity of product in store
-                //    foreach (var orDetail in order.OrderDetails)
-                //    {
-                //        orDetail.Product.Quantity += orDetail.Quantity;
-                //        orDetail.Product.UpdatedAt = DateTime.Now;
-                //        //await _product.Update(orDetail.Product);
-                //    }
-                //    message = "huỷ";
-                //}
-                //else if (dto.OrderStatus == SD.OrderReceived)
-                //    message = "nhận";
-
                 // add notification for user
                 Notification newNotification = new()
                 {
-                    UserId = user.UserId,
+                    UserId = order.UserId,
                     Message = $"Bạn đã {message} đơn hàng thành công. Mã đơn hàng: " + order.OrderId
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
+                await _hub.Clients.User(order.UserId.ToString())
                     .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
@@ -499,7 +469,7 @@ namespace BE_TKDecor.Service
                     Notification notiForAdmin = new()
                     {
                         UserId = admin.UserId,
-                        Message = $"{user.Email} đã {message} đơn hàng. Mã đơn hàng: {order.OrderId}"
+                        Message = $"{order.User.Email} đã {message} đơn hàng. Mã đơn hàng: {order.OrderId}"
                     };
                     _context.Notifications.Add(notiForAdmin);
                     // notification signalR
@@ -514,14 +484,14 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
-        private async Task<Order?> GetOrderById(Guid id)
+        private async Task<Order?> GetOrderById(Guid orderId)
         {
             return await _context.Orders
                     .Include(x => x.User)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.Product)
                             .ThenInclude(x => x.ProductImages)
-                    .FirstOrDefaultAsync(x => x.OrderId == id && !x.IsDelete);
+                    .FirstOrDefaultAsync(x => x.OrderId == orderId && !x.IsDelete);
         }
     }
 }

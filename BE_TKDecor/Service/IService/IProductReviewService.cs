@@ -5,6 +5,6 @@ namespace BE_TKDecor.Service.IService
 {
     public interface IProductReviewService
     {
-        Task<ApiResponse> ReviewProduct(Guid userId, ProductReviewCreateDto productReviewDto);
+        Task<ApiResponse> ReviewProduct(string? userId, ProductReviewCreateDto productReviewDto);
     }
 }

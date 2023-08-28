@@ -78,13 +78,13 @@ namespace BE_TKDecor.Service
         }
 
         // delete product by id
-        public async Task<ApiResponse> Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid productId)
         {
             // find product
             var product = await _context.Products
                     .Include(x => x.Carts.Where(x => !x.IsDelete))
                     .Include(x => x.ProductReports.Where(x => !x.IsDelete))
-                    .FirstOrDefaultAsync(x => x.ProductId == id && !x.IsDelete);
+                    .FirstOrDefaultAsync(x => x.ProductId == productId && !x.IsDelete);
 
             if (product is null)
             {
@@ -114,7 +114,7 @@ namespace BE_TKDecor.Service
             var productReview = await _context.ProductReviews
                 .Include(x => x.OrderDetail)
                 .Include(x => x.ReportProductReviews.Where(x => !x.IsDelete))
-                .Where(x => x.OrderDetail.ProductId == id)
+                .Where(x => x.OrderDetail.ProductId == productId)
                 .ToListAsync();
 
             foreach (var review in productReview)
@@ -140,7 +140,7 @@ namespace BE_TKDecor.Service
         }
 
         // get product by slug
-        public async Task<ApiResponse> GetBySlug(Guid? userId, string slug)
+        public async Task<ApiResponse> GetBySlug(string? userId, string slug)
         {
             var product = await GetProductBySlug(slug);
 
@@ -153,7 +153,7 @@ namespace BE_TKDecor.Service
             try
             {
                 var result = _mapper.Map<ProductGetDto>(product);
-                result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                result.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
 
                 // set total review and total rating
                 int totalReviews = 0;
@@ -183,7 +183,7 @@ namespace BE_TKDecor.Service
         }
 
         // get featured product
-        public async Task<ApiResponse> FeaturedProducts(Guid? userId)
+        public async Task<ApiResponse> FeaturedProducts(string? userId)
         {
             var products = await GetAllProducts();
             products = products.Where(x => x.Quantity > 0)
@@ -199,7 +199,7 @@ namespace BE_TKDecor.Service
                     var productDto = _mapper.Map<ProductGetDto>(product);
 
                     // Check if the user has liked the product or not
-                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
 
                     // set total review and total rating
                     int totalReviews = 0;
@@ -247,7 +247,7 @@ namespace BE_TKDecor.Service
         }
 
         // get all product have filter
-        public async Task<ApiResponse> GetAll(Guid? userId, Guid? categoryId, string search, string sort, int pageIndex, int pageSize)
+        public async Task<ApiResponse> GetAll(string? userId, Guid? categoryId, string search, string sort, int pageIndex, int pageSize)
         {
             var list = await GetAllProducts();
             list = list.Where(x => x.Quantity > 0).ToList();
@@ -278,7 +278,7 @@ namespace BE_TKDecor.Service
                     var productDto = _mapper.Map<ProductGetDto>(product);
 
                     // Check if the user has liked the product or not
-                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
 
                     // set total review and total rating
                     int totalReviews = 0;
@@ -331,7 +331,7 @@ namespace BE_TKDecor.Service
         }
 
         // get review of product by produc slug
-        public async Task<ApiResponse> GetReview(Guid? userId, string slug, string sort, int pageIndex, int pageSize)
+        public async Task<ApiResponse> GetReview(string? userId, string slug, string sort, int pageIndex, int pageSize)
         {
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
             if (product is null)
@@ -356,7 +356,7 @@ namespace BE_TKDecor.Service
                     var reviewDto = _mapper.Map<ProductReviewGetDto>(review);
 
                     // Check if the user has liked the product or not
-                    var interaction = review.ProductReviewInteractions.FirstOrDefault(pf => !pf.IsDelete && pf.UserId == userId);
+                    var interaction = review.ProductReviewInteractions.FirstOrDefault(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
                     if (interaction is not null)
                     {
                         reviewDto.InteractionOfUser = interaction.Interaction.ToString();
@@ -393,7 +393,7 @@ namespace BE_TKDecor.Service
         }
 
         // get relate products by product slug
-        public async Task<ApiResponse> RelatedProducts(Guid? userId, string slug)
+        public async Task<ApiResponse> RelatedProducts(string? userId, string slug)
         {
             var p = await GetProductBySlug(slug.Trim());
 
@@ -419,7 +419,7 @@ namespace BE_TKDecor.Service
                     var productDto = _mapper.Map<ProductGetDto>(product);
 
                     // Check if the user has liked the product or not
-                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
 
                     // set total review and total rating
                     int totalReviews = 0;
@@ -452,9 +452,9 @@ namespace BE_TKDecor.Service
         }
 
         // update product
-        public async Task<ApiResponse> Update(Guid id, ProductUpdateDto dto)
+        public async Task<ApiResponse> Update(Guid productId, ProductUpdateDto dto)
         {
-            if (id != dto.ProductId)
+            if (productId != dto.ProductId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
@@ -463,7 +463,7 @@ namespace BE_TKDecor.Service
             var productDb = await _context.Products
                     .Include(x => x.ProductImages)
                     .Include(x => x.Product3DModel)
-                    .FirstOrDefaultAsync(x => x.ProductId == id && !x.IsDelete);
+                    .FirstOrDefaultAsync(x => x.ProductId == productId && !x.IsDelete);
 
             if (productDb is null)
             {
@@ -554,7 +554,6 @@ namespace BE_TKDecor.Service
                     .Include(x => x.ProductImages)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.ProductReview)
-                    //.Include(x => x.ProductReviews)
                     .Include(x => x.ProductFavorites)
                     .Where(x => !x.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
@@ -570,7 +569,6 @@ namespace BE_TKDecor.Service
                     .Include(x => x.ProductImages)
                     .Include(x => x.OrderDetails)
                         .ThenInclude(x => x.ProductReview)
-                    //.Include(x => x.ProductReviews)
                     .Include(x => x.ProductFavorites)
                     .Where(x => !x.IsDelete)
                     .FirstOrDefaultAsync(x => x.Slug == slug);

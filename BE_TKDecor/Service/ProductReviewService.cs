@@ -10,7 +10,7 @@ namespace BE_TKDecor.Service
     public class ProductReviewService : IProductReviewService
     {
         private readonly TkdecorContext _context;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ProductReviewService(TkdecorContext context)
         {
@@ -19,13 +19,14 @@ namespace BE_TKDecor.Service
         }
 
         // user make review product when bought product
-        public async Task<ApiResponse> ReviewProduct(Guid userId, ProductReviewCreateDto productReviewDto)
+        public async Task<ApiResponse> ReviewProduct(string? userId, ProductReviewCreateDto productReviewDto)
         {
             var orderDetail = await _context.OrderDetails
                 .Include(x => x.Order)
                 .Include(x => x.Product)
                 .Include(x => x.ProductReview)
-                .FirstOrDefaultAsync(x => x.OrderDetailId == productReviewDto.OrderDetailId);
+                .FirstOrDefaultAsync(x => x.OrderDetailId == productReviewDto.OrderDetailId
+                                    && x.Order.UserId.ToString() == userId);
 
             if (orderDetail is null)
             {

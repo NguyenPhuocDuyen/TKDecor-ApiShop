@@ -6,7 +6,7 @@ namespace BE_TKDecor.Service.IService
     public interface IProductReportService
     {
         Task<ApiResponse> GetAll();
-        Task<ApiResponse> Update(Guid id, ProductReportUpdateDto dto);
-        Task<ApiResponse> MakeProductReport(Guid userId, ProductReportCreateDto reportDto);
+        Task<ApiResponse> Update(Guid productReportId, ProductReportUpdateDto dto);
+        Task<ApiResponse> MakeProductReport(string? userId, ProductReportCreateDto reportDto);
     }
 }

@@ -11,7 +11,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public CategoryService(TkdecorContext context, IMapper mapper)
         {

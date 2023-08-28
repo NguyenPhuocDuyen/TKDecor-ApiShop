@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
-using BE_TKDecor.Core.Response;
 using BE_TKDecor.Core.Dtos.Cart;
 using Utility;
 using BE_TKDecor.Service.IService;
@@ -14,24 +12,18 @@ namespace BE_TKDecor.Controllers
     public class CartsController : ControllerBase
     {
         private readonly ICartService _cart;
-        private readonly IUserService _user;
 
-        public CartsController(ICartService cart,
-            IUserService user)
+        public CartsController(ICartService cart)
         {
             _cart = cart;
-            _user = user;
         }
 
         // GET: api/Carts/GetAll
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetCarts()
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _cart.GetCartsForUser(user.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _cart.GetCartsForUser(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -43,11 +35,8 @@ namespace BE_TKDecor.Controllers
         [HttpPost("AddProductToCart")]
         public async Task<IActionResult> AddProductToCart(CartCreateDto cartDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _cart.AddProductToCart(user.UserId, cartDto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _cart.AddProductToCart(userId, cartDto);
             if (res.Success)
             {
                 return Ok(res);
@@ -59,11 +48,8 @@ namespace BE_TKDecor.Controllers
         [HttpPut("UpdateQuantity/{id}")]
         public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto cartDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _cart.UpdateQuantity(user.UserId, id, cartDto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _cart.UpdateQuantity(userId, id, cartDto);
             if (res.Success)
             {
                 return Ok(res);
@@ -75,29 +61,13 @@ namespace BE_TKDecor.Controllers
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _cart.Delete(user.UserId, id);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _cart.Delete(userId, id);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
-        }
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
         }
     }
 }

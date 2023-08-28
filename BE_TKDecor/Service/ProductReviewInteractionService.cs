@@ -9,7 +9,7 @@ namespace BE_TKDecor.Service
     public class ProductReviewInteractionService : IProductReviewInteractionService
     {
         private readonly TkdecorContext _context;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ProductReviewInteractionService(TkdecorContext context)
         {
@@ -18,8 +18,14 @@ namespace BE_TKDecor.Service
         }
 
         // user make interaction
-        public async Task<ApiResponse> Interaction(Guid userId, ProductReviewInteractionDto interactionDto)
+        public async Task<ApiResponse> Interaction(string? userId, ProductReviewInteractionDto interactionDto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             var productReview = await _context.ProductReviews.FindAsync(interactionDto.ProductReviewId);
             if (productReview is null || productReview.IsDelete)
             {
@@ -28,7 +34,7 @@ namespace BE_TKDecor.Service
             }
 
             var interactionReview = await _context.ProductReviewInteractions.FirstOrDefaultAsync(x =>
-                x.UserId == userId && x.ProductReviewId == productReview.ProductReviewId);
+                x.UserId.ToString() == userId && x.ProductReviewId == productReview.ProductReviewId);
 
             bool isAdd = false;
             if (interactionReview is null)
@@ -39,7 +45,6 @@ namespace BE_TKDecor.Service
 
             if (isAdd)
             {
-                interactionReview.UserId = userId;
                 interactionReview.ProductReviewId = productReview.ProductReviewId;
             }
 
@@ -47,6 +52,7 @@ namespace BE_TKDecor.Service
             interactionReview.UpdatedAt = DateTime.Now;
             try
             {
+                interactionReview.UserId = Guid.Parse(userId);
                 if (isAdd)
                 {
                     _context.ProductReviewInteractions.Add(interactionReview);

@@ -24,11 +24,8 @@ namespace BE_TKDecor.Controllers.Management
         [HttpGet("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _user.GetAllUser(user.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _user.GetAllUser(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -59,18 +56,5 @@ namespace BE_TKDecor.Controllers.Management
         //    }
         //    return BadRequest(res);
         //}
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
-        }
     }
 }

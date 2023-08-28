@@ -11,7 +11,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public CartService(TkdecorContext context, IMapper mapper)
         {
@@ -20,8 +20,14 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
-        public async Task<ApiResponse> AddProductToCart(Guid userId, CartCreateDto dto)
+        public async Task<ApiResponse> AddProductToCart(string? userId, CartCreateDto dto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             // get current product info
             var product = await _context.Products.FindAsync(dto.ProductId);
             if (product is null || product.IsDelete)
@@ -38,7 +44,7 @@ namespace BE_TKDecor.Service
 
             // get product information in cart
             var cartDb = await _context.Carts
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == product.ProductId);
+                .FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.ProductId == product.ProductId);
 
             // Variable check add or update product
             bool isAdd = false;
@@ -49,7 +55,6 @@ namespace BE_TKDecor.Service
                 isAdd = true;
                 cartDb = _mapper.Map<Cart>(dto);
                 cartDb.IsDelete = false;
-                cartDb.UserId = userId;
             }
             else
             {
@@ -78,6 +83,7 @@ namespace BE_TKDecor.Service
 
             try
             {
+                cartDb.UserId = Guid.Parse(userId);
                 if (isAdd)
                 {
                     _context.Carts.Add(cartDb);
@@ -100,11 +106,11 @@ namespace BE_TKDecor.Service
         }
 
         // delete cart by id
-        public async Task<ApiResponse> Delete(Guid userId, Guid id)
+        public async Task<ApiResponse> Delete(string? userId, Guid cartId)
         {
             // Find and delete cart
-            var cartDb = await _context.Carts.FindAsync(id);
-            if (cartDb is null || cartDb.UserId != userId || cartDb.IsDelete)
+            var cartDb = await _context.Carts.FindAsync(cartId);
+            if (cartDb is null || cartDb.UserId.ToString() != userId || cartDb.IsDelete)
             {
                 _response.Message = ErrorContent.CartNotFound;
                 return _response;
@@ -123,14 +129,14 @@ namespace BE_TKDecor.Service
         }
 
         // GetCartsForUser
-        public async Task<ApiResponse> GetCartsForUser(Guid userId)
+        public async Task<ApiResponse> GetCartsForUser(string? userId)
         {
             var carts = await _context.Carts
                     .Include(x => x.Product)
                         .ThenInclude(x => x.ProductImages)
                     .Include(x => x.Product)
                         .ThenInclude(x => x.Category)
-                    .Where(x => x.UserId == userId && !x.IsDelete)
+                    .Where(x => x.UserId.ToString() == userId && !x.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
@@ -164,16 +170,16 @@ namespace BE_TKDecor.Service
         }
 
         // update quantity in cart
-        public async Task<ApiResponse> UpdateQuantity(Guid userId, Guid id, CartUpdateDto cartDto)
+        public async Task<ApiResponse> UpdateQuantity(string? userId, Guid cartId, CartUpdateDto dto)
         {
-            if (id != cartDto.CartId)
+            if (cartId != dto.CartId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
             }
 
             var cartDb = await _context.Carts.Include(x => x.Product)
-                    .FirstOrDefaultAsync(x => x.CartId == id && !x.IsDelete && x.UserId == userId);
+                    .FirstOrDefaultAsync(x => x.CartId == cartId && !x.IsDelete && x.UserId.ToString() == userId);
 
             if (cartDb is null)
             {
@@ -181,7 +187,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            cartDb.Quantity = cartDto.Quantity;
+            cartDb.Quantity = dto.Quantity;
             cartDb.UpdatedAt = DateTime.Now;
 
             // Variable check number of valid products

@@ -12,7 +12,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ArticleService(TkdecorContext context, IMapper mapper)
         {
@@ -22,8 +22,14 @@ namespace BE_TKDecor.Service
         }
 
         // create article
-        public async Task<ApiResponse> Create(ArticleCreateDto dto, Guid userId)
+        public async Task<ApiResponse> Create(ArticleCreateDto dto, string? userId)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             dto.Title = dto.Title.Trim();
             // check slug already exists
             var newSlug = Slug.GenerateSlug(dto.Title);
@@ -37,7 +43,7 @@ namespace BE_TKDecor.Service
                 articleDb = new Article();
                 articleDb = _mapper.Map<Article>(dto);
                 articleDb.Slug = newSlug;
-                articleDb.UserId = userId;
+                articleDb.UserId = Guid.Parse(userId);
 
                 _context.Articles.Add(articleDb);
                 await _context.SaveChangesAsync();
@@ -49,9 +55,9 @@ namespace BE_TKDecor.Service
         }
 
         // delete article by id
-        public async Task<ApiResponse> Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid articleId)
         {
-            var article = await _context.Articles.FindAsync(id);
+            var article = await _context.Articles.FindAsync(articleId);
             if (article is null || article.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
@@ -127,11 +133,11 @@ namespace BE_TKDecor.Service
         }
 
         // get article by id for admin
-        public async Task<ApiResponse> GetById(Guid id)
+        public async Task<ApiResponse> GetById(Guid articleId)
         {
             var article = await _context.Articles
                 .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.ArticleId == id && !x.IsDelete);
+                .FirstOrDefaultAsync(x => x.ArticleId == articleId && !x.IsDelete);
 
             if (article is null)
             {
@@ -196,15 +202,15 @@ namespace BE_TKDecor.Service
         }
 
         // update article
-        public async Task<ApiResponse> Update(Guid id, ArticleUpdateDto dto)
+        public async Task<ApiResponse> Update(Guid articleId, ArticleUpdateDto dto)
         {
-            if (id != dto.ArticleId)
+            if (articleId != dto.ArticleId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
             }
 
-            var articleDb = await _context.Articles.FindAsync(id);
+            var articleDb = await _context.Articles.FindAsync(articleId);
             if (articleDb is null || articleDb.IsDelete)
             {
                 _response.Message = ErrorContent.ArticleNotFound;
@@ -217,7 +223,7 @@ namespace BE_TKDecor.Service
             var articleSlug = await _context.Articles.FirstOrDefaultAsync(x => x.Slug == newSlug);
 
             // auto - regenerate slug
-            if (articleSlug is not null && articleSlug.ArticleId != id)
+            if (articleSlug is not null && articleSlug.ArticleId != articleId)
                 newSlug += new Random().Next(1000, 9999);
 
             // update info article

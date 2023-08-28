@@ -12,7 +12,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public CouponService(TkdecorContext context, IMapper mapper)
         {
@@ -60,17 +60,23 @@ namespace BE_TKDecor.Service
                 // set EndDate at 11:59 p.m. dto.EndDate
                 couponCode.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 23, 59, 59);
 
-                if (couponCode.CouponType == SD.CouponByPercent && couponCode.Value > 100)
+                if (couponCode.CouponType == SD.CouponByPercent)
                 {
-                    _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
-                    return _response;
+                    if (couponCode.Value > 100)
+                    {
+                        _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
+                        return _response;
+                    }
                 }
-
-                if (couponCode.Value > couponCode.MaxValue)
+                else
                 {
-                    _response.Message = "Chiếc khấu không được vượt quá chiếc khấu tối đa";
-                    return _response;
+                    couponCode.MaxValue = couponCode.Value;
                 }
+                //if (couponCode.Value > couponCode.MaxValue)
+                //{
+                //    _response.Message = "Chiếc khấu không được vượt quá chiếc khấu tối đa";
+                //    return _response;
+                //}
 
                 if (couponCode.StartDate >= couponCode.EndDate)
                 {
@@ -211,6 +217,26 @@ namespace BE_TKDecor.Service
             //couponDb.EndDate = dto.EndDate;
             couponDb.IsActive = dto.IsActive;
             couponDb.UpdatedAt = DateTime.Now;
+
+            if (couponDb.CouponType == SD.CouponByPercent)
+            {
+                if (couponDb.Value > 100)
+                {
+                    _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
+                    return _response;
+                }
+            }
+            else
+            {
+                couponDb.MaxValue = couponDb.Value;
+            }
+
+            if (couponDb.StartDate >= couponDb.EndDate)
+            {
+                _response.Message = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc";
+                return _response;
+            }
+
             try
             {
                 _context.Coupons.Update(couponDb);
