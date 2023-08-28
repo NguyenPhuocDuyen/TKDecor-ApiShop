@@ -16,7 +16,7 @@ namespace BE_TKDecor.Service
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
         private readonly IHubContext<NotificationHub> _hub;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ReportProductReviewService(TkdecorContext context, IMapper mapper, IHubContext<NotificationHub> hub)
         {
@@ -47,8 +47,14 @@ namespace BE_TKDecor.Service
         }
 
         // make report product review
-        public async Task<ApiResponse> MakeReportProductReview(Guid userId, ReportProductReviewCreateDto reportDto)
+        public async Task<ApiResponse> MakeReportProductReview(string? userId, ReportProductReviewCreateDto reportDto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             var productReview = await _context.ProductReviews
                     .Include(x => x.OrderDetail)
                         .ThenInclude(x => x.Order)
@@ -63,16 +69,16 @@ namespace BE_TKDecor.Service
             }
 
             var report = await _context.ReportProductReviews
-                .FirstOrDefaultAsync(x => x.UserReportId == userId
+                .FirstOrDefaultAsync(x => x.UserReportId.ToString() == userId
                 && x.ProductReviewReportedId == productReview.ProductReviewId);
 
             try
             {
-                if (report is null)
+                if (report is null || report.ReportStatus != SD.ReportPending)
                 {
                     ReportProductReview newReport = new()
                     {
-                        UserReportId = userId,
+                        UserReportId = Guid.Parse(userId),
                         ProductReviewReportedId = productReview.ProductReviewId,
                         ReportStatus = SD.ReportPending,
                         Reason = reportDto.Reason
@@ -91,7 +97,7 @@ namespace BE_TKDecor.Service
                 // add notification for user
                 Notification newNotification = new()
                 {
-                    UserId = userId,
+                    UserId = Guid.Parse(userId),
                     Message = $"Đã báo cáo đánh giá của {productReview.OrderDetail.Order.User.FullName} thành công"
                 };
                 _context.Notifications.Add(newNotification);
@@ -104,7 +110,7 @@ namespace BE_TKDecor.Service
                 var admins = await _context.Users
                     .Where(x => x.Role == SD.RoleAdmin && !x.IsDelete)
                     .ToListAsync();
-                var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
                 foreach (var admin in admins)
                 {
                     // add notification for user
@@ -127,9 +133,9 @@ namespace BE_TKDecor.Service
         }
 
         // update status of report product review
-        public async Task<ApiResponse> Update(Guid id, ReportProductReviewUpdateDto dto)
+        public async Task<ApiResponse> Update(Guid reportProductReviewId, ReportProductReviewUpdateDto dto)
         {
-            if (id != dto.ReportProductReviewId)
+            if (reportProductReviewId != dto.ReportProductReviewId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
@@ -138,7 +144,7 @@ namespace BE_TKDecor.Service
             var report = await _context.ReportProductReviews
                     .Include(x => x.UserReport)
                     .Include(x => x.ProductReviewReported)
-                    .FirstOrDefaultAsync(x => x.ReportProductReviewId == id
+                    .FirstOrDefaultAsync(x => x.ReportProductReviewId == reportProductReviewId
                                         && !x.IsDelete);
 
             if (report is null)

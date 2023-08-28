@@ -14,42 +14,23 @@ namespace BE_TKDecor.Controllers
     public class ProductReviewInteractionsController : ControllerBase
     {
         private readonly IProductReviewInteractionService _interaction;
-        private readonly IUserService _user;
 
-        public ProductReviewInteractionsController(IProductReviewInteractionService interaction,
-            IUserService user)
+        public ProductReviewInteractionsController(IProductReviewInteractionService interaction)
         {
             _interaction = interaction;
-            _user = user;
         }
 
         // POST: api/ProductReviews/Interaction
         [HttpPost("Interaction")]
         public async Task<IActionResult> Interaction(ProductReviewInteractionDto interactionDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return NotFound(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _interaction.Interaction(user.UserId, interactionDto);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _interaction.Interaction(userId, interactionDto);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
-        }
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
         }
     }
 }

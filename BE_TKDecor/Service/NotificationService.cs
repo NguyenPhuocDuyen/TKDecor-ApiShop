@@ -11,7 +11,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public NotificationService(TkdecorContext context, IMapper mapper)
         {
@@ -21,10 +21,10 @@ namespace BE_TKDecor.Service
         }
 
         // get notification
-        public async Task<ApiResponse> GetNotificationsForUser(Guid userId)
+        public async Task<ApiResponse> GetNotificationsForUser(string? userId)
         {
             var notifications = await _context.Notifications
-                    .Where(x => x.UserId == userId && !x.IsDelete)
+                    .Where(x => x.UserId.ToString() == userId && !x.IsDelete)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
@@ -39,10 +39,10 @@ namespace BE_TKDecor.Service
         }
 
         // set read notification
-        public async Task<ApiResponse> ReadAll(Guid userId)
+        public async Task<ApiResponse> ReadAll(string? userId)
         {
             var notifications = await _context.Notifications
-                .Where(x => x.UserId == userId && !x.IsRead)
+                .Where(x => x.UserId.ToString() == userId && !x.IsRead && !x.IsDelete)
                 .ToListAsync();
 
             foreach (var item in notifications)

@@ -14,13 +14,10 @@ namespace BE_TKDecor.Controllers.Management
     public class ManagementArticlesController : ControllerBase
     {
         private readonly IArticleService _article;
-        private readonly IUserService _user;
 
-        public ManagementArticlesController(IArticleService article,
-            IUserService user)
+        public ManagementArticlesController(IArticleService article)
         {
             _article = article;
-            _user = user;
         }
 
         // GET: api/ManagementArticles/GetAll
@@ -51,11 +48,8 @@ namespace BE_TKDecor.Controllers.Management
         [HttpPost("Create")]
         public async Task<IActionResult> Create(ArticleCreateDto articleDto)
         {
-            var user = await GetUser();
-            if (user is null)
-                return BadRequest(new ApiResponse { Message = ErrorContent.UserNotFound });
-
-            var res = await _article.Create(articleDto, user.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _article.Create(articleDto, userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -97,19 +91,6 @@ namespace BE_TKDecor.Controllers.Management
                 return Ok(res);
             }
             return BadRequest(res);
-        }
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
         }
     }
 }

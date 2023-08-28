@@ -11,7 +11,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public Product3DModelService(TkdecorContext context, IMapper mapper)
         {
@@ -95,18 +95,6 @@ namespace BE_TKDecor.Service
                 .Where(x => !x.IsDelete && (x.Product == null || x.Product.ProductId == id))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
-
-            //var product = await _context.Products.FindAsync(id);
-            //if (product is not null && product.Product3DModelId is not null)
-            //{
-            //    models = models.Where(x => x.Product is null
-            //                || x.Product3DModelId == product.Product3DModelId)
-            //                .ToList();
-            //}
-            //else
-            //{
-            //    models = models.Where(x => x.Product is null).ToList();
-            //}
 
             try
             {

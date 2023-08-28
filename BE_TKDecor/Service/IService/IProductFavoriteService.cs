@@ -5,7 +5,7 @@ namespace BE_TKDecor.Service.IService
 {
     public interface IProductFavoriteService
     {
-        Task<ApiResponse> GetFavoriteOfUser(Guid userId, int pageIndex, int pageSize);
-        Task<ApiResponse> SetFavorite(Guid userId, FavoriteSetDto dto);
+        Task<ApiResponse> GetFavoriteOfUser(string? userId, int pageIndex, int pageSize);
+        Task<ApiResponse> SetFavorite(string? userId, FavoriteSetDto dto);
     }
 }

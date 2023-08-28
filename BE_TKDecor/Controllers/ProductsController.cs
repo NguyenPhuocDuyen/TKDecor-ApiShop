@@ -9,13 +9,10 @@ namespace BE_TKDecor.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _product;
-        private readonly IUserService _user;
 
-        public ProductsController(IProductService product,
-            IUserService user)
+        public ProductsController(IProductService product)
         {
             _product = product;
-            _user = user;
         }
 
         // GET: api/Products/GetAll
@@ -28,8 +25,8 @@ namespace BE_TKDecor.Controllers
             int pageSize = 20
             )
         {
-            var user = await GetUser();
-            var res = await _product.GetAll(user?.UserId, categoryId, search, sort, pageIndex, pageSize);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _product.GetAll(userId, categoryId, search, sort, pageIndex, pageSize);
             if (res.Success)
             {
                 return Ok(res);
@@ -41,8 +38,8 @@ namespace BE_TKDecor.Controllers
         [HttpGet("FeaturedProducts")]
         public async Task<IActionResult> FeaturedProducts()
         {
-            var user = await GetUser();
-            var res = await _product.FeaturedProducts(user?.UserId);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _product.FeaturedProducts(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -59,8 +56,8 @@ namespace BE_TKDecor.Controllers
             int pageSize = 20
             )
         {
-            var user = await GetUser();
-            var res = await _product.GetReview(user?.UserId, slug, sort, pageIndex, pageSize);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _product.GetReview(userId, slug, sort, pageIndex, pageSize);
             if (res.Success)
             {
                 return Ok(res);
@@ -72,8 +69,8 @@ namespace BE_TKDecor.Controllers
         [HttpGet("RelatedProducts/{slug}")]
         public async Task<IActionResult> RelatedProducts(string slug)
         {
-            var user = await GetUser();
-            var res = await _product.RelatedProducts(user?.UserId, slug);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _product.RelatedProducts(userId, slug);
             if (res.Success)
             {
                 return Ok(res);
@@ -85,26 +82,13 @@ namespace BE_TKDecor.Controllers
         [HttpGet("GetBySlug/{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
         {
-            var user = await GetUser();
-            var res = await _product.GetBySlug(user?.UserId, slug);
+            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var res = await _product.GetBySlug(userId, slug);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
-        }
-
-        private async Task<User?> GetUser()
-        {
-            var currentUser = HttpContext.User;
-            if (currentUser.HasClaim(c => c.Type == "UserId"))
-            {
-                var userId = currentUser?.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                // get user by user id
-                if (userId != null)
-                    return await _user.GetById(Guid.Parse(userId));
-            }
-            return null;
         }
     }
 }

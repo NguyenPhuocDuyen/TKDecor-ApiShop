@@ -13,7 +13,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ProductFavoriteService(TkdecorContext context, IMapper mapper)
         {
@@ -22,7 +22,7 @@ namespace BE_TKDecor.Service
             _response = new ApiResponse();
         }
 
-        public async Task<ApiResponse> GetFavoriteOfUser(Guid userId, int pageIndex, int pageSize)
+        public async Task<ApiResponse> GetFavoriteOfUser(string? userId, int pageIndex, int pageSize)
         {
             var list = await _context.Products
                     .Include(x => x.Category)
@@ -45,7 +45,7 @@ namespace BE_TKDecor.Service
                     var productDto = _mapper.Map<ProductGetDto>(product);
 
                     // Check if the user has liked the product or not
-                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId == userId);
+                    productDto.IsFavorite = product.ProductFavorites.Any(pf => !pf.IsDelete && pf.UserId.ToString() == userId);
 
                     int totalReviews = 0;
                     int totalRating = 0;
@@ -89,8 +89,14 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
-        public async Task<ApiResponse> SetFavorite(Guid userId, FavoriteSetDto dto)
+        public async Task<ApiResponse> SetFavorite(string? userId, FavoriteSetDto dto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             var product = await _context.Products.FindAsync(dto.ProductId);
             if (product is null || product.IsDelete)
             {
@@ -102,7 +108,7 @@ namespace BE_TKDecor.Service
             // if not then add
             // yes then delete
             var productFavoriteDb = await _context.ProductFavorites
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == product.ProductId);
+                .FirstOrDefaultAsync(x => x.UserId.ToString() == userId && x.ProductId == product.ProductId);
 
             try
             {
@@ -111,7 +117,7 @@ namespace BE_TKDecor.Service
                     ProductFavorite newProductFavorite = new()
                     {
                         ProductId = product.ProductId,
-                        UserId = userId
+                        UserId = Guid.Parse(userId)
                     };
                     _context.ProductFavorites.Add(newProductFavorite);
                 }

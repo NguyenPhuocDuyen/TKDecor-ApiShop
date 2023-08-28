@@ -18,7 +18,7 @@ namespace BE_TKDecor.Service
         private readonly ISendMailService _sendMailService;
         private readonly IMapper _mapper;
         private readonly IHubContext<NotificationHub> _hub;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public UserService(TkdecorContext context,
             ISendMailService sendMailService,
@@ -33,8 +33,15 @@ namespace BE_TKDecor.Service
         }
 
         // change password
-        public async Task<ApiResponse> ChangePassword(User user, UserChangePasswordDto dto)
+        public async Task<ApiResponse> ChangePassword(string? userId, UserChangePasswordDto dto)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
+            if (user is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             if (!user.ResetPasswordRequired)
             {
                 _response.Message = "Người dùng không yêu cầu đổi mật khẩu!";
@@ -67,6 +74,7 @@ namespace BE_TKDecor.Service
                 // get random code
                 string code = RandomCode.GenerateRandomCode();
                 user.ResetPasswordCode = code;
+                user.ResetPasswordSentAt = DateTime.Now;
             }
             else
             {
@@ -118,45 +126,45 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
-        // delete user by userId
-        public async Task<ApiResponse> Delete(Guid userId)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.UserId == userId
-                                    && !x.IsDelete);
-            if (user is null)
-            {
-                _response.Message = ErrorContent.UserNotFound;
-                return _response;
-            }
+        //// delete user by userId
+        //public async Task<ApiResponse> Delete(string? userId)
+        //{
+        //    var user = await _context.Users
+        //        .FirstOrDefaultAsync(x => x.UserId == userId
+        //                            && !x.IsDelete);
+        //    if (user is null)
+        //    {
+        //        _response.Message = ErrorContent.UserNotFound;
+        //        return _response;
+        //    }
 
-            // check can't not delete last admin
-            var admins = await _context.Users
-                .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
-                .ToListAsync();
-            if (admins.Count == 1 && admins[0].UserId == user.UserId)
-            {
-                _response.Message = "Không thể xoá admin cuối cùng.";
-                return _response;
-            }
+        //    // check can't not delete last admin
+        //    var admins = await _context.Users
+        //        .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
+        //        .ToListAsync();
+        //    if (admins.Count == 1 && admins[0].UserId == user.UserId)
+        //    {
+        //        _response.Message = "Không thể xoá admin cuối cùng.";
+        //        return _response;
+        //    }
 
-            user.IsDelete = true;
-            user.UpdatedAt = DateTime.Now;
-            try
-            {
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
-                _response.Success = true;
-            }
-            catch { _response.Message = ErrorContent.Data; }
-            return _response;
-        }
+        //    user.IsDelete = true;
+        //    user.UpdatedAt = DateTime.Now;
+        //    try
+        //    {
+        //        _context.Users.Update(user);
+        //        await _context.SaveChangesAsync();
+        //        _response.Success = true;
+        //    }
+        //    catch { _response.Message = ErrorContent.Data; }
+        //    return _response;
+        //}
 
         // get all user except user have userId current
-        public async Task<ApiResponse> GetAllUser(Guid userId)
+        public async Task<ApiResponse> GetAllUser(string? userId)
         {
             var users = await _context.Users
-                .Where(x => !x.IsDelete && x.UserId != userId)
+                .Where(x => !x.IsDelete && x.UserId.ToString() != userId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
@@ -171,15 +179,36 @@ namespace BE_TKDecor.Service
         }
 
         // get user by id
-        public async Task<User?> GetById(Guid id)
+        public async Task<ApiResponse> GetById(string? userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete);
-            return user;
+            //var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId && !x.IsDelete);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
+            if (user is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            try
+            {
+                var result = _mapper.Map<UserGetDto>(user);
+                _response.Success = true;
+                _response.Data = result;
+            }
+            catch { _response.Message = ErrorContent.Data; }
+            return _response;
         }
 
         // send mail request change password
-        public async Task<ApiResponse> RequestChangePassword(User user)
+        public async Task<ApiResponse> RequestChangePassword(string? userId)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
+            if (user is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             // get random code
             string code = RandomCode.GenerateRandomCode();
             user.ResetPasswordRequired = true;
@@ -227,12 +256,6 @@ namespace BE_TKDecor.Service
         // set role for user
         public async Task<ApiResponse> SetRole(Guid userId, UserSetRoleDto dto)
         {
-            if (userId != dto.UserId)
-            {
-                _response.Message = ErrorContent.NotMatchId;
-                return _response;
-            }
-
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId && !x.IsDelete);
             if (user is null)
             {
@@ -240,7 +263,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            // check can't not delete last admin
+            // check can't not set role customer for last admin
             var admins = await _context.Users
                 .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
                 .ToListAsync();
@@ -254,17 +277,13 @@ namespace BE_TKDecor.Service
             user.UpdatedAt = DateTime.Now;
             try
             {
-                // remove refreshTokenOfUser
-                //var refreshTokenOfUser = await _context.RefreshTokens.Where(x => x.UserId == userId).ToListAsync();
-                //_context.RefreshTokens.RemoveRange(refreshTokenOfUser);
-
                 _context.Users.Update(user);
 
                 // add notification for user
                 Notification newNotification = new()
                 {
                     UserId = user.UserId,
-                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}. Cần đăng nhập lại."
+                    Message = $"Vai trò của bạn được quản trị thay đổi thành {dto.Role}. Cần đăng nhập lại để có thể sử dụng chức năng vai trò mới."
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR
@@ -280,8 +299,21 @@ namespace BE_TKDecor.Service
         }
 
         // update user info
-        public async Task<ApiResponse> UpdateUserInfo(User user)
+        public async Task<ApiResponse> UpdateUserInfo(string? userId, UserUpdateDto dto)
         {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
+            if (user is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
+            user.FullName = dto.FullName;
+            user.AvatarUrl = dto.AvatarUrl;
+            user.BirthDay = dto.BirthDay;
+            user.Gender = dto.Gender;
+            user.Phone = dto.Phone;
+            user.UpdatedAt = DateTime.Now;
             try
             {
                 _context.Users.Update(user);

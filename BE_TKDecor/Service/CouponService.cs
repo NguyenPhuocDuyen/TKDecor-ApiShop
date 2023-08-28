@@ -12,7 +12,7 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public CouponService(TkdecorContext context, IMapper mapper)
         {
@@ -28,7 +28,7 @@ namespace BE_TKDecor.Service
             {
                 dto.Code = dto.Code.ToUpper().Trim();
 
-                var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code == dto.Code);
+                var couponCode = await _context.Coupons.FirstOrDefaultAsync(x => x.Code.ToUpper() == dto.Code);
 
                 bool isAdd = true;
                 if (couponCode is null)
@@ -50,27 +50,37 @@ namespace BE_TKDecor.Service
                     couponCode.Value = dto.Value;
                     couponCode.MaxValue = dto.MaxValue;
                     couponCode.RemainingUsageCount = dto.RemainingUsageCount;
-                    couponCode.StartDate = dto.StartDate;
-                    couponCode.EndDate = dto.EndDate;
+                    //couponCode.StartDate = dto.StartDate;
+                    //couponCode.EndDate = dto.EndDate;
                     couponCode.IsActive = dto.IsActive;
                     couponCode.UpdatedAt = DateTime.Now;
                 }
+                // set StartDate at 0:00 of dto.StartDate
+                couponCode.StartDate = new DateTime(dto.StartDate.Year, dto.StartDate.Month, dto.StartDate.Day, 0, 0, 0);
+                // set EndDate at 11:59 p.m. dto.EndDate
+                couponCode.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 23, 59, 59);
 
-                if (couponCode.CouponType == SD.CouponByPercent && couponCode.Value > 100)
+                if (couponCode.CouponType == SD.CouponByPercent)
                 {
-                    _response.Message = "Không thể giảm hơn 100%";
-                    return _response;
+                    if (couponCode.Value > 100)
+                    {
+                        _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
+                        return _response;
+                    }
                 }
-
-                if (couponCode.Value > couponCode.MaxValue)
+                else
                 {
-                    _response.Message = "Giá trị không được vượt quá giá trị tối đa";
-                    return _response;
+                    couponCode.MaxValue = couponCode.Value;
                 }
+                //if (couponCode.Value > couponCode.MaxValue)
+                //{
+                //    _response.Message = "Chiếc khấu không được vượt quá chiếc khấu tối đa";
+                //    return _response;
+                //}
 
-                if (couponCode.StartDate > couponCode.EndDate)
+                if (couponCode.StartDate >= couponCode.EndDate)
                 {
-                    _response.Message = "Ngày bắt đầu và kết thúc không hợp lệ";
+                    _response.Message = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc";
                     return _response;
                 }
 
@@ -121,6 +131,19 @@ namespace BE_TKDecor.Service
 
             try
             {
+                // update state coupon
+                foreach (var item in coupons)
+                {
+                    if (item.RemainingUsageCount == 0
+                        || DateTime.Now > item.EndDate)
+                    {
+                        item.IsActive = false;
+                        item.UpdatedAt = DateTime.Now;
+                        _context.Coupons.Update(item);
+                    }
+                }
+                _context.SaveChanges();
+
                 var result = _mapper.Map<List<CouponGetDto>>(coupons);
                 _response.Success = true;
                 _response.Data = result;
@@ -185,10 +208,35 @@ namespace BE_TKDecor.Service
             couponDb.Value = dto.Value;
             couponDb.MaxValue = dto.MaxValue;
             couponDb.RemainingUsageCount = dto.RemainingUsageCount;
-            couponDb.StartDate = dto.StartDate;
-            couponDb.EndDate = dto.EndDate;
+
+            // set StartDate at 0:00 of dto.StartDate
+            couponDb.StartDate = new DateTime(dto.StartDate.Year, dto.StartDate.Month, dto.StartDate.Day, 0, 0, 0);
+            // set EndDate at 11:59 p.m. dto.EndDate
+            couponDb.EndDate = new DateTime(dto.EndDate.Year, dto.EndDate.Month, dto.EndDate.Day, 11, 59, 0);
+            //couponDb.StartDate = dto.StartDate;
+            //couponDb.EndDate = dto.EndDate;
             couponDb.IsActive = dto.IsActive;
             couponDb.UpdatedAt = DateTime.Now;
+
+            if (couponDb.CouponType == SD.CouponByPercent)
+            {
+                if (couponDb.Value > 100)
+                {
+                    _response.Message = "Chiếc khấu không hơn 100% khi giảm theo phần trăm";
+                    return _response;
+                }
+            }
+            else
+            {
+                couponDb.MaxValue = couponDb.Value;
+            }
+
+            if (couponDb.StartDate >= couponDb.EndDate)
+            {
+                _response.Message = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc";
+                return _response;
+            }
+
             try
             {
                 _context.Coupons.Update(couponDb);

@@ -5,9 +5,9 @@ namespace BE_TKDecor.Service.IService
 {
     public interface ICartService
     {
-        Task<ApiResponse> GetCartsForUser(Guid userId);
-        Task<ApiResponse> AddProductToCart(Guid userId, CartCreateDto dto);
-        Task<ApiResponse> UpdateQuantity(Guid userId, Guid id, CartUpdateDto cartDto);
-        Task<ApiResponse> Delete(Guid userId, Guid id);
+        Task<ApiResponse> GetCartsForUser(string? userId);
+        Task<ApiResponse> AddProductToCart(string? userId, CartCreateDto dto);
+        Task<ApiResponse> UpdateQuantity(string? userId, Guid cartId, CartUpdateDto dto);
+        Task<ApiResponse> Delete(string? userId, Guid cartId);
     }
 }

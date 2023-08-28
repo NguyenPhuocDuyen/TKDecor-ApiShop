@@ -1,13 +1,9 @@
-﻿using AutoMapper;
-using BE_TKDecor.Core.Config.JWT;
-using BE_TKDecor.Core.Dtos.Notification;
+﻿using BE_TKDecor.Core.Config.JWT;
 using BE_TKDecor.Core.Dtos.User;
 using BE_TKDecor.Core.Mail;
 using BE_TKDecor.Core.Response;
-using BE_TKDecor.Hubs;
 using BE_TKDecor.Service.IService;
 using BusinessObject;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -23,21 +19,15 @@ namespace BE_TKDecor.Service
     {
         private readonly TkdecorContext _context;
         private readonly ISendMailService _sendMailService;
-        private readonly IHubContext<NotificationHub> _hub;
-        private readonly IMapper _mapper;
         private readonly JwtSettings _jwtSettings;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public AuthenService(TkdecorContext context,
             IOptions<JwtSettings> options,
-            ISendMailService sendMailService,
-            IHubContext<NotificationHub> hub,
-            IMapper mapper)
+            ISendMailService sendMailService)
         {
             _context = context;
             _sendMailService = sendMailService;
-            _hub = hub;
-            _mapper = mapper;
             _jwtSettings = options.Value;
             _response = new ApiResponse();
         }
@@ -46,8 +36,6 @@ namespace BE_TKDecor.Service
         {
             //get user by email
             dto.Email = dto.Email.ToLower().Trim();
-            //var u = await _user.FindByEmail(dto.Email);
-
             var user = _context.Users.FirstOrDefault(x => x.Email == dto.Email);
 
             //check user null
@@ -172,7 +160,6 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> ConfirmMail(UserConfirmMailDto dto)
         {
             dto.Email = dto.Email.ToLower().Trim();
-
             // get user by email confirm token 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
 
@@ -189,7 +176,7 @@ namespace BE_TKDecor.Service
             }
 
             bool codeOutOfDate = false;
-            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-1))
             {
                 codeOutOfDate = true;
                 string code = RandomCode.GenerateRandomCode();
@@ -211,6 +198,7 @@ namespace BE_TKDecor.Service
                 //set email confirm
                 user.EmailConfirmed = true;
             }
+
             user.UpdatedAt = DateTime.Now;
             try
             {
@@ -239,7 +227,7 @@ namespace BE_TKDecor.Service
 
         public async Task<ApiResponse> ResendConfirmationEmail(UserEmailDto dto)
         {
-            // get user by email 
+            // get user by email
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email.ToLower().Trim());
             if (user is null)
             {
@@ -254,7 +242,7 @@ namespace BE_TKDecor.Service
             }
 
             //check code expires to create new code: 5 minutes
-            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.EmailConfirmationSentAt <= DateTime.Now.AddMinutes(-1))
                 user.EmailConfirmationCode = RandomCode.GenerateRandomCode();
 
             user.EmailConfirmationSentAt = DateTime.Now;
@@ -293,6 +281,12 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
+            if (!user.EmailConfirmed)
+            {
+                _response.Message = "Email chưa được xác nhận!";
+                return _response;
+            }
+
             if (user.IsDelete)
             {
                 _response.Message = "Tài khoản đã bị chặn";
@@ -325,13 +319,13 @@ namespace BE_TKDecor.Service
                 //update user
                 _context.Users.Update(user);
 
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = "Bạn đã yêu cầu quên mật khẩu"
-                };
-                _context.Notifications.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = "Bạn đã yêu cầu quên mật khẩu"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -369,7 +363,7 @@ namespace BE_TKDecor.Service
             }
 
             //check token expires: 5 minutes
-            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-5))
+            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-1))
             {
                 _response.Message = "Mã xác nhận hết hạn!";
                 return _response;
@@ -385,13 +379,13 @@ namespace BE_TKDecor.Service
                 //update to database and return info user
                 _context.Users.Update(user);
 
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = "Xác nhận mật khẩu mới thành công"
-                };
-                _context.Notifications.Add(newNotification);
-                await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = "Xác nhận mật khẩu mới thành công"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -453,18 +447,18 @@ namespace BE_TKDecor.Service
                     return _response;
                 }
 
-                //check 5: check refreshToken is used/revoked?
-                if (storedToken.IsUsed)
-                {
-                    _response.Message = "Mã xác thực làm mới đã được sử dụng!";
-                    return _response;
-                }
+                ////check 5: check refreshToken is used/revoked?
+                //if (storedToken.IsUsed)
+                //{
+                //    _response.Message = "Mã xác thực làm mới đã được sử dụng!";
+                //    return _response;
+                //}
 
-                if (storedToken.IsRevoked)
-                {
-                    _response.Message = "Mã xác thực làm mới đã bị thu hồi!";
-                    return _response;
-                }
+                //if (storedToken.IsRevoked)
+                //{
+                //    _response.Message = "Mã xác thực làm mới đã bị thu hồi!";
+                //    return _response;
+                //}
 
                 //check 6: AccessToken id == JwtId in RefreshToken
                 var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
@@ -514,6 +508,7 @@ namespace BE_TKDecor.Service
                 Expires = DateTime.Now.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
             };
+
             //create token
             var token = tokenHandler.CreateToken(tokenDescriptor);
             //convert token to string

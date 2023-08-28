@@ -16,7 +16,7 @@ namespace BE_TKDecor.Service
         private readonly TkdecorContext _context;
         private readonly IMapper _mapper;
         private readonly IHubContext<NotificationHub> _hub;
-        private ApiResponse _response;
+        private readonly ApiResponse _response;
 
         public ProductReportService(TkdecorContext context, IMapper mapper, IHubContext<NotificationHub> hub)
         {
@@ -47,8 +47,14 @@ namespace BE_TKDecor.Service
         }
 
         // make report of user
-        public async Task<ApiResponse> MakeProductReport(Guid userId, ProductReportCreateDto reportDto)
+        public async Task<ApiResponse> MakeProductReport(string? userId, ProductReportCreateDto reportDto)
         {
+            if (userId is null)
+            {
+                _response.Message = ErrorContent.UserNotFound;
+                return _response;
+            }
+
             var product = await _context.Products.FindAsync(reportDto.ProductReportedId);
             if (product is null || product.IsDelete)
             {
@@ -57,17 +63,16 @@ namespace BE_TKDecor.Service
             }
 
             var report = await _context.ProductReports
-                    .FirstOrDefaultAsync(x => x.UserReportId == userId && x.ProductReportedId == product.ProductId);
+                    .FirstOrDefaultAsync(x => x.UserReportId.ToString() == userId && x.ProductReportedId == product.ProductId);
 
             bool isAdd = false;
             // create a new report of that user for that product
             // if there is no report that product is in the peding state
-            if (report is null)
+            if (report is null || report.ReportStatus != SD.ReportPending)
             {
                 isAdd = true;
                 report = new ProductReport()
                 {
-                    UserReportId = userId,
                     ProductReportedId = product.ProductId,
                 };
             }
@@ -78,6 +83,7 @@ namespace BE_TKDecor.Service
 
             try
             {
+                report.UserReportId = Guid.Parse(userId);
                 if (isAdd)
                 {
                     _context.ProductReports.Add(report);
@@ -90,12 +96,12 @@ namespace BE_TKDecor.Service
                 // add notification for user
                 Notification newNotification = new()
                 {
-                    UserId = userId,
+                    UserId = Guid.Parse(userId),
                     Message = $"Báo cáo sản phẩm {product.Name} thành công"
                 };
                 _context.Notifications.Add(newNotification);
                 // notification signalR
-                await _hub.Clients.User(userId.ToString())
+                await _hub.Clients.User(userId)
                     .SendAsync(SD.NewNotification,
                     _mapper.Map<NotificationGetDto>(newNotification));
 
@@ -104,7 +110,7 @@ namespace BE_TKDecor.Service
                     .Where(x => x.Role == SD.RoleAdmin && !x.IsDelete)
                     .ToListAsync();
 
-                var user = await _context.Users.FindAsync(userId);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == userId);
                 foreach (var admin in admins)
                 {
                     // add notification for user
@@ -128,9 +134,9 @@ namespace BE_TKDecor.Service
         }
 
         // update status of report product
-        public async Task<ApiResponse> Update(Guid id, ProductReportUpdateDto dto)
+        public async Task<ApiResponse> Update(Guid productReportId, ProductReportUpdateDto dto)
         {
-            if (id != dto.ProductReportId)
+            if (productReportId != dto.ProductReportId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
@@ -140,7 +146,7 @@ namespace BE_TKDecor.Service
             var report = await _context.ProductReports
                 .Include(x => x.ProductReported)
                 .Include(x => x.UserReport)
-                .FirstOrDefaultAsync(x => x.ProductReportId == id && !x.IsDelete);
+                .FirstOrDefaultAsync(x => x.ProductReportId == productReportId && !x.IsDelete);
 
             if (report is null)
             {
