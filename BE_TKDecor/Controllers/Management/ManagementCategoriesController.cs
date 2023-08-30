@@ -32,9 +32,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementCategories/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(CategoryCreateDto categoryDto)
+        public async Task<IActionResult> Create(CategoryCreateDto dto)
         {
-            var res = await _category.Create(categoryDto);
+            var res = await _category.Create(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -44,9 +44,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // GET: api/ManagementCategories/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(Guid id, CategoryUpdateDto categoryDto)
+        public async Task<IActionResult> Update(Guid id, CategoryUpdateDto dto)
         {
-            var res = await _category.Update(id, categoryDto);
+            var res = await _category.Update(id, dto);
             if (res.Success)
             {
                 return Ok(res);

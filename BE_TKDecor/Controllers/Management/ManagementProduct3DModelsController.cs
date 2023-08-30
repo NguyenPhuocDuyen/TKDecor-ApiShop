@@ -44,9 +44,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementProduct3DModels/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(Product3DModelCreateDto modelDto)
+        public async Task<IActionResult> Create(Product3DModelCreateDto dto)
         {
-            var res = await _product3DModel.Create(modelDto);
+            var res = await _product3DModel.Create(dto);
             if (res.Success)
             {
                 return Ok(res);

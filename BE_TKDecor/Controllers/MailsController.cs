@@ -1,6 +1,7 @@
 ﻿using BE_TKDecor.Core.Dtos.Mail;
 using BE_TKDecor.Core.Mail;
 using BE_TKDecor.Core.Response;
+using BE_TKDecor.Service.IService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE_TKDecor.Controllers
@@ -18,15 +19,15 @@ namespace BE_TKDecor.Controllers
 
         // api/Mails/GetComment
         [HttpPost("GetComment")]
-        public async Task<IActionResult> GetComment(MailSendDto mailSendDto)
+        public async Task<IActionResult> GetComment(MailSendDto dto)
         {
             //set data to send
             MailContent mailContent = new()
             {
                 To = "DuyenNP7901@gmail.com",
                 Subject = "Mail để đưa ra nhận xét về trang web",
-                Body = $"<h4>Được góp ý bởi: {mailSendDto.MailSender}. Tên khánh hàng: {mailSendDto.Name}</h4>" +
-                $"<p>Nội dung: {mailSendDto.Content}</p>"
+                Body = $"<h4>Được góp ý bởi: {dto.MailSender}. Tên khánh hàng: {dto.Name}</h4>" +
+                $"<p>Nội dung: {dto.Content}</p>"
             };
             // send mail
             await _sendMailService.SendMail(mailContent);

@@ -1,7 +1,5 @@
 ﻿using BE_TKDecor.Core.Dtos.ProductReviewInteraction;
-using BE_TKDecor.Core.Response;
 using BE_TKDecor.Service.IService;
-using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
@@ -22,10 +20,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/ProductReviews/Interaction
         [HttpPost("Interaction")]
-        public async Task<IActionResult> Interaction(ProductReviewInteractionDto interactionDto)
+        public async Task<IActionResult> Interaction(ProductReviewInteractionDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _interaction.Interaction(userId, interactionDto);
+            var res = await _interaction.Interaction(userId, dto);
             if (res.Success)
             {
                 return Ok(res);

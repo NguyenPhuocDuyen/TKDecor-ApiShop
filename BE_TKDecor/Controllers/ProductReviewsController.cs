@@ -19,10 +19,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/ProductReviews/Review
         [HttpPost("Review")]
-        public async Task<IActionResult> ReviewProduct(ProductReviewCreateDto productReviewDto)
+        public async Task<IActionResult> ReviewProduct(ProductReviewCreateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _productReview.ReviewProduct(userId, productReviewDto);
+            var res = await _productReview.ReviewProduct(userId, dto);
             if (res.Success)
             {
                 return Ok(res);

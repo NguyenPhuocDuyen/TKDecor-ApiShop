@@ -19,13 +19,13 @@ namespace BE_TKDecor.Service
         }
 
         // user make review product when bought product
-        public async Task<ApiResponse> ReviewProduct(string? userId, ProductReviewCreateDto productReviewDto)
+        public async Task<ApiResponse> ReviewProduct(string? userId, ProductReviewCreateDto dto)
         {
             var orderDetail = await _context.OrderDetails
                 .Include(x => x.Order)
                 .Include(x => x.Product)
                 .Include(x => x.ProductReview)
-                .FirstOrDefaultAsync(x => x.OrderDetailId == productReviewDto.OrderDetailId
+                .FirstOrDefaultAsync(x => x.OrderDetailId == dto.OrderDetailId
                                     && x.Order.UserId.ToString() == userId);
 
             if (orderDetail is null)
@@ -43,8 +43,8 @@ namespace BE_TKDecor.Service
             orderDetail.ProductReview ??= new ProductReview();
             orderDetail.ProductReview.IsDelete = false;
             orderDetail.ProductReview.UpdatedAt = DateTime.Now;
-            orderDetail.ProductReview.Rate = productReviewDto.Rate;
-            orderDetail.ProductReview.Description = productReviewDto.Description;
+            orderDetail.ProductReview.Rate = dto.Rate;
+            orderDetail.ProductReview.Description = dto.Description;
             try
             {
                 _context.OrderDetails.Update(orderDetail);

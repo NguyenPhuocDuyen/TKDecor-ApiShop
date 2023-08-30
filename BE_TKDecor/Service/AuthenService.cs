@@ -319,14 +319,6 @@ namespace BE_TKDecor.Service
                 //update user
                 _context.Users.Update(user);
 
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    Message = "Bạn đã yêu cầu quên mật khẩu"
-                //};
-                //_context.Notifications.Add(newNotification);
-                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
-
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
@@ -378,14 +370,6 @@ namespace BE_TKDecor.Service
             {
                 //update to database and return info user
                 _context.Users.Update(user);
-
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    Message = "Xác nhận mật khẩu mới thành công"
-                //};
-                //_context.Notifications.Add(newNotification);
-                //await _hub.Clients.User(user.UserId.ToString()).SendAsync(SD.NewNotification, _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;

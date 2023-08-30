@@ -32,9 +32,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementReportProductReviews/UpdateStatusReport/1
         [HttpPut("UpdateStatusReport/{id}")]
-        public async Task<IActionResult> UpdateStatusReport(Guid id, ReportProductReviewUpdateDto reportDto)
+        public async Task<IActionResult> UpdateStatusReport(Guid id, ReportProductReviewUpdateDto dto)
         {
-            var res = await _reportProductReview.Update(id, reportDto);
+            var res = await _reportProductReview.Update(id, dto);
             if (res.Success)
             {
                 return Ok(res);

@@ -47,7 +47,7 @@ namespace BE_TKDecor.Service
         }
 
         // make report product review
-        public async Task<ApiResponse> MakeReportProductReview(string? userId, ReportProductReviewCreateDto reportDto)
+        public async Task<ApiResponse> MakeReportProductReview(string? userId, ReportProductReviewCreateDto dto)
         {
             if (userId is null)
             {
@@ -59,7 +59,7 @@ namespace BE_TKDecor.Service
                     .Include(x => x.OrderDetail)
                         .ThenInclude(x => x.Order)
                             .ThenInclude(x => x.User)
-                    .FirstOrDefaultAsync(x => x.ProductReviewId == reportDto.ProductReviewReportedId
+                    .FirstOrDefaultAsync(x => x.ProductReviewId == dto.ProductReviewReportedId
                                             && !x.IsDelete);
 
             if (productReview is null)
@@ -81,14 +81,14 @@ namespace BE_TKDecor.Service
                         UserReportId = Guid.Parse(userId),
                         ProductReviewReportedId = productReview.ProductReviewId,
                         ReportStatus = SD.ReportPending,
-                        Reason = reportDto.Reason
+                        Reason = dto.Reason
                     };
                     _context.ReportProductReviews.Add(newReport);
                 }
                 else
                 {
                     report.IsDelete = false;
-                    report.Reason = reportDto.Reason;
+                    report.Reason = dto.Reason;
                     report.ReportStatus = SD.ReportPending;
                     report.UpdatedAt = DateTime.Now;
                     _context.ReportProductReviews.Update(report);

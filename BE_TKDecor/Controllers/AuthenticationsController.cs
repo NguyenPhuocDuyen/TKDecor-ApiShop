@@ -18,9 +18,9 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Authentications/Register
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(UserRegisterDto userDto)
+        public async Task<IActionResult> Register(UserRegisterDto dto)
         {
-            var res = await _authen.Register(userDto);
+            var res = await _authen.Register(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -31,9 +31,9 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ConfirmMail
         //confirm mail of user 
         [HttpPost("ConfirmMail")]
-        public async Task<ActionResult> ConfirmMail(UserConfirmMailDto userDto)
+        public async Task<ActionResult> ConfirmMail(UserConfirmMailDto dto)
         {
-            var res = await _authen.ConfirmMail(userDto);
+            var res = await _authen.ConfirmMail(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -43,9 +43,9 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Authentications/ResendConfirmationCode
         [HttpPost("ResendConfirmationCode")]
-        public async Task<IActionResult> ResendConfirmationEmail(UserEmailDto userDto)
+        public async Task<IActionResult> ResendConfirmationEmail(UserEmailDto dto)
         {
-            var res = await _authen.ResendConfirmationEmail(userDto);
+            var res = await _authen.ResendConfirmationEmail(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -55,9 +55,9 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Authentications/Login
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(UserLoginDto userDto)
+        public async Task<IActionResult> Login(UserLoginDto dto)
         {
-            var res = await _authen.Login(userDto);
+            var res = await _authen.Login(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -68,9 +68,9 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ForgotPassword
         //ForgotPassword of user 
         [HttpPost("ForgotPassword")]
-        public async Task<ActionResult> ForgotPassword(UserEmailDto userDto)
+        public async Task<ActionResult> ForgotPassword(UserEmailDto dto)
         {
-            var res = await _authen.ForgotPassword(userDto);
+            var res = await _authen.ForgotPassword(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -81,9 +81,9 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ConfirmForgotPassword
         //ChangePassword of user 
         [HttpPost("ConfirmForgotPassword")]
-        public async Task<ActionResult> ConfirmForgotPassword(UserConfirmForgotPasswordDto userDto)
+        public async Task<ActionResult> ConfirmForgotPassword(UserConfirmForgotPasswordDto dto)
         {
-            var res = await _authen.ConfirmForgotPassword(userDto);
+            var res = await _authen.ConfirmForgotPassword(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -93,9 +93,9 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Authentications/RenewToken
         [HttpPost("RenewToken")]
-        public async Task<IActionResult> RenewToken(TokenModel model)
+        public async Task<IActionResult> RenewToken(TokenModel dto)
         {
-            var res = await _authen.RenewToken(model);
+            var res = await _authen.RenewToken(dto);
             if (res.Success)
             {
                 return Ok(res);

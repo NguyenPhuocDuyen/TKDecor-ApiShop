@@ -115,25 +115,25 @@ namespace BE_TKDecor.Service
         }
 
         // update category
-        public async Task<ApiResponse> Update(Guid id, CategoryUpdateDto categoryDto)
+        public async Task<ApiResponse> Update(Guid id, CategoryUpdateDto dto)
         {
-            if (id != categoryDto.CategoryId)
+            if (id != dto.CategoryId)
             {
                 _response.Message = ErrorContent.NotMatchId;
                 return _response;
             }
 
-            var categoryDb = await _context.Categories.FindAsync(categoryDto.CategoryId);
+            var categoryDb = await _context.Categories.FindAsync(dto.CategoryId);
             if (categoryDb is null || categoryDb.IsDelete)
             {
                 _response.Message = ErrorContent.CategoryNotFound;
                 return _response;
             }
 
-            categoryDb.Name = categoryDto.Name.Trim();
+            categoryDb.Name = dto.Name.Trim();
             // check name already exists
             var categoryName = await _context.Categories
-                .FirstOrDefaultAsync(x => x.Name.ToLower() == categoryDto.Name.ToLower());
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == dto.Name.ToLower());
 
             if (categoryName is not null && categoryName.CategoryId != id)
             {
@@ -141,8 +141,8 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            //categoryDb.Name = categoryDto.Name;
-            categoryDb.Thumbnail = categoryDto.Thumbnail;
+            //categoryDb.Name = dto.Name;
+            categoryDb.Thumbnail = dto.Thumbnail;
             categoryDb.UpdatedAt = DateTime.Now;
             try
             {
