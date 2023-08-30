@@ -20,6 +20,51 @@ namespace BE_TKDecor.Controllers
             _apiResponse = new ApiResponse();
         }
 
+        [HttpGet("ResetAccount")]
+        public async Task<IActionResult> ResetAccount(string email)
+        {
+            var acc = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (acc == null)
+            {
+                _apiResponse.Message = ErrorContent.UserNotFound;
+                return BadRequest(_apiResponse);
+            }
+
+            acc.EmailConfirmed = false;
+            try
+            {
+                _context.Users.Update(acc);
+                await _context.SaveChangesAsync();
+                _apiResponse.Success = true;
+                return Ok(_apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _apiResponse.Message = ex.Message;
+                return BadRequest(_apiResponse);
+            }
+        }
+
+        [HttpGet("DeleteAddress")]
+        public async Task<IActionResult> DeleteAddress(string email)
+        {
+            var list = await _context.UserAddresses.Include(x => x.User)
+                .Where(x => x.User.Email == email).ToListAsync();
+
+            try
+            {
+                _context.UserAddresses.RemoveRange(list);
+                await _context.SaveChangesAsync();
+                _apiResponse.Success = true;
+                return Ok(_apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _apiResponse.Message = ex.Message;
+                return BadRequest(_apiResponse);
+            }
+        }
+
         [HttpGet("ResetModelDelete")]
         public async Task<IActionResult> ResetModelDelete()
         {

@@ -107,17 +107,17 @@ namespace BE_TKDecor.Service
                     return _response;
                 }
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = $"Đổi mật khẩu thành công"
-                };
-                _context.Notifications.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(SD.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Đổi mật khẩu thành công"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(SD.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
@@ -234,17 +234,17 @@ namespace BE_TKDecor.Service
                 // send mail
                 await _sendMailService.SendMail(mailContent);
 
-                // add notification for user
-                Notification newNotification = new()
-                {
-                    UserId = user.UserId,
-                    Message = $"Bạn đã yêu cầu thay đổi mật khẩu"
-                };
-                _context.Notifications.Add(newNotification);
-                // notification signalR
-                await _hub.Clients.User(user.UserId.ToString())
-                    .SendAsync(SD.NewNotification,
-                    _mapper.Map<NotificationGetDto>(newNotification));
+                //// add notification for user
+                //Notification newNotification = new()
+                //{
+                //    UserId = user.UserId,
+                //    Message = $"Bạn đã yêu cầu thay đổi mật khẩu"
+                //};
+                //_context.Notifications.Add(newNotification);
+                //// notification signalR
+                //await _hub.Clients.User(user.UserId.ToString())
+                //    .SendAsync(SD.NewNotification,
+                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
