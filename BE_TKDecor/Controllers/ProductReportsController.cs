@@ -21,7 +21,7 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/ProductReports/MakeProductReport
         [HttpPost("MakeProductReport")]
-        public async Task<ActionResult<ProductReport>> MakeProductReport(ProductReportCreateDto dto)
+        public async Task<IActionResult> MakeProductReport(ProductReportCreateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
             var res = await _productReport.MakeProductReport(userId, dto);

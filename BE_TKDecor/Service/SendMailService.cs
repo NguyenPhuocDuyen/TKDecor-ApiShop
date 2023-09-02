@@ -53,10 +53,12 @@ namespace BE_TKDecor.Service
                 logger.LogInformation("Lỗi gửi mail, lưu tại - " + emailsavefile);
                 logger.LogError(ex.Message);
             }
+            finally
+            {
+                smtp.Disconnect(true);
 
-            smtp.Disconnect(true);
-
-            logger.LogInformation("send mail to " + mailContent.To);
+                logger.LogInformation("send mail to " + mailContent.To);
+            }
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)

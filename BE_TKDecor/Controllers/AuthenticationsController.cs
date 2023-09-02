@@ -31,7 +31,7 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ConfirmMail
         //confirm mail of user 
         [HttpPost("ConfirmMail")]
-        public async Task<ActionResult> ConfirmMail(UserConfirmMailDto dto)
+        public async Task<IActionResult> ConfirmMail(UserConfirmMailDto dto)
         {
             var res = await _authen.ConfirmMail(dto);
             if (res.Success)
@@ -68,7 +68,7 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ForgotPassword
         //ForgotPassword of user 
         [HttpPost("ForgotPassword")]
-        public async Task<ActionResult> ForgotPassword(UserEmailDto dto)
+        public async Task<IActionResult> ForgotPassword(UserEmailDto dto)
         {
             var res = await _authen.ForgotPassword(dto);
             if (res.Success)
@@ -81,7 +81,7 @@ namespace BE_TKDecor.Controllers
         // POST: api/Authentications/ConfirmForgotPassword
         //ChangePassword of user 
         [HttpPost("ConfirmForgotPassword")]
-        public async Task<ActionResult> ConfirmForgotPassword(UserConfirmForgotPasswordDto dto)
+        public async Task<IActionResult> ConfirmForgotPassword(UserConfirmForgotPasswordDto dto)
         {
             var res = await _authen.ConfirmForgotPassword(dto);
             if (res.Success)

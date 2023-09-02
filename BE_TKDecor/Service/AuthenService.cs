@@ -354,24 +354,48 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            //check token expires: 5 minutes
-            if (user.ResetPasswordSentAt <= DateTime.Now.AddMinutes(-1))
-            {
-                _response.Message = "Mã xác nhận hết hạn!";
-                return _response;
-            }
+            bool codeOutOfDate = user.ResetPasswordSentAt < DateTime.Now.AddMinutes(-5);
 
-            //if reset password, will back status do not reset password
-            user.ResetPasswordRequired = false;
-            //set new password
-            user.Password = Password.HashPassword(dto.Password);
+            // random new code if code time expired
+            if (codeOutOfDate)
+            {
+                // get random code
+                string code = RandomCode.GenerateRandomCode();
+                user.ResetPasswordCode = code;
+                user.ResetPasswordSentAt = DateTime.Now;
+            }
+            else
+            {
+                //if reset password, will back status do not reset password
+                user.ResetPasswordRequired = false;
+                //set new password
+                user.Password = Password.HashPassword(dto.Password);
+            }
             user.UpdatedAt = DateTime.Now;
+
             try
             {
                 //update to database and return info user
                 _context.Users.Update(user);
 
                 await _context.SaveChangesAsync();
+                if (codeOutOfDate)
+                {
+                    //send mail to changepassword
+                    //set data to send
+                    MailContent mailContent = new()
+                    {
+                        To = user.Email,
+                        Subject = "Đổi mật khẩu tại TKDecor Shop",
+                        Body = $"<h4>Nếu bạn không có yêu cầu đổi mật khẩu, hãy bỏ qua email này!</h4>" +
+                        $"<p>Đây là mã xác nhận: <strong>{user.ResetPasswordCode}</strong></p>"
+                    };
+                    // send mail
+                    await _sendMailService.SendMail(mailContent);
+                    _response.Message = "Hết thời gian mã xác nhận đổi mật khẩu. Vui lòng kiểm tra lại mail để xem mã mới!";
+                    return _response;
+                }
+
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }

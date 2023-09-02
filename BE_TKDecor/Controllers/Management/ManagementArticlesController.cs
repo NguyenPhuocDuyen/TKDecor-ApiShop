@@ -69,7 +69,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/ManagementArticles/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteArticle(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var res = await _article.Delete(id);
             if (res.Success)

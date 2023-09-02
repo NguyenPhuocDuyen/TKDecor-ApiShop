@@ -13,8 +13,7 @@ namespace BE_TKDecor.Service
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
 
-        public UserAddressService(TkdecorContext context,
-            IMapper mapper)
+        public UserAddressService(TkdecorContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

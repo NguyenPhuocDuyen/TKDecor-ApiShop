@@ -375,19 +375,21 @@ namespace BE_TKDecor.Service
         // get review of product by produc slug
         public async Task<ApiResponse> GetReview(string? userId, string slug, string sort, int pageIndex, int pageSize)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
-            if (product is null)
-            {
-                _response.Message = ErrorContent.ProductNotFound;
-                return _response;
-            }
+            //var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
+            //if (product is null)
+            //{
+            //    _response.Message = ErrorContent.ProductNotFound;
+            //    return _response;
+            //}
 
             var revews = await _context.ProductReviews
                     .Include(x => x.OrderDetail)
                         .ThenInclude(x => x.Order)
                             .ThenInclude(x => x.User)
+                    .Include(x => x.OrderDetail)
+                        .ThenInclude(x => x.Product)
                     .Include(x => x.ProductReviewInteractions)
-                    .Where(x => x.OrderDetail.ProductId == product.ProductId && !x.IsDelete)
+                    .Where(x => x.OrderDetail.Product.Slug == slug.ToLower().Trim() && !x.IsDelete)
                     .ToListAsync();
 
             try

@@ -62,11 +62,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            bool codeOutOfDate = false;
-            if (user.ResetPasswordSentAt < DateTime.Now.AddMinutes(-5))
-            {
-                codeOutOfDate = true;
-            }
+            bool codeOutOfDate = user.ResetPasswordSentAt < DateTime.Now.AddMinutes(-5);
 
             // random new code if code time expired
             if (codeOutOfDate)
@@ -97,8 +93,7 @@ namespace BE_TKDecor.Service
                     {
                         To = user.Email,
                         Subject = "Đổi mật khẩu tại TKDecor Shop",
-                        Body = $"<h4>Bạn yêu cầu đổi mật khẩu cho web TKDecor. " +
-                        $"Nếu bạn không có yêu cầu đổi mật khẩu, hãy bỏ qua email này!</h4>" +
+                        Body = $"<h4>Nếu bạn không có yêu cầu đổi mật khẩu, hãy bỏ qua email này!</h4>" +
                         $"<p>Đây là mã xác nhận: <strong>{user.ResetPasswordCode}</strong></p>"
                     };
                     // send mail
@@ -107,58 +102,12 @@ namespace BE_TKDecor.Service
                     return _response;
                 }
 
-                //// add notification for user
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    Message = $"Đổi mật khẩu thành công"
-                //};
-                //_context.Notifications.Add(newNotification);
-                //// notification signalR
-                //await _hub.Clients.User(user.UserId.ToString())
-                //    .SendAsync(SD.NewNotification,
-                //    _mapper.Map<NotificationGetDto>(newNotification));
-
                 await _context.SaveChangesAsync();
                 _response.Success = true;
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
         }
-
-        //// delete user by userId
-        //public async Task<ApiResponse> Delete(string? userId)
-        //{
-        //    var user = await _context.Users
-        //        .FirstOrDefaultAsync(x => x.UserId == userId
-        //                            && !x.IsDelete);
-        //    if (user is null)
-        //    {
-        //        _response.Message = ErrorContent.UserNotFound;
-        //        return _response;
-        //    }
-
-        //    // check can't not delete last admin
-        //    var admins = await _context.Users
-        //        .Where(x => !x.IsDelete && x.Role == SD.RoleAdmin)
-        //        .ToListAsync();
-        //    if (admins.Count == 1 && admins[0].UserId == user.UserId)
-        //    {
-        //        _response.Message = "Không thể xoá admin cuối cùng.";
-        //        return _response;
-        //    }
-
-        //    user.IsDelete = true;
-        //    user.UpdatedAt = DateTime.Now;
-        //    try
-        //    {
-        //        _context.Users.Update(user);
-        //        await _context.SaveChangesAsync();
-        //        _response.Success = true;
-        //    }
-        //    catch { _response.Message = ErrorContent.Data; }
-        //    return _response;
-        //}
 
         // get all user except user have userId current
         public async Task<ApiResponse> GetAllUser(string? userId)
@@ -233,18 +182,6 @@ namespace BE_TKDecor.Service
                 };
                 // send mail
                 await _sendMailService.SendMail(mailContent);
-
-                //// add notification for user
-                //Notification newNotification = new()
-                //{
-                //    UserId = user.UserId,
-                //    Message = $"Bạn đã yêu cầu thay đổi mật khẩu"
-                //};
-                //_context.Notifications.Add(newNotification);
-                //// notification signalR
-                //await _hub.Clients.User(user.UserId.ToString())
-                //    .SendAsync(SD.NewNotification,
-                //    _mapper.Map<NotificationGetDto>(newNotification));
 
                 await _context.SaveChangesAsync();
                 _response.Success = true;
