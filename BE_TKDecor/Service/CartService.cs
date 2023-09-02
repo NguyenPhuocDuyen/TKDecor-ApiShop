@@ -129,7 +129,7 @@ namespace BE_TKDecor.Service
         }
 
         // GetCartsForUser
-        public async Task<ApiResponse> GetCartsForUser(string? userId)
+        public async Task<ApiResponse> GetCarts(string? userId)
         {
             var carts = await _context.Carts
                     .Include(x => x.Product)

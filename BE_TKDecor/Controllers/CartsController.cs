@@ -23,7 +23,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetCarts()
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _cart.GetCartsForUser(userId);
+            var res = await _cart.GetCarts(userId);
             if (res.Success)
             {
                 return Ok(res);
