@@ -109,26 +109,26 @@ namespace BE_TKDecor.Service
             return _response;
         }
 
-        // get order by id user and id order
-        public async Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId)
-        {
-            var order = await GetOrderById(orderId);
+        //// get order by id user and id order
+        //public async Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId)
+        //{
+        //    var order = await GetOrderById(orderId);
 
-            if (order is null || order.UserId.ToString() != userId)
-            {
-                _response.Message = ErrorContent.OrderNotFound;
-                return _response;
-            }
+        //    if (order is null || order.UserId.ToString() != userId)
+        //    {
+        //        _response.Message = ErrorContent.OrderNotFound;
+        //        return _response;
+        //    }
 
-            try
-            {
-                var result = _mapper.Map<OrderGetDto>(order);
-                _response.Success = true;
-                _response.Data = result;
-            }
-            catch { _response.Message = ErrorContent.Data; }
-            return _response;
-        }
+        //    try
+        //    {
+        //        var result = _mapper.Map<OrderGetDto>(order);
+        //        _response.Success = true;
+        //        _response.Data = result;
+        //    }
+        //    catch { _response.Message = ErrorContent.Data; }
+        //    return _response;
+        //}
 
         // make order 
         public async Task<ApiResponse> MakeOrder(string? userId, OrderMakeDto dto)

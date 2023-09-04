@@ -170,7 +170,7 @@ namespace BE_TKDecor.Service
 
                 foreach (var orderDetail in product.OrderDetails)
                 {
-                    if (orderDetail.ProductReview is not null)
+                    if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                     {
                         totalReviews++;
                         totalRating += orderDetail.ProductReview.Rate;
@@ -227,7 +227,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;
@@ -328,7 +328,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;
@@ -491,7 +491,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;

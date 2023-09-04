@@ -24,7 +24,7 @@ namespace BE_TKDecor.Controllers
             //set data to send
             MailContent mailContent = new()
             {
-                To = "DuyenNP7901@gmail.com",
+                To = "tkdecor123@gmail.com",
                 Subject = "Mail để đưa ra nhận xét về trang web",
                 Body = $"<h4>Được góp ý bởi: {dto.MailSender}. Tên khánh hàng: {dto.Name}</h4>" +
                 $"<p>Nội dung: {dto.Content}</p>"

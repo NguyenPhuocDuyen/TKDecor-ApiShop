@@ -8,7 +8,7 @@ namespace BE_TKDecor.Service.IService
     {
         Task<ApiResponse> GetAll();
         Task<ApiResponse> GetById(Guid orderId);
-        Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId);
+        //Task<ApiResponse> GetByIdAndUser(Guid orderId, string? userId);
         Task<ApiResponse> UpdateStatusOrder(Guid orderId, OrderUpdateStatusDto dto);
         Task<ApiResponse> GetAllForUser(string? userId);
         Task<ApiResponse> MakeOrder(string? userId, OrderMakeDto dto);
