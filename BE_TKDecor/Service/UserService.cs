@@ -8,6 +8,7 @@ using BE_TKDecor.Service.IService;
 using BusinessObject;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop.Infrastructure;
 using Utility;
 
 namespace BE_TKDecor.Service
@@ -193,6 +194,12 @@ namespace BE_TKDecor.Service
         // set role for user
         public async Task<ApiResponse> SetRole(Guid userId, UserSetRoleDto dto)
         {
+            if (userId != dto.UserId)
+            {
+                _response.Message = ErrorContent.NotMatchId; 
+                return _response;
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId && !x.IsDelete);
             if (user is null)
             {
