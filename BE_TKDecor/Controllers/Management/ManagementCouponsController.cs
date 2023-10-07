@@ -32,9 +32,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementCoupons/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(CouponCreateDto couponDto)
+        public async Task<IActionResult> Create(CouponCreateDto dto)
         {
-            var res = await _coupon.Create(couponDto);
+            var res = await _coupon.Create(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -44,9 +44,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementCoupons/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(Guid id, CouponUpdateDto couponDto)
+        public async Task<IActionResult> Update(Guid id, CouponUpdateDto dto)
         {
-            var res = await _coupon.Update(id, couponDto);
+            var res = await _coupon.Update(id, dto);
             if (res.Success)
             {
                 return Ok(res);

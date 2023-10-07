@@ -23,7 +23,7 @@ namespace BE_TKDecor.Controllers
         public async Task<IActionResult> GetCarts()
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _cart.GetCartsForUser(userId);
+            var res = await _cart.GetCarts(userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -33,10 +33,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Carts/AddProductToCart
         [HttpPost("AddProductToCart")]
-        public async Task<IActionResult> AddProductToCart(CartCreateDto cartDto)
+        public async Task<IActionResult> AddProductToCart(CartCreateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _cart.AddProductToCart(userId, cartDto);
+            var res = await _cart.AddProductToCart(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -46,10 +46,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Carts/UpdateQuantity/201
         [HttpPut("UpdateQuantity/{id}")]
-        public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto cartDto)
+        public async Task<IActionResult> UpdateQuantity(Guid id, CartUpdateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _cart.UpdateQuantity(userId, id, cartDto);
+            var res = await _cart.UpdateQuantity(userId, id, dto);
             if (res.Success)
             {
                 return Ok(res);

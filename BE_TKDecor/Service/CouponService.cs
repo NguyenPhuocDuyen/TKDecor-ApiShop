@@ -50,8 +50,6 @@ namespace BE_TKDecor.Service
                     couponCode.Value = dto.Value;
                     couponCode.MaxValue = dto.MaxValue;
                     couponCode.RemainingUsageCount = dto.RemainingUsageCount;
-                    //couponCode.StartDate = dto.StartDate;
-                    //couponCode.EndDate = dto.EndDate;
                     couponCode.IsActive = dto.IsActive;
                     couponCode.UpdatedAt = DateTime.Now;
                 }
@@ -72,11 +70,6 @@ namespace BE_TKDecor.Service
                 {
                     couponCode.MaxValue = couponCode.Value;
                 }
-                //if (couponCode.Value > couponCode.MaxValue)
-                //{
-                //    _response.Message = "Chiếc khấu không được vượt quá chiếc khấu tối đa";
-                //    return _response;
-                //}
 
                 if (couponCode.StartDate >= couponCode.EndDate)
                 {

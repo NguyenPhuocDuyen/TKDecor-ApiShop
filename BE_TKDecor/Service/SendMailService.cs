@@ -1,8 +1,10 @@
-﻿using MailKit.Security;
+﻿using BE_TKDecor.Core.Mail;
+using BE_TKDecor.Service.IService;
+using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace BE_TKDecor.Core.Mail
+namespace BE_TKDecor.Service
 {
     public class SendMailService : ISendMailService
     {
@@ -51,10 +53,12 @@ namespace BE_TKDecor.Core.Mail
                 logger.LogInformation("Lỗi gửi mail, lưu tại - " + emailsavefile);
                 logger.LogError(ex.Message);
             }
+            finally
+            {
+                smtp.Disconnect(true);
 
-            smtp.Disconnect(true);
-
-            logger.LogInformation("send mail to " + mailContent.To);
+                logger.LogInformation("send mail to " + mailContent.To);
+            }
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)

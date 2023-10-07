@@ -33,10 +33,10 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Favorites/SetFavorite
         [HttpPost("SetFavorite")]
-        public async Task<IActionResult> SetFavorite(FavoriteSetDto favoriteDto)
+        public async Task<IActionResult> SetFavorite(FavoriteSetDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _productFavorite.SetFavorite(userId, favoriteDto);
+            var res = await _productFavorite.SetFavorite(userId, dto);
             if (res.Success)
             {
                 return Ok(res);

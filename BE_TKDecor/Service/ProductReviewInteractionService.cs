@@ -18,7 +18,7 @@ namespace BE_TKDecor.Service
         }
 
         // user make interaction
-        public async Task<ApiResponse> Interaction(string? userId, ProductReviewInteractionDto interactionDto)
+        public async Task<ApiResponse> Interaction(string? userId, ProductReviewInteractionDto dto)
         {
             if (userId is null)
             {
@@ -26,15 +26,15 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var productReview = await _context.ProductReviews.FindAsync(interactionDto.ProductReviewId);
-            if (productReview is null || productReview.IsDelete)
-            {
-                _response.Message = ErrorContent.ProductReviewNotFound;
-                return _response;
-            }
+            //var productReview = await _context.ProductReviews.FindAsync(dto.ProductReviewId);
+            //if (productReview is null || productReview.IsDelete)
+            //{
+            //    _response.Message = ErrorContent.ProductReviewNotFound;
+            //    return _response;
+            //}
 
             var interactionReview = await _context.ProductReviewInteractions.FirstOrDefaultAsync(x =>
-                x.UserId.ToString() == userId && x.ProductReviewId == productReview.ProductReviewId);
+                x.UserId.ToString() == userId && x.ProductReviewId == dto.ProductReviewId);
 
             bool isAdd = false;
             if (interactionReview is null)
@@ -45,10 +45,10 @@ namespace BE_TKDecor.Service
 
             if (isAdd)
             {
-                interactionReview.ProductReviewId = productReview.ProductReviewId;
+                interactionReview.ProductReviewId = dto.ProductReviewId;
             }
 
-            interactionReview.Interaction = interactionDto.Interaction;
+            interactionReview.Interaction = dto.Interaction;
             interactionReview.UpdatedAt = DateTime.Now;
             try
             {

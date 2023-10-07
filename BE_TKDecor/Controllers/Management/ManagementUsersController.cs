@@ -35,26 +35,14 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementUsers/SetRole/1
         [HttpPut("SetRole/{userId}")]
-        public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto userDto)
+        public async Task<IActionResult> SetRole(Guid userId, UserSetRoleDto dto)
         {
-            var res = await _user.SetRole(userId, userDto);
+            var res = await _user.SetRole(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
             }
             return BadRequest(res);
         }
-
-        //// Delete: api/ManagementUsers/Delete/1
-        //[HttpDelete("Delete/{userId}")]
-        //public async Task<IActionResult> Delete(Guid userId)
-        //{
-        //    var res = await _user.Delete(userId);
-        //    if (res.Success)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest(res);
-        //}
     }
 }

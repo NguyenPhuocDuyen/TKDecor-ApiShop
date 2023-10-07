@@ -47,7 +47,7 @@ namespace BE_TKDecor.Service
         }
 
         // make report of user
-        public async Task<ApiResponse> MakeProductReport(string? userId, ProductReportCreateDto reportDto)
+        public async Task<ApiResponse> MakeProductReport(string? userId, ProductReportCreateDto dto)
         {
             if (userId is null)
             {
@@ -55,7 +55,7 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var product = await _context.Products.FindAsync(reportDto.ProductReportedId);
+            var product = await _context.Products.FindAsync(dto.ProductReportedId);
             if (product is null || product.IsDelete)
             {
                 _response.Message = ErrorContent.ProductNotFound;
@@ -78,7 +78,7 @@ namespace BE_TKDecor.Service
             }
             report.IsDelete = false;
             report.ReportStatus = SD.ReportPending;
-            report.Reason = reportDto.Reason;
+            report.Reason = dto.Reason;
             report.UpdatedAt = DateTime.Now;
 
             try

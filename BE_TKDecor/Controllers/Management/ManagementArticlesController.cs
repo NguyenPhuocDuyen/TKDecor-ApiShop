@@ -1,7 +1,5 @@
 ﻿using BE_TKDecor.Core.Dtos.Article;
-using BE_TKDecor.Core.Response;
 using BE_TKDecor.Service.IService;
-using BusinessObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Utility;
@@ -46,10 +44,10 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementArticles/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(ArticleCreateDto articleDto)
+        public async Task<IActionResult> Create(ArticleCreateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _article.Create(articleDto, userId);
+            var res = await _article.Create(dto, userId);
             if (res.Success)
             {
                 return Ok(res);
@@ -59,9 +57,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementArticles/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(Guid id, ArticleUpdateDto articleDto)
+        public async Task<IActionResult> Update(Guid id, ArticleUpdateDto dto)
         {
-            var res = await _article.Update(id, articleDto);
+            var res = await _article.Update(id, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -71,7 +69,7 @@ namespace BE_TKDecor.Controllers.Management
 
         // DELETE: api/ManagementArticles/Delete/5
         [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteArticle(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var res = await _article.Delete(id);
             if (res.Success)
@@ -83,9 +81,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // api/ManagementArticles/SetPublish
         [HttpPost("SetPublish")]
-        public async Task<IActionResult> SetPublish(ArticleSetPublishDto articleDto)
+        public async Task<IActionResult> SetPublish(ArticleSetPublishDto dto)
         {
-            var res = await _article.SetPublish(articleDto);
+            var res = await _article.SetPublish(dto);
             if (res.Success)
             {
                 return Ok(res);

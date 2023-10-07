@@ -18,7 +18,7 @@ namespace BE_TKDecor.Core.Dtos.Product
         //[MinLength(50)]
         public string Description { get; set; } = null!;
 
-        [Range(1, 1000000)]
+        [Range(0, 1000000)]
         public int Quantity { get; set; }
 
         [Range(1, 9999999999)]

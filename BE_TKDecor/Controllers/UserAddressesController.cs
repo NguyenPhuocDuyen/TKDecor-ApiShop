@@ -58,10 +58,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/UserAddresses/Create
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(UserAddressCreateDto userAddressDto)
+        public async Task<IActionResult> Create(UserAddressCreateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _userAddress.Create(userId, userAddressDto);
+            var res = await _userAddress.Create(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -71,10 +71,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/UserAddresses/Update/1
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(Guid id, UserAddressUpdateDto userAddressDto)
+        public async Task<IActionResult> Update(Guid id, UserAddressUpdateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _userAddress.Update(userId, id, userAddressDto);
+            var res = await _userAddress.Update(userId, id, dto);
             if (res.Success)
             {
                 return Ok(res);

@@ -1,4 +1,6 @@
-﻿namespace BE_TKDecor.Core.Mail
+﻿using BE_TKDecor.Core.Mail;
+
+namespace BE_TKDecor.Service.IService
 {
     public interface ISendMailService
     {

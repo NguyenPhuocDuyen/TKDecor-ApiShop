@@ -32,10 +32,10 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Users/UpdateUserInfo
         [HttpPost("UpdateUserInfo")]
-        public async Task<IActionResult> UpdateUserInfo(UserUpdateDto userDto)
+        public async Task<IActionResult> UpdateUserInfo(UserUpdateDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _user.UpdateUserInfo(userId, userDto);
+            var res = await _user.UpdateUserInfo(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -58,10 +58,10 @@ namespace BE_TKDecor.Controllers
 
         // GET: api/Users/ChangePassword
         [HttpPost("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(UserChangePasswordDto userDto)
+        public async Task<IActionResult> ChangePassword(UserChangePasswordDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _user.ChangePassword(userId, userDto);
+            var res = await _user.ChangePassword(userId, dto);
             if (res.Success)
             {
                 return Ok(res);

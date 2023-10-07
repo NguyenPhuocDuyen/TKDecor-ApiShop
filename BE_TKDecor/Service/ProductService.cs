@@ -142,7 +142,16 @@ namespace BE_TKDecor.Service
         // get product by slug
         public async Task<ApiResponse> GetBySlug(string? userId, string slug)
         {
-            var product = await GetProductBySlug(slug);
+            var product = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .FirstOrDefaultAsync(x => x.Slug == slug.Trim());
 
             if (product is null)
             {
@@ -161,7 +170,7 @@ namespace BE_TKDecor.Service
 
                 foreach (var orderDetail in product.OrderDetails)
                 {
-                    if (orderDetail.ProductReview is not null)
+                    if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                     {
                         totalReviews++;
                         totalRating += orderDetail.ProductReview.Rate;
@@ -185,7 +194,18 @@ namespace BE_TKDecor.Service
         // get featured product
         public async Task<ApiResponse> FeaturedProducts(string? userId)
         {
-            var products = await GetAllProducts();
+            var products = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .ToListAsync();
+
             products = products.Where(x => x.Quantity > 0)
                     .OrderByDescending(x => x.OrderDetails.Sum(x => x.Quantity))
                     .Take(9)
@@ -207,7 +227,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;
@@ -234,7 +254,18 @@ namespace BE_TKDecor.Service
         // get all product
         public async Task<ApiResponse> GetAll()
         {
-            var products = await GetAllProducts();
+            var products = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .ToListAsync();
+
 
             try
             {
@@ -249,7 +280,18 @@ namespace BE_TKDecor.Service
         // get all product have filter
         public async Task<ApiResponse> GetAll(string? userId, Guid? categoryId, string search, string sort, int pageIndex, int pageSize)
         {
-            var list = await GetAllProducts();
+            var list = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .ToListAsync();
+
             list = list.Where(x => x.Quantity > 0).ToList();
 
             // filter categoryId
@@ -286,7 +328,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null  && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;
@@ -333,19 +375,21 @@ namespace BE_TKDecor.Service
         // get review of product by produc slug
         public async Task<ApiResponse> GetReview(string? userId, string slug, string sort, int pageIndex, int pageSize)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
-            if (product is null)
-            {
-                _response.Message = ErrorContent.ProductNotFound;
-                return _response;
-            }
+            //var product = await _context.Products.FirstOrDefaultAsync(x => x.Slug == slug.Trim() && !x.IsDelete);
+            //if (product is null)
+            //{
+            //    _response.Message = ErrorContent.ProductNotFound;
+            //    return _response;
+            //}
 
             var revews = await _context.ProductReviews
                     .Include(x => x.OrderDetail)
                         .ThenInclude(x => x.Order)
                             .ThenInclude(x => x.User)
+                    .Include(x => x.OrderDetail)
+                        .ThenInclude(x => x.Product)
                     .Include(x => x.ProductReviewInteractions)
-                    .Where(x => x.OrderDetail.ProductId == product.ProductId && !x.IsDelete)
+                    .Where(x => x.OrderDetail.Product.Slug == slug.ToLower().Trim() && !x.IsDelete)
                     .ToListAsync();
 
             try
@@ -395,7 +439,16 @@ namespace BE_TKDecor.Service
         // get relate products by product slug
         public async Task<ApiResponse> RelatedProducts(string? userId, string slug)
         {
-            var p = await GetProductBySlug(slug.Trim());
+            var p = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .FirstOrDefaultAsync(x => x.Slug == slug.Trim());
 
             if (p is null)
             {
@@ -403,7 +456,18 @@ namespace BE_TKDecor.Service
                 return _response;
             }
 
-            var productList = await GetAllProducts();
+            var productList = await _context.Products
+                    .Include(x => x.Category)
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.Product3DModel)
+                    .Include(x => x.ProductImages)
+                    .Include(x => x.OrderDetails)
+                        .ThenInclude(x => x.ProductReview)
+                    .Include(x => x.ProductFavorites)
+                    .Where(x => !x.IsDelete)
+                    .OrderByDescending(x => x.CreatedAt)
+                    .ToListAsync();
+
             // take 5 related products, if not enough, get more products
             productList = productList.Where(x => x.ProductId != p.ProductId && x.Quantity > 0)
                 .OrderByDescending(x => x.Category == p.Category)
@@ -427,7 +491,7 @@ namespace BE_TKDecor.Service
 
                     foreach (var orderDetail in product.OrderDetails)
                     {
-                        if (orderDetail.ProductReview is not null)
+                        if (orderDetail.ProductReview is not null && !orderDetail.ProductReview.IsDelete)
                         {
                             totalReviews++;
                             totalRating += orderDetail.ProductReview.Rate;
@@ -543,35 +607,6 @@ namespace BE_TKDecor.Service
             }
             catch { _response.Message = ErrorContent.Data; }
             return _response;
-        }
-
-        private async Task<List<Product>> GetAllProducts()
-        {
-            return await _context.Products
-                    .Include(x => x.Category)
-                    .Include(x => x.OrderDetails)
-                    .Include(x => x.Product3DModel)
-                    .Include(x => x.ProductImages)
-                    .Include(x => x.OrderDetails)
-                        .ThenInclude(x => x.ProductReview)
-                    .Include(x => x.ProductFavorites)
-                    .Where(x => !x.IsDelete)
-                    .OrderByDescending(x => x.CreatedAt)
-                    .ToListAsync();
-        }
-
-        private async Task<Product?> GetProductBySlug(string slug)
-        {
-            return await _context.Products
-                    .Include(x => x.Category)
-                    .Include(x => x.OrderDetails)
-                    .Include(x => x.Product3DModel)
-                    .Include(x => x.ProductImages)
-                    .Include(x => x.OrderDetails)
-                        .ThenInclude(x => x.ProductReview)
-                    .Include(x => x.ProductFavorites)
-                    .Where(x => !x.IsDelete)
-                    .FirstOrDefaultAsync(x => x.Slug == slug);
         }
     }
 }

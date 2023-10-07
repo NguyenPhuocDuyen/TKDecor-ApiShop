@@ -33,10 +33,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Orders/MakeOrder
         [HttpPost("MakeOrder")]
-        public async Task<IActionResult> MakeOrder(OrderMakeDto orderDto)
+        public async Task<IActionResult> MakeOrder(OrderMakeDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _order.MakeOrder(userId, orderDto);
+            var res = await _order.MakeOrder(userId, dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -46,10 +46,10 @@ namespace BE_TKDecor.Controllers
 
         // POST: api/Orders/UpdateStatusOrder/1
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto dto)
         {
             var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            var res = await _order.UpdateStatusOrderForCus(userId, id, orderDto);
+            var res = await _order.UpdateStatusOrderForCus(userId, id, dto);
             if (res.Success)
             {
                 return Ok(res);

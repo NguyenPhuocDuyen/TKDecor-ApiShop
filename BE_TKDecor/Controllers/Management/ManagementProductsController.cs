@@ -45,9 +45,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementProducts/Create
         [HttpPost("Create")]
-        public async Task<ActionResult<Product>> Create(ProductCreateDto productDto)
+        public async Task<IActionResult> Create(ProductCreateDto dto)
         {
-            var res = await _product.Create(productDto);
+            var res = await _product.Create(dto);
             if (res.Success)
             {
                 return Ok(res);
@@ -57,9 +57,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // PUT: api/ManagementProducts/Update/5
         [HttpPut("Update/{id}")]
-        public async Task<IActionResult> Update(Guid id, ProductUpdateDto productDto)
+        public async Task<IActionResult> Update(Guid id, ProductUpdateDto dto)
         {
-            var res = await _product.Update(id, productDto);
+            var res = await _product.Update(id, dto);
             if (res.Success)
             {
                 return Ok(res);

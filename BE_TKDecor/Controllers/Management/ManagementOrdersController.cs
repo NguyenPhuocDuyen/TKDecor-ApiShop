@@ -44,9 +44,9 @@ namespace BE_TKDecor.Controllers.Management
 
         // POST: api/ManagementOrders/UpdateStatusOrder/1
         [HttpPut("UpdateStatusOrder/{id}")]
-        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto orderDto)
+        public async Task<IActionResult> UpdateStatusOrder(Guid id, OrderUpdateStatusDto dto)
         {
-            var res = await _order.UpdateStatusOrder(id, orderDto);
+            var res = await _order.UpdateStatusOrder(id, dto);
             if (res.Success)
             {
                 return Ok(res);
