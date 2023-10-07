@@ -28,32 +28,10 @@ namespace BE_TKDecor.Data
             }
             catch (Exception) { }
 
-            //var admin = _db.Users.Where(x => x.Email == "admin2@gmail.com");
-            //_db.RemoveRange(admin);
-            //_db.SaveChanges();
-
-            // add admin
-            //User admin = new()
-            //{
-            //    Email = "admin2@gmail.com",
-            //    Password = Password.HashPassword("Default@123"),
-            //    FullName = "admin 2",
-            //    Role = SD.RoleAdmin,
-            //    BirthDay = DateTime.Now,
-            //    Gender = SD.GenderMale,
-            //    Phone = GenerateRandomPhoneNumber(),
-            //    EmailConfirmed = true,
-            //    AvatarUrl = "https://static.vecteezy.com/system/resources/previews/000/439/863/original/vector-users-icon.jpg",
-            //};
-            //_db.Users.Add(admin);
-            //_db.SaveChanges();
-
-            ////DeleteData();
-
-            AddModel3D();
-            AddUser();
-            await AddArticles();
-            AddCategories();
+            //AddModel3D();
+            //AddUser();
+            //await AddArticles();
+            //AddCategories();
             //AddCoupons();
             //await AddNotifications();
             //await AddProductReports();

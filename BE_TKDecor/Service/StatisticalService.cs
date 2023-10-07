@@ -64,7 +64,7 @@ namespace BE_TKDecor.Service
         public async Task<ApiResponse> GetTopProductSale(DateTime? startDate, DateTime? endDate, int take)
         {
             if (!startDate.HasValue)
-                startDate = DateTime.Now.AddMonths(-1);
+                startDate = DateTime.Now.AddMonths(-6);
 
             if (!endDate.HasValue)
                 endDate = DateTime.Now;
@@ -85,9 +85,8 @@ namespace BE_TKDecor.Service
                     TotalQuantity = group.Sum(orderDetail => orderDetail.Quantity),
                 })
                 .OrderByDescending(item => item.TotalQuantity)
+                .Take(take)
                 .ToList();
-
-            productQuantities = productQuantities.Take(take).ToList();
 
             _response.Success = true;
             _response.Data = productQuantities;

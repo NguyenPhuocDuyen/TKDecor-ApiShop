@@ -18,7 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 // add signalR
 builder.Services.AddSignalR();
 
-// config automapper
+// config auto
+// mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // service Database
@@ -95,6 +96,7 @@ builder.Services.AddControllersWithViews()
         .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
     );
+
 // config bearer token
 builder.Services.AddSwaggerGen(swagger =>
 {
